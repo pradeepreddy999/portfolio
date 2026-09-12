@@ -1,4 +1,5 @@
 import { ModeToggle } from '#/components/mode-toggle'
+import { ResumeDownloadButton } from '#/components/resume-download-button'
 import { Button } from '#/components/ui/button'
 import {
   Sheet,
@@ -16,6 +17,7 @@ const navLinks = [
   { name: 'Experience', to: '/' as const, hash: 'experience' },
   { name: 'Projects', to: '/' as const, hash: 'projects' },
   { name: 'Blog', to: '/blog' as const, hash: undefined },
+  { name: 'Tutorials', to: '/tutorials' as const, hash: undefined },
   { name: 'Contact', to: '/' as const, hash: 'contact' },
 ]
 
@@ -61,6 +63,10 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <div className="hidden sm:block">
+            <ResumeDownloadButton />
+          </div>
+
           <div className="hidden sm:flex items-center gap-1">
             {socialLinks.map((social) => (
               <a
@@ -87,7 +93,7 @@ export default function Header() {
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
+                <Menu className="size-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
@@ -104,6 +110,10 @@ export default function Header() {
                     {link.name}
                   </Link>
                 ))}
+
+                <div className="mt-2">
+                  <ResumeDownloadButton />
+                </div>
 
                 <div className="mt-4 flex gap-4">
                   {socialLinks.map((social) => (

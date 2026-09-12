@@ -16,7 +16,7 @@ function BlogPage() {
           to="/"
           className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
+          <ArrowLeft className="mr-2 size-4" /> Back to Home
         </Link>
         <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
           The Blog
@@ -36,14 +36,14 @@ function BlogPage() {
                     {post.category}
                   </Badge>
                   <span className="text-xs text-muted-foreground flex items-center">
-                    <Clock className="mr-1 h-3 w-3" /> {post.readTime}
+                    <Clock className="mr-1 size-3" /> {post.readTime}
                   </span>
                 </div>
                 <CardTitle className="text-2xl group-hover:text-primary">
                   {post.title}
                 </CardTitle>
                 <div className="text-sm text-muted-foreground flex items-center mt-2">
-                  <Calendar className="mr-2 h-4 w-4" />
+                  <Calendar className="mr-2 size-4" />
                   {post.date}
                 </div>
               </CardHeader>

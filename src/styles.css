@@ -156,3 +156,22 @@
     transition: none;
   }
 }
+
+@layer components {
+  .tut-code {
+    color: oklch(0.92 0 0);
+  }
+  .tut-code .kw {
+    color: #c792ea;
+  }
+  .tut-code .ty {
+    color: #82aaff;
+  }
+  .tut-code .str {
+    color: #c3e88d;
+  }
+  .tut-code .cm {
+    color: #7a8291;
+    font-style: italic;
+  }
+}

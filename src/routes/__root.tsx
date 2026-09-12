@@ -26,7 +26,19 @@ export const Route = createRootRoute({
           "Pradeep Palavalli's personal portfolio — Software Engineer specializing in .NET Core, React, and SQL Server, building scalable retail and supply chain solutions.",
       },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: 'stylesheet', href: appCss },
+      {
+        rel: 'icon',
+        type: 'image/x-icon',
+        href: `${import.meta.env.BASE_URL}favicon.ico`,
+      },
+      {
+        rel: 'icon',
+        type: 'image/svg+xml',
+        href: `${import.meta.env.BASE_URL}favicon.svg`,
+      },
+    ],
   }),
   component: RootLayout,
   notFoundComponent: NotFoundPage,
@@ -56,7 +68,7 @@ function NotFoundPage() {
       </p>
       <a href="/">
         <Button>
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="mr-2 size-4" />
           Back to Home
         </Button>
       </a>

@@ -14,6 +14,12 @@ import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
+import { Route as TutorialsIndexRouteImport } from './routes/tutorials/index'
+import { Route as TutorialsSlugRouteImport } from './routes/tutorials/$slug'
+import { Route as TutorialsCsharp14IndexRouteImport } from './routes/tutorials/csharp-14/index'
+import { Route as TutorialsCsharp14TopicIdRouteImport } from './routes/tutorials/csharp-14/$topicId'
+import { Route as TutorialsSqlNovaPizzaIndexRouteImport } from './routes/tutorials/sql-nova-pizza/index'
+import { Route as TutorialsSqlNovaPizzaTopicIdRouteImport } from './routes/tutorials/sql-nova-pizza/$topicId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,49 +46,134 @@ const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
   path: '/projects/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TutorialsIndexRoute = TutorialsIndexRouteImport.update({
+  id: '/tutorials/',
+  path: '/tutorials/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TutorialsSlugRoute = TutorialsSlugRouteImport.update({
+  id: '/tutorials/$slug',
+  path: '/tutorials/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TutorialsCsharp14IndexRoute = TutorialsCsharp14IndexRouteImport.update({
+  id: '/tutorials/csharp-14/',
+  path: '/tutorials/csharp-14/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TutorialsCsharp14TopicIdRoute =
+  TutorialsCsharp14TopicIdRouteImport.update({
+    id: '/tutorials/csharp-14/$topicId',
+    path: '/tutorials/csharp-14/$topicId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const TutorialsSqlNovaPizzaIndexRoute =
+  TutorialsSqlNovaPizzaIndexRouteImport.update({
+    id: '/tutorials/sql-nova-pizza/',
+    path: '/tutorials/sql-nova-pizza/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const TutorialsSqlNovaPizzaTopicIdRoute =
+  TutorialsSqlNovaPizzaTopicIdRouteImport.update({
+    id: '/tutorials/sql-nova-pizza/$topicId',
+    path: '/tutorials/sql-nova-pizza/$topicId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/tutorials/$slug': typeof TutorialsSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/tutorials/': typeof TutorialsIndexRoute
+  '/tutorials/csharp-14/$topicId': typeof TutorialsCsharp14TopicIdRoute
+  '/tutorials/sql-nova-pizza/$topicId': typeof TutorialsSqlNovaPizzaTopicIdRoute
+  '/tutorials/csharp-14/': typeof TutorialsCsharp14IndexRoute
+  '/tutorials/sql-nova-pizza/': typeof TutorialsSqlNovaPizzaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/tutorials/$slug': typeof TutorialsSlugRoute
   '/blog': typeof BlogIndexRoute
   '/projects': typeof ProjectsIndexRoute
+  '/tutorials': typeof TutorialsIndexRoute
+  '/tutorials/csharp-14/$topicId': typeof TutorialsCsharp14TopicIdRoute
+  '/tutorials/sql-nova-pizza/$topicId': typeof TutorialsSqlNovaPizzaTopicIdRoute
+  '/tutorials/csharp-14': typeof TutorialsCsharp14IndexRoute
+  '/tutorials/sql-nova-pizza': typeof TutorialsSqlNovaPizzaIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/tutorials/$slug': typeof TutorialsSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/tutorials/': typeof TutorialsIndexRoute
+  '/tutorials/csharp-14/$topicId': typeof TutorialsCsharp14TopicIdRoute
+  '/tutorials/sql-nova-pizza/$topicId': typeof TutorialsSqlNovaPizzaTopicIdRoute
+  '/tutorials/csharp-14/': typeof TutorialsCsharp14IndexRoute
+  '/tutorials/sql-nova-pizza/': typeof TutorialsSqlNovaPizzaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/blog/$slug' | '/projects/$slug' | '/blog/' | '/projects/'
+  fullPaths:
+    | '/'
+    | '/blog/$slug'
+    | '/projects/$slug'
+    | '/tutorials/$slug'
+    | '/blog/'
+    | '/projects/'
+    | '/tutorials/'
+    | '/tutorials/csharp-14/$topicId'
+    | '/tutorials/sql-nova-pizza/$topicId'
+    | '/tutorials/csharp-14/'
+    | '/tutorials/sql-nova-pizza/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/blog/$slug' | '/projects/$slug' | '/blog' | '/projects'
+  to:
+    | '/'
+    | '/blog/$slug'
+    | '/projects/$slug'
+    | '/tutorials/$slug'
+    | '/blog'
+    | '/projects'
+    | '/tutorials'
+    | '/tutorials/csharp-14/$topicId'
+    | '/tutorials/sql-nova-pizza/$topicId'
+    | '/tutorials/csharp-14'
+    | '/tutorials/sql-nova-pizza'
   id:
     | '__root__'
     | '/'
     | '/blog/$slug'
     | '/projects/$slug'
+    | '/tutorials/$slug'
     | '/blog/'
     | '/projects/'
+    | '/tutorials/'
+    | '/tutorials/csharp-14/$topicId'
+    | '/tutorials/sql-nova-pizza/$topicId'
+    | '/tutorials/csharp-14/'
+    | '/tutorials/sql-nova-pizza/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BlogSlugRoute: typeof BlogSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
+  TutorialsSlugRoute: typeof TutorialsSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
+  TutorialsIndexRoute: typeof TutorialsIndexRoute
+  TutorialsCsharp14TopicIdRoute: typeof TutorialsCsharp14TopicIdRoute
+  TutorialsSqlNovaPizzaTopicIdRoute: typeof TutorialsSqlNovaPizzaTopicIdRoute
+  TutorialsCsharp14IndexRoute: typeof TutorialsCsharp14IndexRoute
+  TutorialsSqlNovaPizzaIndexRoute: typeof TutorialsSqlNovaPizzaIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -122,6 +213,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tutorials/': {
+      id: '/tutorials/'
+      path: '/tutorials'
+      fullPath: '/tutorials/'
+      preLoaderRoute: typeof TutorialsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutorials/$slug': {
+      id: '/tutorials/$slug'
+      path: '/tutorials/$slug'
+      fullPath: '/tutorials/$slug'
+      preLoaderRoute: typeof TutorialsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutorials/csharp-14/': {
+      id: '/tutorials/csharp-14/'
+      path: '/tutorials/csharp-14'
+      fullPath: '/tutorials/csharp-14/'
+      preLoaderRoute: typeof TutorialsCsharp14IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutorials/csharp-14/$topicId': {
+      id: '/tutorials/csharp-14/$topicId'
+      path: '/tutorials/csharp-14/$topicId'
+      fullPath: '/tutorials/csharp-14/$topicId'
+      preLoaderRoute: typeof TutorialsCsharp14TopicIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutorials/sql-nova-pizza/': {
+      id: '/tutorials/sql-nova-pizza/'
+      path: '/tutorials/sql-nova-pizza'
+      fullPath: '/tutorials/sql-nova-pizza/'
+      preLoaderRoute: typeof TutorialsSqlNovaPizzaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutorials/sql-nova-pizza/$topicId': {
+      id: '/tutorials/sql-nova-pizza/$topicId'
+      path: '/tutorials/sql-nova-pizza/$topicId'
+      fullPath: '/tutorials/sql-nova-pizza/$topicId'
+      preLoaderRoute: typeof TutorialsSqlNovaPizzaTopicIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -129,8 +262,14 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BlogSlugRoute: BlogSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
+  TutorialsSlugRoute: TutorialsSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
+  TutorialsIndexRoute: TutorialsIndexRoute,
+  TutorialsCsharp14TopicIdRoute: TutorialsCsharp14TopicIdRoute,
+  TutorialsSqlNovaPizzaTopicIdRoute: TutorialsSqlNovaPizzaTopicIdRoute,
+  TutorialsCsharp14IndexRoute: TutorialsCsharp14IndexRoute,
+  TutorialsSqlNovaPizzaIndexRoute: TutorialsSqlNovaPizzaIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

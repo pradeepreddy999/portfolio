@@ -23,7 +23,7 @@ function ProjectsPage() {
           to="/"
           className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4 transition-colors"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
+          <ArrowLeft className="mr-2 size-4" /> Back to Home
         </Link>
         <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
           Projects
@@ -72,7 +72,7 @@ function ProjectsPage() {
               >
                 <Button variant="outline" className="w-full group">
                   View Case Study
-                  <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                  <ArrowUpRight className="ml-2 size-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
                 </Button>
               </Link>
             </CardFooter>

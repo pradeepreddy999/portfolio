@@ -53,7 +53,7 @@ export const projects: Project[] = [
     slug: 'walmart-deductions-finance-tool',
     title: 'Deductions – Finance Tool (Walmart)',
     description:
-      "Vendor deduction management system for Walmart, with React dashboards giving vendors visibility into deduction activity and reducing manual reconciliation effort.",
+      'Vendor deduction management system for Walmart, with React dashboards giving vendors visibility into deduction activity and reducing manual reconciliation effort.',
     date: 'Sep 2023 - Aug 2024',
     tech: ['React.js', 'Redux Toolkit', '.NET Core 7', 'Web API'],
     image: '/projects/walmart-deductions.jpg',

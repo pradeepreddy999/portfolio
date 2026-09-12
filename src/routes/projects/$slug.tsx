@@ -31,7 +31,7 @@ function ProjectPage() {
         to="/projects"
         className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors"
       >
-        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Projects
+        <ArrowLeft className="mr-2 size-4" /> Back to Projects
       </Link>
 
       <div className="space-y-6 mb-12">
@@ -61,7 +61,7 @@ function ProjectPage() {
                 rel="noopener noreferrer"
               >
                 <Button>
-                  <Code2 className="mr-2 h-4 w-4" /> View Source
+                  <Code2 className="mr-2 size-4" /> View Source
                 </Button>
               </a>
             )}
@@ -72,7 +72,7 @@ function ProjectPage() {
                 rel="noopener noreferrer"
               >
                 <Button variant="outline">
-                  <Globe className="mr-2 h-4 w-4" /> Live Demo
+                  <Globe className="mr-2 size-4" /> Live Demo
                 </Button>
               </a>
             )}

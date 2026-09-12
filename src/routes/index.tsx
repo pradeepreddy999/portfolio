@@ -30,7 +30,7 @@ function Home() {
             <span className="text-primary">one pixel at a time.</span>
           </h1>
           <p className="mx-auto max-w-175 text-gray-500 md:text-xl dark:text-gray-400">
-            I&apos;m a Software Engineer with 4+ years of experience building
+            I&apos;m a Software Engineer with 5+ years of experience building
             scalable, data-driven retail and supply chain solutions with .NET
             Core, React, and SQL Server.
           </p>
@@ -38,7 +38,7 @@ function Home() {
         <div className="flex gap-4">
           <a href="#contact">
             <Button size="lg" className="font-semibold">
-              Contact Me <ArrowRight className="ml-2 h-4 w-4" />
+              Contact Me <ArrowRight className="ml-2 size-4" />
             </Button>
           </a>
           <a
@@ -76,20 +76,20 @@ function Home() {
 
                 <div className="space-y-4 text-gray-500 dark:text-gray-400 text-lg leading-relaxed">
                   <p>
-                    I build and maintain full-stack applications using .NET
-                    Core Web API, React, and SQL Server, with a strong focus
-                    on retail solutions — including Walmart deductions
-                    management and store-specific order processing across the
-                    Walmart supply chain.
+                    I build and maintain full-stack applications using .NET Core
+                    Web API, React, and SQL Server, with a strong focus on
+                    retail solutions — including Walmart deductions management
+                    and store-specific order processing across the Walmart
+                    supply chain.
                   </p>
                   <p>
-                    I&apos;m adept at full-stack development, system design,
-                    and performance optimization, with an emphasis on clean
+                    I&apos;m adept at full-stack development, system design, and
+                    performance optimization, with an emphasis on clean
                     architecture, maintainability, and business impact. I
                     spearheaded my company&apos;s first reusable React +
-                    TypeScript component library, published via Azure
-                    Artifacts and documented with Storybook to improve UI
-                    consistency across teams.
+                    TypeScript component library, published via Azure Artifacts
+                    and documented with Storybook to improve UI consistency
+                    across teams.
                   </p>
                 </div>
 
@@ -127,7 +127,10 @@ function Home() {
 
       {/* EXPERIENCE SECTION */}
       <Reveal>
-        <section id="experience" className="py-24 container px-4 md:px-6 mx-auto">
+        <section
+          id="experience"
+          className="py-24 container px-4 md:px-6 mx-auto"
+        >
           <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
               Experience
@@ -153,13 +156,13 @@ function Home() {
                 <ul className="list-disc pl-5 space-y-2 text-gray-500 dark:text-gray-400">
                   <li>
                     Spearheaded the company&apos;s first reusable React +
-                    TypeScript component library, published via Azure
-                    Artifacts and documented with Storybook.
+                    TypeScript component library, published via Azure Artifacts
+                    and documented with Storybook.
                   </li>
                   <li>
-                    Built and maintained full-stack applications using .NET
-                    Core Web API, React, and SQL Server for Walmart&apos;s
-                    supply chain and vendor deductions systems.
+                    Built and maintained full-stack applications using .NET Core
+                    Web API, React, and SQL Server for Walmart&apos;s supply
+                    chain and vendor deductions systems.
                   </li>
                   <li>
                     Delivered retail analytics dashboards for Mars Grocery
@@ -167,9 +170,8 @@ function Home() {
                     including Kroger, HEB, Albertsons, and Publix.
                   </li>
                   <li>
-                    Ensured clean architecture, maintainability, and
-                    performance tuning for enterprise-grade software
-                    solutions.
+                    Ensured clean architecture, maintainability, and performance
+                    tuning for enterprise-grade software solutions.
                   </li>
                 </ul>
               </CardContent>
@@ -189,13 +191,13 @@ function Home() {
               <CardContent>
                 <ul className="list-disc pl-5 space-y-2 text-gray-500 dark:text-gray-400">
                   <li>
-                    Participated in code reviews and testing activities to
-                    learn software development best practices.
+                    Participated in code reviews and testing activities to learn
+                    software development best practices.
                   </li>
                   <li>
-                    Supported integration of retailer-specific business
-                    rules into analytics solutions and assisted in QA
-                    testing and post-production support.
+                    Supported integration of retailer-specific business rules
+                    into analytics solutions and assisted in QA testing and
+                    post-production support.
                   </li>
                 </ul>
               </CardContent>
@@ -256,7 +258,7 @@ function Home() {
                   >
                     <Button variant="outline" className="w-full group">
                       View Project
-                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </Link>
                 </CardFooter>
@@ -267,7 +269,7 @@ function Home() {
           <div className="flex justify-center mt-12">
             <Link to="/projects">
               <Button size="lg" variant="secondary">
-                View All Projects <ArrowUpRight className="ml-2 h-4 w-4" />
+                View All Projects <ArrowUpRight className="ml-2 size-4" />
               </Button>
             </Link>
           </div>
@@ -292,7 +294,7 @@ function Home() {
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-full bg-muted">
-                    <Mail className="h-6 w-6 text-primary" />
+                    <Mail className="size-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-semibold">Email</h3>

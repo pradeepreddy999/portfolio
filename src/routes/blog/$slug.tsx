@@ -27,7 +27,7 @@ function BlogPostPage() {
         to="/blog"
         className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8"
       >
-        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Blog
+        <ArrowLeft className="mr-2 size-4" /> Back to Blog
       </Link>
 
       <div className="space-y-4 border-b pb-8 mb-8">
@@ -43,11 +43,11 @@ function BlogPostPage() {
 
         <div className="flex items-center gap-6 text-sm text-muted-foreground">
           <div className="flex items-center">
-            <Calendar className="mr-2 h-4 w-4" />
+            <Calendar className="mr-2 size-4" />
             {post.date}
           </div>
           <div className="flex items-center">
-            <Clock className="mr-2 h-4 w-4" />
+            <Clock className="mr-2 size-4" />
             {post.readTime}
           </div>
         </div>
