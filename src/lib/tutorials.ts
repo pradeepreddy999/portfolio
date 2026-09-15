@@ -14,9 +14,9 @@ export const tutorials: Tutorial[] = [
     slug: 'csharp-14',
     title: 'C# — Basics to Advanced (C# 14 / .NET 10)',
     excerpt:
-      'A full self-paced roadmap from C# fundamentals through async, memory, and the new language features shipping in C# 14 with .NET 10.',
+      'A full self-paced roadmap from C# fundamentals through async, memory, and the new language features shipping in C# 14 with .NET 10 — 40 topics, each with the "why," not just the "what."',
     date: '2026-09-12',
-    readTime: '45 min read',
+    readTime: '65 min read',
     difficulty: 'Intermediate',
     stack: ['C#', '.NET 10'],
     content: '',
@@ -25,11 +25,22 @@ export const tutorials: Tutorial[] = [
     slug: 'sql-nova-pizza',
     title: 'SQL — Basics to Advanced (Nova Pizza Academy)',
     excerpt:
-      'Learn SQL from SELECT to views, window functions, CTEs, ROLLUP/CUBE, indexing, and stored procedures — every example queries the same five-table pizza delivery schema so it all clicks together.',
+      'Learn SQL from SELECT to window functions, CTEs, ROLLUP/CUBE, transactions, JSON, indexing, and security — every example queries the same five-table pizza delivery schema so it all clicks together.',
     date: '2026-09-12',
-    readTime: '50 min read',
+    readTime: '65 min read',
     difficulty: 'Beginner',
     stack: ['SQL', 'PostgreSQL'],
+    content: '',
+  },
+  {
+    slug: 'efcore-10',
+    title: 'EF Core — Basics to Advanced (Superhero Academy)',
+    excerpt:
+      'A complete walk from first DbContext to bulk operations, multi-tenancy, and provider internals — every relationship, query, and gotcha taught against one running schema: a superhero academy database.',
+    date: '2026-09-15',
+    readTime: '65 min read',
+    difficulty: 'Intermediate',
+    stack: ['C#', 'EF Core 10', '.NET 10'],
     content: '',
   },
 ]

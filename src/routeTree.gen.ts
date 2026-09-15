@@ -18,6 +18,8 @@ import { Route as TutorialsIndexRouteImport } from './routes/tutorials/index'
 import { Route as TutorialsSlugRouteImport } from './routes/tutorials/$slug'
 import { Route as TutorialsCsharp14IndexRouteImport } from './routes/tutorials/csharp-14/index'
 import { Route as TutorialsCsharp14TopicIdRouteImport } from './routes/tutorials/csharp-14/$topicId'
+import { Route as TutorialsEfcore10IndexRouteImport } from './routes/tutorials/efcore-10/index'
+import { Route as TutorialsEfcore10TopicIdRouteImport } from './routes/tutorials/efcore-10/$topicId'
 import { Route as TutorialsSqlNovaPizzaIndexRouteImport } from './routes/tutorials/sql-nova-pizza/index'
 import { Route as TutorialsSqlNovaPizzaTopicIdRouteImport } from './routes/tutorials/sql-nova-pizza/$topicId'
 
@@ -67,6 +69,17 @@ const TutorialsCsharp14TopicIdRoute =
     path: '/tutorials/csharp-14/$topicId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const TutorialsEfcore10IndexRoute = TutorialsEfcore10IndexRouteImport.update({
+  id: '/tutorials/efcore-10/',
+  path: '/tutorials/efcore-10/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TutorialsEfcore10TopicIdRoute =
+  TutorialsEfcore10TopicIdRouteImport.update({
+    id: '/tutorials/efcore-10/$topicId',
+    path: '/tutorials/efcore-10/$topicId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const TutorialsSqlNovaPizzaIndexRoute =
   TutorialsSqlNovaPizzaIndexRouteImport.update({
     id: '/tutorials/sql-nova-pizza/',
@@ -89,8 +102,10 @@ export interface FileRoutesByFullPath {
   '/projects/': typeof ProjectsIndexRoute
   '/tutorials/': typeof TutorialsIndexRoute
   '/tutorials/csharp-14/$topicId': typeof TutorialsCsharp14TopicIdRoute
+  '/tutorials/efcore-10/$topicId': typeof TutorialsEfcore10TopicIdRoute
   '/tutorials/sql-nova-pizza/$topicId': typeof TutorialsSqlNovaPizzaTopicIdRoute
   '/tutorials/csharp-14/': typeof TutorialsCsharp14IndexRoute
+  '/tutorials/efcore-10/': typeof TutorialsEfcore10IndexRoute
   '/tutorials/sql-nova-pizza/': typeof TutorialsSqlNovaPizzaIndexRoute
 }
 export interface FileRoutesByTo {
@@ -102,8 +117,10 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsIndexRoute
   '/tutorials': typeof TutorialsIndexRoute
   '/tutorials/csharp-14/$topicId': typeof TutorialsCsharp14TopicIdRoute
+  '/tutorials/efcore-10/$topicId': typeof TutorialsEfcore10TopicIdRoute
   '/tutorials/sql-nova-pizza/$topicId': typeof TutorialsSqlNovaPizzaTopicIdRoute
   '/tutorials/csharp-14': typeof TutorialsCsharp14IndexRoute
+  '/tutorials/efcore-10': typeof TutorialsEfcore10IndexRoute
   '/tutorials/sql-nova-pizza': typeof TutorialsSqlNovaPizzaIndexRoute
 }
 export interface FileRoutesById {
@@ -116,8 +133,10 @@ export interface FileRoutesById {
   '/projects/': typeof ProjectsIndexRoute
   '/tutorials/': typeof TutorialsIndexRoute
   '/tutorials/csharp-14/$topicId': typeof TutorialsCsharp14TopicIdRoute
+  '/tutorials/efcore-10/$topicId': typeof TutorialsEfcore10TopicIdRoute
   '/tutorials/sql-nova-pizza/$topicId': typeof TutorialsSqlNovaPizzaTopicIdRoute
   '/tutorials/csharp-14/': typeof TutorialsCsharp14IndexRoute
+  '/tutorials/efcore-10/': typeof TutorialsEfcore10IndexRoute
   '/tutorials/sql-nova-pizza/': typeof TutorialsSqlNovaPizzaIndexRoute
 }
 export interface FileRouteTypes {
@@ -131,8 +150,10 @@ export interface FileRouteTypes {
     | '/projects/'
     | '/tutorials/'
     | '/tutorials/csharp-14/$topicId'
+    | '/tutorials/efcore-10/$topicId'
     | '/tutorials/sql-nova-pizza/$topicId'
     | '/tutorials/csharp-14/'
+    | '/tutorials/efcore-10/'
     | '/tutorials/sql-nova-pizza/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -144,8 +165,10 @@ export interface FileRouteTypes {
     | '/projects'
     | '/tutorials'
     | '/tutorials/csharp-14/$topicId'
+    | '/tutorials/efcore-10/$topicId'
     | '/tutorials/sql-nova-pizza/$topicId'
     | '/tutorials/csharp-14'
+    | '/tutorials/efcore-10'
     | '/tutorials/sql-nova-pizza'
   id:
     | '__root__'
@@ -157,8 +180,10 @@ export interface FileRouteTypes {
     | '/projects/'
     | '/tutorials/'
     | '/tutorials/csharp-14/$topicId'
+    | '/tutorials/efcore-10/$topicId'
     | '/tutorials/sql-nova-pizza/$topicId'
     | '/tutorials/csharp-14/'
+    | '/tutorials/efcore-10/'
     | '/tutorials/sql-nova-pizza/'
   fileRoutesById: FileRoutesById
 }
@@ -171,8 +196,10 @@ export interface RootRouteChildren {
   ProjectsIndexRoute: typeof ProjectsIndexRoute
   TutorialsIndexRoute: typeof TutorialsIndexRoute
   TutorialsCsharp14TopicIdRoute: typeof TutorialsCsharp14TopicIdRoute
+  TutorialsEfcore10TopicIdRoute: typeof TutorialsEfcore10TopicIdRoute
   TutorialsSqlNovaPizzaTopicIdRoute: typeof TutorialsSqlNovaPizzaTopicIdRoute
   TutorialsCsharp14IndexRoute: typeof TutorialsCsharp14IndexRoute
+  TutorialsEfcore10IndexRoute: typeof TutorialsEfcore10IndexRoute
   TutorialsSqlNovaPizzaIndexRoute: typeof TutorialsSqlNovaPizzaIndexRoute
 }
 
@@ -241,6 +268,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TutorialsCsharp14TopicIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tutorials/efcore-10/': {
+      id: '/tutorials/efcore-10/'
+      path: '/tutorials/efcore-10'
+      fullPath: '/tutorials/efcore-10/'
+      preLoaderRoute: typeof TutorialsEfcore10IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutorials/efcore-10/$topicId': {
+      id: '/tutorials/efcore-10/$topicId'
+      path: '/tutorials/efcore-10/$topicId'
+      fullPath: '/tutorials/efcore-10/$topicId'
+      preLoaderRoute: typeof TutorialsEfcore10TopicIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tutorials/sql-nova-pizza/': {
       id: '/tutorials/sql-nova-pizza/'
       path: '/tutorials/sql-nova-pizza'
@@ -267,8 +308,10 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsIndexRoute: ProjectsIndexRoute,
   TutorialsIndexRoute: TutorialsIndexRoute,
   TutorialsCsharp14TopicIdRoute: TutorialsCsharp14TopicIdRoute,
+  TutorialsEfcore10TopicIdRoute: TutorialsEfcore10TopicIdRoute,
   TutorialsSqlNovaPizzaTopicIdRoute: TutorialsSqlNovaPizzaTopicIdRoute,
   TutorialsCsharp14IndexRoute: TutorialsCsharp14IndexRoute,
+  TutorialsEfcore10IndexRoute: TutorialsEfcore10IndexRoute,
   TutorialsSqlNovaPizzaIndexRoute: TutorialsSqlNovaPizzaIndexRoute,
 }
 export const routeTree = rootRouteImport

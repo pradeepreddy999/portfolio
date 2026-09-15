@@ -14,7 +14,7 @@ export interface NavGroup {
 }
 
 export type TutorialBasePath =
-  '/tutorials/csharp-14' | '/tutorials/sql-nova-pizza'
+  '/tutorials/csharp-14' | '/tutorials/sql-nova-pizza' | '/tutorials/efcore-10'
 
 function topicRoute(basePath: TutorialBasePath) {
   return `${basePath}/$topicId`
@@ -365,6 +365,14 @@ export function Callout({
         variant === 'default' && 'border-l-primary',
       )}
     >
+      {children}
+    </div>
+  )
+}
+
+export function Deepdive({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-4 rounded-r-md border-l-4 border-l-orange-500 bg-orange-500/10 p-4 text-[0.92rem]">
       {children}
     </div>
   )
