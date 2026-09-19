@@ -14,7 +14,12 @@ export interface NavGroup {
 }
 
 export type TutorialBasePath =
-  '/tutorials/csharp-14' | '/tutorials/sql-nova-pizza' | '/tutorials/efcore-10'
+  | '/tutorials/csharp-14'
+  | '/tutorials/sql-nova-pizza'
+  | '/tutorials/efcore-10'
+  | '/tutorials/web-development'
+  | '/tutorials/dotnet-web-api'
+  | '/tutorials/react-tanstack-start'
 
 function topicRoute(basePath: TutorialBasePath) {
   return `${basePath}/$topicId`

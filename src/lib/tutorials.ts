@@ -43,6 +43,39 @@ export const tutorials: Tutorial[] = [
     stack: ['C#', 'EF Core 10', '.NET 10'],
     content: '',
   },
+  {
+    slug: 'web-development',
+    title: 'Modern Web Development — Fundamentals to Advanced',
+    excerpt:
+      'A complete self-paced roadmap: how the web actually works, then HTML, CSS, and JavaScript from first principles through the newest browser features — container queries, :has(), signals, Web Components, and more.',
+    date: '2026-09-19',
+    readTime: '90 min read',
+    difficulty: 'Beginner',
+    stack: ['HTML', 'CSS', 'JavaScript', 'TypeScript'],
+    content: '',
+  },
+  {
+    slug: 'react-tanstack-start',
+    title: 'React & TanStack Start — Field Notes',
+    excerpt:
+      'A working reference for going from component basics to a fully-routed, server-rendered TanStack Start app — 36 modules covering hooks, React 19, and file-based routing, loaders, server functions, and deployment.',
+    date: '2026-09-19',
+    readTime: '75 min read',
+    difficulty: 'Intermediate',
+    stack: ['React 19', 'TanStack Start', 'TypeScript'],
+    content: '',
+  },
+  {
+    slug: 'dotnet-web-api',
+    title: 'The .NET 10 Web API Field Guide',
+    excerpt:
+      'Everything a Web API needs, in the order you’ll actually need it — 45 concepts from C# 14 language essentials through Docker, every one of them named against the library you’d reach for in real production code, all built around one running Pizza Ordering API. Targets .NET 10, EF Core 10, and xUnit v3.',
+    date: '2026-09-19',
+    readTime: '95 min read',
+    difficulty: 'Intermediate',
+    stack: ['.NET 10', 'C# 14', 'EF Core 10'],
+    content: '',
+  },
 ]
 
 export function getTutorial(slug: string) {
