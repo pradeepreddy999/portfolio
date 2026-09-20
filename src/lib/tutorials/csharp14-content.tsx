@@ -1,3 +1,4 @@
+import type { NavGroup } from '#/lib/tutorials/shared'
 import {
   Callout,
   Code,
@@ -5,7 +6,6 @@ import {
   RefTable,
   Topic,
 } from '#/lib/tutorials/shared'
-import type { NavGroup } from '#/lib/tutorials/shared'
 
 export const csharp14Nav: Array<NavGroup> = [
   {
@@ -101,17 +101,16 @@ export function Csharp14Content() {
       <Topic id="t1" no="01" title="Hello World & the CLI">
         <p>
           <strong>What&apos;s actually happening:</strong> the C# compiler
-          (Roslyn) doesn&apos;t produce machine code directly — it compiles
-          your source into <strong>IL (Intermediate Language)</strong>, a
-          CPU-agnostic bytecode stored in a <code>.dll</code>/<code>.exe</code>
-          . At run time, the .NET runtime&apos;s{' '}
-          <strong>JIT (Just-In-Time) compiler</strong> turns that IL into
-          native machine code for the CPU it&apos;s actually running on —
-          that&apos;s how the same build runs on Windows, Linux, and macOS
-          unmodified. .NET also supports{' '}
-          <strong>AOT (Ahead-of-Time) compilation</strong> for scenarios
-          wanting faster startup and no JIT step, at the cost of losing some
-          runtime flexibility.
+          (Roslyn) doesn&apos;t produce machine code directly — it compiles your
+          source into <strong>IL (Intermediate Language)</strong>, a
+          CPU-agnostic bytecode stored in a <code>.dll</code>/<code>.exe</code>.
+          At run time, the .NET runtime&apos;s{' '}
+          <strong>JIT (Just-In-Time) compiler</strong> turns that IL into native
+          machine code for the CPU it&apos;s actually running on — that&apos;s
+          how the same build runs on Windows, Linux, and macOS unmodified. .NET
+          also supports <strong>AOT (Ahead-of-Time) compilation</strong> for
+          scenarios wanting faster startup and no JIT step, at the cost of
+          losing some runtime flexibility.
         </p>
         <p>
           Every C# program used to require a <code>class Program</code> with a{' '}
@@ -185,18 +184,17 @@ export function Csharp14Content() {
 
       <Topic id="t2" no="02" title="Variables & Types">
         <p>
-          C#&apos;s type system splits into <strong>predefined types</strong>{' '}
-          (<code>int</code>, <code>bool</code>, <code>string</code> — really
-          just aliases for .NET BCL types like <code>System.Int32</code>) and{' '}
-          <strong>user-defined types</strong> (your own{' '}
-          <code>class</code>/<code>struct</code>/<code>enum</code>).
-          Physically, value-type locals typically live on the{' '}
-          <strong>stack</strong> — fast to allocate, automatically reclaimed
-          when the method returns — while reference-type instances live on the{' '}
-          <strong>heap</strong>, managed by the garbage collector, with only
-          the reference itself on the stack. This is why passing a large
-          struct around by value can get expensive: you&apos;re copying the
-          whole block of memory each time, not just a pointer.
+          C#&apos;s type system splits into <strong>predefined types</strong> (
+          <code>int</code>, <code>bool</code>, <code>string</code> — really just
+          aliases for .NET BCL types like <code>System.Int32</code>) and{' '}
+          <strong>user-defined types</strong> (your own <code>class</code>/
+          <code>struct</code>/<code>enum</code>). Physically, value-type locals
+          typically live on the <strong>stack</strong> — fast to allocate,
+          automatically reclaimed when the method returns — while reference-type
+          instances live on the <strong>heap</strong>, managed by the garbage
+          collector, with only the reference itself on the stack. This is why
+          passing a large struct around by value can get expensive: you&apos;re
+          copying the whole block of memory each time, not just a pointer.
         </p>
         <p>
           C# is <strong>statically typed</strong> — every variable&apos;s type
@@ -248,13 +246,13 @@ partyB.Add(<span class="str">"Mage"</span>);       <span class="cm">// partyA no
         <p>
           Two behaviors worth internalizing early: <code>&amp;&amp;</code> and{' '}
           <code>||</code> <strong>short-circuit</strong> — the right-hand side
-          is never evaluated if the left already determines the result, which
-          is why <code>{'character != null && character.Hp > 0'}</code> is
-          safe and won&apos;t throw even if <code>character</code> is null. C#
-          also enforces <strong>definite assignment</strong>: the compiler
-          refuses to build if a variable might be read before every code path
-          has assigned it, eliminating a whole class of &quot;uninitialized
-          variable&quot; bugs that plague languages without this check.
+          is never evaluated if the left already determines the result, which is
+          why <code>{'character != null && character.Hp > 0'}</code> is safe and
+          won&apos;t throw even if <code>character</code> is null. C# also
+          enforces <strong>definite assignment</strong>: the compiler refuses to
+          build if a variable might be read before every code path has assigned
+          it, eliminating a whole class of &quot;uninitialized variable&quot;
+          bugs that plague languages without this check.
         </p>
         <p>
           C# has the usual suspects — <code>if</code>/<code>else</code>,{' '}
@@ -318,10 +316,10 @@ partyB.Add(<span class="str">"Mage"</span>);       <span class="cm">// partyA no
           existing call resolves to, a subtle source of behavior changes when
           you extend an API. Every method call pushes a new{' '}
           <strong>stack frame</strong> holding parameters, locals, and the
-          return address; deep recursion without a base case exhausts the
-          stack and throws <code>StackOverflowException</code> — one of the
-          few exceptions you cannot catch, because by the time it&apos;s
-          thrown there&apos;s no stack left to run a handler on.
+          return address; deep recursion without a base case exhausts the stack
+          and throws <code>StackOverflowException</code> — one of the few
+          exceptions you cannot catch, because by the time it&apos;s thrown
+          there&apos;s no stack left to run a handler on.
         </p>
         <p>
           Beyond ordinary parameters, C# gives you several passing mechanisms
@@ -373,11 +371,11 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
           The deeper reason this choice matters: a <code>class</code> instance
           requires a heap allocation and GC tracking every time you create one,
           while a local <code>struct</code> often needs no heap allocation at
-          all — the JIT can keep it entirely in registers or on the stack. For
-          a type created millions of times per second (a 2D point in a physics
+          all — the JIT can keep it entirely in registers or on the stack. For a
+          type created millions of times per second (a 2D point in a physics
           loop, say), that difference is the whole performance story. The rule
-          of thumb: reach for <code>struct</code> only when the type is small
-          (a few fields), logically a single value, and ideally immutable —
+          of thumb: reach for <code>struct</code> only when the type is small (a
+          few fields), logically a single value, and ideally immutable —
           otherwise default to <code>class</code> or <code>record</code>.
         </p>
         <p>
@@ -443,15 +441,15 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
         <p>
           Object construction happens in a fixed order worth memorizing when
           debugging weird initial-state bugs: field initializers and property
-          initializers run first (top to bottom, in declaration order), then
-          the base class&apos;s constructor runs, then finally your own
-          constructor body executes. A property that looks like a plain field
-          (<code>public int Hp { '{ get; set; }' }</code>) is actually compiled
+          initializers run first (top to bottom, in declaration order), then the
+          base class&apos;s constructor runs, then finally your own constructor
+          body executes. A property that looks like a plain field (
+          <code>public int Hp {'{ get; set; }'}</code>) is actually compiled
           into a private backing field plus two real methods (
           <code>get_Hp()</code>/<code>set_Hp()</code>) — which is exactly why
-          you can later add validation logic to the setter without breaking
-          any code that calls <code>hero.Hp = 50</code>, since callers were
-          never touching a raw field to begin with.
+          you can later add validation logic to the setter without breaking any
+          code that calls <code>hero.Hp = 50</code>, since callers were never
+          touching a raw field to begin with.
         </p>
         <p>
           Auto-properties generate the backing field for you. <code>init</code>{' '}
@@ -495,18 +493,17 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
 
       <Topic id="t7" no="07" title="Inheritance & Interfaces">
         <p>
-          C# deliberately restricts a class to <strong>one</strong> base class
-          — this sidesteps the &quot;diamond problem&quot; that multiple class
+          C# deliberately restricts a class to <strong>one</strong> base class —
+          this sidesteps the &quot;diamond problem&quot; that multiple class
           inheritance creates in languages like C++ (ambiguity when two base
           classes define the same member). Interfaces sidestep the diamond
-          problem differently: they carry no state of their own, so
-          implementing several is safe. Under the hood, calling a{' '}
-          <code>virtual</code> method goes through a per-type{' '}
-          <strong>vtable</strong> (virtual method table) lookup rather than
-          jumping straight to the method address — the small runtime cost that
-          makes polymorphism possible, and why <code>sealed</code> methods
-          (which skip the vtable) can be marginally faster in extremely hot
-          code paths.
+          problem differently: they carry no state of their own, so implementing
+          several is safe. Under the hood, calling a <code>virtual</code> method
+          goes through a per-type <strong>vtable</strong> (virtual method table)
+          lookup rather than jumping straight to the method address — the small
+          runtime cost that makes polymorphism possible, and why{' '}
+          <code>sealed</code> methods (which skip the vtable) can be marginally
+          faster in extremely hot code paths.
         </p>
         <p>
           A class inherits from exactly one base class (single inheritance) but
@@ -559,11 +556,11 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
           implementation freely as long as its <em>public</em> contract stays
           the same, without breaking any code that depends on it. A{' '}
           <code>Vault</code> that exposes <code>Deposit(int)</code> and a
-          read-only <code>Balance</code> can switch its internal storage from
-          an <code>int</code> field to a database call later, and every caller
-          keeps working unchanged. Exposing raw mutable fields instead locks
-          you into that exact representation forever, because any external
-          code could be reading or writing it directly.
+          read-only <code>Balance</code> can switch its internal storage from an{' '}
+          <code>int</code> field to a database call later, and every caller
+          keeps working unchanged. Exposing raw mutable fields instead locks you
+          into that exact representation forever, because any external code
+          could be reading or writing it directly.
         </p>
         <p>The full access-modifier picture:</p>
         <RefTable
@@ -663,14 +660,15 @@ bag.Add(<span class="str">"Sword"</span>); bag.Add(<span class="str">"Potion"</s
         <p>
           Picking the right collection is really a Big-O decision:{' '}
           <code>{'List<T>'}</code> gives O(1) index access but O(n) to find an
-          item by value or insert in the middle; <code>{'Dictionary<K,V>'}</code>{' '}
-          and <code>{'HashSet<T>'}</code> give O(1) average lookup/insert via
-          hashing, at the cost of no guaranteed order; <code>{'Queue<T>'}</code>
-          /<code>{'Stack<T>'}</code> give O(1) at one end only. Reaching for a{' '}
-          <code>{'List<T>'}</code> and doing <code>.Contains()</code> in a hot
-          loop over thousands of items is a very common, very fixable
-          performance mistake — swapping in a <code>{'HashSet<T>'}</code> for
-          membership checks alone can turn an O(n²) algorithm into O(n).
+          item by value or insert in the middle;{' '}
+          <code>{'Dictionary<K,V>'}</code> and <code>{'HashSet<T>'}</code> give
+          O(1) average lookup/insert via hashing, at the cost of no guaranteed
+          order; <code>{'Queue<T>'}</code>/<code>{'Stack<T>'}</code> give O(1)
+          at one end only. Reaching for a <code>{'List<T>'}</code> and doing{' '}
+          <code>.Contains()</code> in a hot loop over thousands of items is a
+          very common, very fixable performance mistake — swapping in a{' '}
+          <code>{'HashSet<T>'}</code> for membership checks alone can turn an
+          O(n²) algorithm into O(n).
         </p>
         <RefTable
           headers={['Collection', 'Use it for']}
@@ -709,11 +707,11 @@ bag.Add(<span class="str">"Sword"</span>); bag.Add(<span class="str">"Potion"</s
           with. Nullable <em>reference</em> types (this topic) are purely a
           compiler annotation feature: <code>string?</code> and{' '}
           <code>string</code> compile to the exact same IL and have identical
-          runtime behavior — the only difference is which one the compiler
-          warns you about when you might be dereferencing null. It&apos;s
-          opt-in per project (or even per file with{' '}
-          <code>#nullable enable</code>), which is exactly why older codebases
-          you might integrate with often don&apos;t have it turned on at all.
+          runtime behavior — the only difference is which one the compiler warns
+          you about when you might be dereferencing null. It&apos;s opt-in per
+          project (or even per file with <code>#nullable enable</code>), which
+          is exactly why older codebases you might integrate with often
+          don&apos;t have it turned on at all.
         </p>
         <p>
           With <code>{'<Nullable>enable</Nullable>'}</code> (the default in new
@@ -791,15 +789,14 @@ bag.Add(<span class="str">"Sword"</span>); bag.Add(<span class="str">"Potion"</s
           it&apos;s a real class the compiler generates for you, with an{' '}
           <code>Invoke</code> method and internally an{' '}
           <strong>invocation list</strong> of every method attached via{' '}
-          <code>+=</code>. That&apos;s the mechanism behind multicast: calling
-          a delegate with three subscribers runs all three in the order they
-          were added, and if one throws, the rest never execute — a common
-          surprise when debugging &quot;why didn&apos;t my second handler
-          run.&quot; An <code>event</code> compiles down to a delegate field
-          plus compiler-generated <code>add</code>/<code>remove</code>{' '}
-          accessors, which is exactly why outside code can subscribe/
-          unsubscribe but never call <code>Invoke</code> or overwrite the
-          whole list directly.
+          <code>+=</code>. That&apos;s the mechanism behind multicast: calling a
+          delegate with three subscribers runs all three in the order they were
+          added, and if one throws, the rest never execute — a common surprise
+          when debugging &quot;why didn&apos;t my second handler run.&quot; An{' '}
+          <code>event</code> compiles down to a delegate field plus
+          compiler-generated <code>add</code>/<code>remove</code> accessors,
+          which is exactly why outside code can subscribe/ unsubscribe but never
+          call <code>Invoke</code> or overwrite the whole list directly.
         </p>
         <p>
           Delegates are type-safe function references — they can hold multiple
@@ -842,15 +839,15 @@ boss.Die();`}
         <p>
           Throwing an exception is genuinely expensive relative to a normal
           return — the runtime has to capture a full stack trace and unwind
-          frames looking for a matching <code>catch</code>, which can be
-          orders of magnitude slower than a regular method call. That&apos;s
-          the practical reason exceptions are for truly <em>exceptional</em>,
+          frames looking for a matching <code>catch</code>, which can be orders
+          of magnitude slower than a regular method call. That&apos;s the
+          practical reason exceptions are for truly <em>exceptional</em>,
           unexpected situations, not routine control flow — a &quot;user typed
           an invalid menu option&quot; case belongs in an ordinary{' '}
           <code>if</code>/return-value check, not a <code>throw</code>.
           It&apos;s also why a <code>try</code> block with no exception thrown
-          costs essentially nothing at runtime — the overhead only exists on
-          the actual throw/catch path, not on entry to the block.
+          costs essentially nothing at runtime — the overhead only exists on the
+          actual throw/catch path, not on entry to the block.
         </p>
         <Code
           html={`<span class="kw">public</span> <span class="kw">class</span> CharacterDeadException(<span class="kw">string</span> name) : <span class="ty">Exception</span>($<span class="str">"{name} is already dead"</span>);
@@ -889,14 +886,13 @@ boss.Die();`}
           <code>{'IEnumerable<T>'}</code>, <code>{'c => c.Hp > 0'}</code>{' '}
           compiles to an ordinary delegate — actual executable code. Against{' '}
           <code>{'IQueryable<T>'}</code> (Entity Framework and similar), the
-          same lambda instead compiles to an{' '}
-          <strong>expression tree</strong> — a data structure describing the
-          logic (&quot;compare property Hp to constant 0&quot;) rather than
-          executable code — which the provider then walks and translates into
-          SQL before anything runs. That&apos;s also why certain things work in
-          LINQ-to-Objects but throw at runtime in EF queries: an arbitrary C#
-          method has no SQL translation, so it can&apos;t be turned into an
-          expression tree the database understands.
+          same lambda instead compiles to an <strong>expression tree</strong> —
+          a data structure describing the logic (&quot;compare property Hp to
+          constant 0&quot;) rather than executable code — which the provider
+          then walks and translates into SQL before anything runs. That&apos;s
+          also why certain things work in LINQ-to-Objects but throw at runtime
+          in EF queries: an arbitrary C# method has no SQL translation, so it
+          can&apos;t be turned into an expression tree the database understands.
         </p>
         <p>
           Most LINQ operators are <strong>lazily evaluated (deferred)</strong> —
@@ -932,13 +928,14 @@ party.Add(<span class="kw">new</span>(<span class="str">"Rogue"</span>) { Hp = 8
 
       <Topic id="t16" no="16" title="Extension Methods (classic)">
         <p>
-          Extension methods are pure compiler sugar — <code>hero.IsAlive()</code>{' '}
-          compiles to exactly <code>CharacterExtensions.IsAlive(hero)</code>, an
-          ordinary static call with the instance passed as the first argument.
-          Nothing is actually added to the <code>Character</code> type itself;
-          there&apos;s no way to extend private state, and an extension method
-          can never override or hide a real instance method (instance members
-          always win overload resolution). This is precisely why LINQ&apos;s{' '}
+          Extension methods are pure compiler sugar —{' '}
+          <code>hero.IsAlive()</code> compiles to exactly{' '}
+          <code>CharacterExtensions.IsAlive(hero)</code>, an ordinary static
+          call with the instance passed as the first argument. Nothing is
+          actually added to the <code>Character</code> type itself; there&apos;s
+          no way to extend private state, and an extension method can never
+          override or hide a real instance method (instance members always win
+          overload resolution). This is precisely why LINQ&apos;s{' '}
           <code>.Where()</code>/<code>.Select()</code> can appear to
           &quot;add&quot; query methods to every <code>{'IEnumerable<T>'}</code>{' '}
           in existence — they&apos;re just extension methods in{' '}
@@ -984,9 +981,9 @@ hero.Heal(10).Heal(5); <span class="cm">// chained extension calls</span>
           yet&quot;) rather than running to completion synchronously — the
           calling thread is freed to do other work, and the runtime&apos;s
           thread pool resumes the state machine when the awaited operation
-          actually completes, potentially on a different thread than it
-          started on (unless a <code>SynchronizationContext</code>, like the
-          UI thread, pins it back).
+          actually completes, potentially on a different thread than it started
+          on (unless a <code>SynchronizationContext</code>, like the UI thread,
+          pins it back).
         </p>
         <p>
           <code>async</code>/<code>await</code> frees up the calling thread
@@ -1024,9 +1021,9 @@ hero.Heal(10).Heal(5); <span class="cm">// chained extension calls</span>
       <Topic id="t18" no="18" title="Span<T> & Memory">
         <p>
           <code>{'Span<T>'}</code> is a <code>ref struct</code> — a special
-          compiler-enforced category of struct that can <em>only</em> ever
-          live on the stack, never on the heap. That restriction is what makes
-          it safe to point at stack-allocated memory (<code>stackalloc</code>)
+          compiler-enforced category of struct that can <em>only</em> ever live
+          on the stack, never on the heap. That restriction is what makes it
+          safe to point at stack-allocated memory (<code>stackalloc</code>)
           without risking a dangling reference after the stack frame is gone,
           but it also means the compiler flat-out refuses to let you put a{' '}
           <code>{'Span<T>'}</code> in a class field, box it, or capture it in a
@@ -1060,20 +1057,19 @@ Span&lt;<span class="kw">int</span>&gt; stackBuffer = stackalloc <span class="kw
 
       <Topic id="t19" no="19" title="IDisposable & Garbage Collection">
         <p>
-          The .NET GC is <strong>generational</strong>: new objects start in
-          Gen 0, which is collected frequently and cheaply (most objects die
-          young — think a loop&apos;s temporary variables); survivors get
-          promoted to Gen 1, then Gen 2, which are collected far less often
-          since long-lived objects are statistically likely to keep living.
-          This generational assumption is why allocating lots of short-lived
-          small objects is usually fine performance-wise, while a memory leak
-          (something unexpectedly holding a long reference chain, keeping
-          garbage alive in Gen 2) is much more damaging. Finalizers (
-          <code>~ClassName()</code>) are a GC-driven last-resort cleanup and
-          are best avoided — they add real overhead and run at a
-          non-deterministic time chosen by the GC, which is exactly the
-          problem <code>IDisposable</code>&apos;s deterministic,
-          caller-controlled cleanup solves.
+          The .NET GC is <strong>generational</strong>: new objects start in Gen
+          0, which is collected frequently and cheaply (most objects die young —
+          think a loop&apos;s temporary variables); survivors get promoted to
+          Gen 1, then Gen 2, which are collected far less often since long-lived
+          objects are statistically likely to keep living. This generational
+          assumption is why allocating lots of short-lived small objects is
+          usually fine performance-wise, while a memory leak (something
+          unexpectedly holding a long reference chain, keeping garbage alive in
+          Gen 2) is much more damaging. Finalizers (<code>~ClassName()</code>)
+          are a GC-driven last-resort cleanup and are best avoided — they add
+          real overhead and run at a non-deterministic time chosen by the GC,
+          which is exactly the problem <code>IDisposable</code>&apos;s
+          deterministic, caller-controlled cleanup solves.
         </p>
         <p>
           The GC automatically reclaims managed memory in generations (0, 1, 2 —
@@ -1119,8 +1115,8 @@ Span&lt;<span class="kw">int</span>&gt; stackBuffer = stackalloc <span class="kw
           runtime (<code>Type</code>, <code>MethodInfo</code>,{' '}
           <code>PropertyInfo</code> objects mirror the compiled structure),
           which is powerful but comparatively slow — each reflective call
-          involves lookups and checks a direct method call skips entirely,
-          often 10-100x slower in tight loops.
+          involves lookups and checks a direct method call skips entirely, often
+          10-100x slower in tight loops.
         </p>
         <p>
           Attributes attach metadata; reflection reads it at runtime. This is
@@ -1150,16 +1146,16 @@ Span&lt;<span class="kw">int</span>&gt; stackBuffer = stackalloc <span class="kw
       <Topic id="t21" no="21" title="Source Generators">
         <p>
           A source generator plugs into the compiler pipeline itself: it
-          receives the syntax trees of your code as the compiler is building
-          it, can inspect them (find every class with a particular attribute,
-          say), and emits brand-new <code>.cs</code> files that get compiled
-          right alongside your hand-written code in the same pass. Because the
+          receives the syntax trees of your code as the compiler is building it,
+          can inspect them (find every class with a particular attribute, say),
+          and emits brand-new <code>.cs</code> files that get compiled right
+          alongside your hand-written code in the same pass. Because the
           generated code exists at compile time, the JIT sees ordinary, fully
           typed method calls with no reflection involved at runtime — you get
           the flexibility developers associate with reflection (inspecting
-          types, generating boilerplate) with none of its runtime cost, which
-          is exactly why the .NET team moved performance-sensitive libraries
-          like <code>System.Text.Json</code> toward this model.
+          types, generating boilerplate) with none of its runtime cost, which is
+          exactly why the .NET team moved performance-sensitive libraries like{' '}
+          <code>System.Text.Json</code> toward this model.
         </p>
         <p>
           Source generators run <em>at compile time</em>, inspect your code, and
@@ -1188,15 +1184,15 @@ Span&lt;<span class="kw">int</span>&gt; stackBuffer = stackalloc <span class="kw
         <p>
           A <code>switch</code> expression with several patterns isn&apos;t
           evaluated as a naive top-to-bottom chain of separate checks the way a
-          series of <code>if</code>/<code>else if</code> would be — the
-          compiler analyzes all the patterns together and can build an
-          efficient decision structure (grouping by discriminating type or
-          value first), and critically, it performs{' '}
-          <strong>exhaustiveness analysis</strong>: for a closed type hierarchy
-          like an <code>abstract record</code> with known subtypes, the
-          compiler warns you if a <code>switch</code> doesn&apos;t handle every
-          possible case, catching a whole class of &quot;forgot to handle the
-          new event type&quot; bugs at compile time rather than in production.
+          series of <code>if</code>/<code>else if</code> would be — the compiler
+          analyzes all the patterns together and can build an efficient decision
+          structure (grouping by discriminating type or value first), and
+          critically, it performs <strong>exhaustiveness analysis</strong>: for
+          a closed type hierarchy like an <code>abstract record</code> with
+          known subtypes, the compiler warns you if a <code>switch</code>{' '}
+          doesn&apos;t handle every possible case, catching a whole class of
+          &quot;forgot to handle the new event type&quot; bugs at compile time
+          rather than in production.
         </p>
         <p>
           Records support inheritance and positional deconstruction, which
@@ -1228,9 +1224,9 @@ Span&lt;<span class="kw">int</span>&gt; stackBuffer = stackalloc <span class="kw
 
       <Topic id="t23" no="23" title="Threading & Parallelism">
         <p>
-          <code>Task.Run</code> and <code>Parallel.For</code> both draw from
-          the same shared <strong>thread pool</strong> rather than spinning up
-          a brand-new OS thread per call — OS threads are relatively expensive
+          <code>Task.Run</code> and <code>Parallel.For</code> both draw from the
+          same shared <strong>thread pool</strong> rather than spinning up a
+          brand-new OS thread per call — OS threads are relatively expensive
           (each reserves around a megabyte of stack and costs real time to
           create/context-switch), so the pool reuses a managed set of worker
           threads sized to the machine&apos;s core count. This is also why
@@ -1274,10 +1270,6 @@ Interlocked.Increment(<span class="kw">ref</span> _killCount);`}
       </Topic>
 
       <ModuleTitle>Module 7 — C# 14: What&apos;s New</ModuleTitle>
-      <Callout variant="new">
-        <strong>Ships with .NET 10 / VS 2026 (Nov 2025).</strong> Language-level
-        additions on top of everything above.
-      </Callout>
 
       <Topic id="t24" no="24" title="Extension Members — the headline feature">
         <p>
@@ -1286,9 +1278,9 @@ Interlocked.Increment(<span class="kw">ref</span> _killCount);`}
           behavior, useless for adding a property-like read. Library authors
           wanting <code>myThing.SomeComputedValue</code> syntax on a type they
           didn&apos;t own had no clean option; they either lived with
-          parentheses (<code>myThing.SomeComputedValue()</code>) or gave up.
-          The new <code>extension(...)</code> block is a genuinely new
-          compiler feature (not just sugar over the old <code>this</code>
+          parentheses (<code>myThing.SomeComputedValue()</code>) or gave up. The
+          new <code>extension(...)</code> block is a genuinely new compiler
+          feature (not just sugar over the old <code>this</code>
           -parameter trick) that widens what &quot;extending a type&quot; can
           mean, while staying fully source- and binary-compatible with every
           extension method already written.
@@ -1334,14 +1326,13 @@ Interlocked.Increment(<span class="kw">ref</span> _killCount);`}
       <Topic id="t25" no="25" title="Null-Conditional Assignment">
         <p>
           This closes an asymmetry that existed since <code>?.</code> was
-          introduced in C# 6: reading was null-safe, writing was not, forcing
-          an explicit null-check every time you wanted to conditionally
-          assign. The compiler implements it exactly the way you&apos;d
-          hand-write the guard yourself — <code>maybeHero?.Hp = 100</code>{' '}
-          desugars to check-then-assign, not some new runtime mechanism — so
-          there&apos;s no behavioral surprise, just less boilerplate for a
-          pattern that comes up constantly when working with optional/nullable
-          object graphs.
+          introduced in C# 6: reading was null-safe, writing was not, forcing an
+          explicit null-check every time you wanted to conditionally assign. The
+          compiler implements it exactly the way you&apos;d hand-write the guard
+          yourself — <code>maybeHero?.Hp = 100</code> desugars to
+          check-then-assign, not some new runtime mechanism — so there&apos;s no
+          behavioral surprise, just less boilerplate for a pattern that comes up
+          constantly when working with optional/nullable object graphs.
         </p>
         <p>
           You&apos;ve always been able to <em>read</em> through <code>?.</code>{' '}
@@ -1369,16 +1360,16 @@ maybeHero?.Hp = 100; <span class="cm">// no-op if maybeHero is null</span>
         }
       >
         <p>
-          Before this, the moment you needed even one line of logic in a
-          setter, you lost the auto-property&apos;s conciseness entirely and
-          had to fall back to declaring your own named backing field (
-          <code>_hp</code>) plus writing both accessors by hand — a
-          disproportionate amount of boilerplate for a single{' '}
-          <code>Math.Clamp</code> call. <code>field</code> is a contextual
-          keyword that only means &quot;the compiler-generated backing
-          field&quot; inside a property accessor body; it&apos;s not a new
-          reserved word, so it doesn&apos;t break any existing code that
-          happens to use <code>field</code> as an identifier elsewhere.
+          Before this, the moment you needed even one line of logic in a setter,
+          you lost the auto-property&apos;s conciseness entirely and had to fall
+          back to declaring your own named backing field (<code>_hp</code>) plus
+          writing both accessors by hand — a disproportionate amount of
+          boilerplate for a single <code>Math.Clamp</code> call.{' '}
+          <code>field</code> is a contextual keyword that only means &quot;the
+          compiler-generated backing field&quot; inside a property accessor
+          body; it&apos;s not a new reserved word, so it doesn&apos;t break any
+          existing code that happens to use <code>field</code> as an identifier
+          elsewhere.
         </p>
         <p>
           Want simple logic in a property accessor — clamping, validation,
@@ -1420,8 +1411,8 @@ maybeHero?.Hp = 100; <span class="cm">// no-op if maybeHero is null</span>
           &quot;shape&quot; of a constructor or event that your hand-written
           partial class implements, or vice versa — your code declares the
           signature and a generator fills in the body. Before C# 14, generators
-          needing to participate in construction had to work around the gap
-          with factory methods or initialization callbacks instead of a real
+          needing to participate in construction had to work around the gap with
+          factory methods or initialization callbacks instead of a real
           constructor, which was awkward and easy to get wrong (e.g. an object
           usable before it was fully set up).
         </p>
@@ -1461,13 +1452,13 @@ maybeHero?.Hp = 100; <span class="cm">// no-op if maybeHero is null</span>
           Prior to C# 14, <code>+=</code> on a type with an overloaded{' '}
           <code>+</code> was purely syntactic — the compiler always expanded it
           to <code>x = x + y</code>, meaning a struct-based vector or matrix
-          library incremented in a tight loop allocated (or at minimum,
-          copied) a brand-new instance on every single iteration. Letting you
-          define <code>+=</code> directly means the operator can mutate the
-          existing instance&apos;s fields in place instead, which matters most
-          for exactly the kind of numeric/vector types that get updated
-          millions of times in a physics or simulation loop — the allocation
-          savings compound fast at that scale.
+          library incremented in a tight loop allocated (or at minimum, copied)
+          a brand-new instance on every single iteration. Letting you define{' '}
+          <code>+=</code> directly means the operator can mutate the existing
+          instance&apos;s fields in place instead, which matters most for
+          exactly the kind of numeric/vector types that get updated millions of
+          times in a physics or simulation loop — the allocation savings
+          compound fast at that scale.
         </p>
         <p>
           Previously, overloading <code>+</code> meant that <code>x += y</code>{' '}
@@ -1506,9 +1497,9 @@ hp -= 200; <span class="cm">// clamps to 0</span>`}
           <code>{'nameof(List<int>)'}</code> but not the more general{' '}
           <code>{'nameof(List<>)'}</code>; file-based apps target the exact
           friction of &quot;I want to try a five-line idea&quot; requiring a
-          full project scaffold first. Taken together with the rest of Module
-          7, C# 14 reads as a release focused on sanding down everyday rough
-          edges rather than introducing new ways to structure programs.
+          full project scaffold first. Taken together with the rest of Module 7,
+          C# 14 reads as a release focused on sanding down everyday rough edges
+          rather than introducing new ways to structure programs.
         </p>
         <p>A cluster of smaller-but-genuinely-handy additions:</p>
         <Code
@@ -1530,11 +1521,6 @@ ReadOnlySpan&lt;<span class="kw">int</span>&gt; slice = rolls[..3];
       </Topic>
 
       <ModuleTitle>Module 8 — Rounding Out the Language</ModuleTitle>
-      <Callout>
-        These didn&apos;t fit cleanly into the earlier modules but are core,
-        everyday C# — things you&apos;ll hit within your first few weeks of
-        real work.
-      </Callout>
 
       <Topic id="t30" no="30" title="Arrays">
         <p>
@@ -1547,9 +1533,9 @@ ReadOnlySpan&lt;<span class="kw">int</span>&gt; slice = rolls[..3];
           copy.&quot; Arrays also implement <code>{'IEnumerable<T>'}</code>, so
           every LINQ method works on them directly, and multi-dimensional (
           <code>[,]</code>) arrays are stored as one contiguous block in memory
-          (row-major order), which is why iterating one in the right order
-          plays much nicer with CPU cache than a jagged array&apos;s scattered
-          row allocations.
+          (row-major order), which is why iterating one in the right order plays
+          much nicer with CPU cache than a jagged array&apos;s scattered row
+          allocations.
         </p>
         <p>
           Arrays are fixed-size, zero-indexed sequences — the most primitive
@@ -1576,15 +1562,15 @@ jagged[1] = <span class="kw">new</span>[] { 1, 2, 3 };`}
       <Topic id="t31" no="31" title="Strings Deep Dive">
         <p>
           Every C# string is a UTF-16 sequence of <code>char</code> values,
-          immutable from the moment it&apos;s created — any operation that
-          looks like it &quot;modifies&quot; a string (<code>.ToUpper()</code>,
+          immutable from the moment it&apos;s created — any operation that looks
+          like it &quot;modifies&quot; a string (<code>.ToUpper()</code>,
           concatenation, <code>.Trim()</code>) actually allocates and returns a
           whole new string object, leaving the original untouched. That
           immutability is what makes strings safe to share freely without
           defensive copying, but it&apos;s also exactly why building a large
           string piece-by-piece with <code>+</code> in a loop is quadratic in
-          the number of appends — each <code>+</code> allocates a new,
-          slightly longer string and copies everything from before into it.{' '}
+          the number of appends — each <code>+</code> allocates a new, slightly
+          longer string and copies everything from before into it.{' '}
           <code>StringBuilder</code> exists specifically to break that pattern:
           it maintains one mutable internal buffer and only reallocates when it
           actually runs out of room.
@@ -1602,8 +1588,8 @@ jagged[1] = <span class="kw">new</span>[] { 1, 2, 3 };`}
         />
         <p>
           Because strings are immutable, repeated concatenation in a loop
-          allocates a new string every time — use <code>StringBuilder</code>{' '}
-          for heavy building:
+          allocates a new string every time — use <code>StringBuilder</code> for
+          heavy building:
         </p>
         <Code
           html={`<span class="kw">var</span> sb = <span class="kw">new</span> StringBuilder();
@@ -1616,16 +1602,16 @@ jagged[1] = <span class="kw">new</span>[] { 1, 2, 3 };`}
       <Topic id="t32" no="32" title="Tuples & Deconstruction">
         <p>
           Modern C# value tuples (the <code>(int, bool)</code> syntax) are
-          actually the <code>System.ValueTuple</code> struct under the hood —
-          a real value type, not the older, clunkier{' '}
-          <code>System.Tuple</code> class from pre-C#7 code, which was a
-          heap-allocated reference type with generic <code>Item1</code>/
-          <code>Item2</code> member names instead of your own. Deconstruction
-          itself is a general compiler feature, not tuple-specific: any type —
-          your own classes included — can opt in by defining a method
-          literally named <code>Deconstruct</code>, which is exactly the
-          mechanism records get for free and which lets pattern matching pull
-          values out of them in a <code>switch</code>.
+          actually the <code>System.ValueTuple</code> struct under the hood — a
+          real value type, not the older, clunkier <code>System.Tuple</code>{' '}
+          class from pre-C#7 code, which was a heap-allocated reference type
+          with generic <code>Item1</code>/<code>Item2</code> member names
+          instead of your own. Deconstruction itself is a general compiler
+          feature, not tuple-specific: any type — your own classes included —
+          can opt in by defining a method literally named{' '}
+          <code>Deconstruct</code>, which is exactly the mechanism records get
+          for free and which lets pattern matching pull values out of them in a{' '}
+          <code>switch</code>.
         </p>
         <p>
           Value tuples let you group values without declaring a whole type —
@@ -1652,15 +1638,14 @@ jagged[1] = <span class="kw">new</span>[] { 1, 2, 3 };`}
         <p>
           C# actually has <em>three</em> separate, easily confused notions of
           equality for any type: reference equality (
-          <code>ReferenceEquals</code>, do these two variables point at the
-          same object), the virtual <code>Equals(object)</code> method
-          (overridable, meant for logical/value equality), and the{' '}
-          <code>==</code> operator (overloadable independently — by default it
-          does reference equality for classes but value equality for structs
-          and records). This is exactly why records give you value equality
-          &quot;for free&quot;: the compiler auto-generates{' '}
-          <code>Equals</code>, <code>GetHashCode</code>, and{' '}
-          <code>==</code>/<code>!=</code> for you, but a plain{' '}
+          <code>ReferenceEquals</code>, do these two variables point at the same
+          object), the virtual <code>Equals(object)</code> method (overridable,
+          meant for logical/value equality), and the <code>==</code> operator
+          (overloadable independently — by default it does reference equality
+          for classes but value equality for structs and records). This is
+          exactly why records give you value equality &quot;for free&quot;: the
+          compiler auto-generates <code>Equals</code>, <code>GetHashCode</code>,
+          and <code>==</code>/<code>!=</code> for you, but a plain{' '}
           <code>class</code> gets none of that unless you write it yourself —
           which is the whole reason the <code>Equals</code>/
           <code>GetHashCode</code> pairing rule exists:{' '}
@@ -1705,12 +1690,12 @@ jagged[1] = <span class="kw">new</span>[] { 1, 2, 3 };`}
         <p>
           An indexer is really just a specially named property — the compiler
           generates <code>get_Item</code>/<code>set_Item</code> methods, the
-          exact same mechanism ordinary properties use — which is also why
-          every type you&apos;ve used <code>[]</code> on so far (arrays,{' '}
-          <code>{'List<T>'}</code>, <code>{'Dictionary<K,V>'}</code>) is
-          simply exposing its own indexer, not receiving special compiler
-          treatment. You can overload indexers by parameter type or count,
-          just like methods, so a single type can support both{' '}
+          exact same mechanism ordinary properties use — which is also why every
+          type you&apos;ve used <code>[]</code> on so far (arrays,{' '}
+          <code>{'List<T>'}</code>, <code>{'Dictionary<K,V>'}</code>) is simply
+          exposing its own indexer, not receiving special compiler treatment.
+          You can overload indexers by parameter type or count, just like
+          methods, so a single type can support both{' '}
           <code>inventory[&quot;Potion&quot;]</code> and{' '}
           <code>inventory[0]</code> if that fits the domain.
         </p>
@@ -1738,24 +1723,23 @@ bag[<span class="str">"Potion"</span>] = 3;
 
       <Topic id="t35" no="35" title="Iterators (yield return)">
         <p>
-          <code>yield return</code> is compiler-generated state-machine magic
-          in the same family as <code>async</code>/<code>await</code> (Topic
-          17) — the method you write is transformed into a hidden class
-          implementing <code>{'IEnumerator<T>'}</code>, whose{' '}
-          <code>MoveNext()</code> resumes execution exactly where the last{' '}
-          <code>yield return</code> left off, remembering local variables in
-          between calls the same way a paused coroutine would. This is
-          precisely how <code>Where</code>, <code>Select</code>, and the rest
-          of LINQ achieve their lazy, deferred-execution behavior (Topic 15)
-          internally — they&apos;re implemented as iterator methods, pulling
-          one item at a time only when something actually asks for the next
-          one.
+          <code>yield return</code> is compiler-generated state-machine magic in
+          the same family as <code>async</code>/<code>await</code> (Topic 17) —
+          the method you write is transformed into a hidden class implementing{' '}
+          <code>{'IEnumerator<T>'}</code>, whose <code>MoveNext()</code> resumes
+          execution exactly where the last <code>yield return</code> left off,
+          remembering local variables in between calls the same way a paused
+          coroutine would. This is precisely how <code>Where</code>,{' '}
+          <code>Select</code>, and the rest of LINQ achieve their lazy,
+          deferred-execution behavior (Topic 15) internally — they&apos;re
+          implemented as iterator methods, pulling one item at a time only when
+          something actually asks for the next one.
         </p>
         <p>
-          <code>yield return</code> lets you write a method that produces a
-          lazy sequence one item at a time — the compiler generates the state
-          machine for you. This is exactly how LINQ&apos;s own operators are
-          implemented internally.
+          <code>yield return</code> lets you write a method that produces a lazy
+          sequence one item at a time — the compiler generates the state machine
+          for you. This is exactly how LINQ&apos;s own operators are implemented
+          internally.
         </p>
         <Code
           html={`<span class="ty">IEnumerable&lt;<span class="kw">int</span>&gt;</span> InfiniteXp()
@@ -1785,15 +1769,14 @@ bag[<span class="str">"Potion"</span>] = 3;
           cost generics (Topic 9) were introduced to eliminate for the common
           cases. Integer overflow wrapping silently (rather than throwing) is a
           deliberate default for performance — the runtime doesn&apos;t check
-          every arithmetic operation unless you opt in with{' '}
-          <code>checked</code>, since that check has a real, if small,
-          per-operation cost.
+          every arithmetic operation unless you opt in with <code>checked</code>
+          , since that check has a real, if small, per-operation cost.
         </p>
         <p>
           <strong>Boxing</strong> wraps a value type in a heap-allocated object
-          so it can be treated as <code>object</code>;{' '}
-          <strong>unboxing</strong> reverses it. Both cost a heap allocation —
-          avoid in hot paths (generics largely exist to sidestep this).
+          so it can be treated as <code>object</code>; <strong>unboxing</strong>{' '}
+          reverses it. Both cost a heap allocation — avoid in hot paths
+          (generics largely exist to sidestep this).
         </p>
         <Code
           html={`<span class="kw">int</span> hp = 100;
@@ -1821,13 +1804,13 @@ bag[<span class="str">"Potion"</span>] = 3;
           don&apos;t exist as a runtime concept the way types do; a fully
           qualified name like <code>MyGame.Combat.DamageCalculator</code> is
           just how the compiler disambiguates two types that happen to share a
-          short name in different parts of a large codebase or across
-          referenced libraries. <code>using</code> directives (and{' '}
+          short name in different parts of a large codebase or across referenced
+          libraries. <code>using</code> directives (and{' '}
           <code>global using</code>) don&apos;t change what code does at all,
-          only what you&apos;re allowed to type without the full
-          qualification — which is why adding or removing a <code>using</code>{' '}
-          can only ever cause a compile error (ambiguous or missing
-          reference), never a runtime behavior change.
+          only what you&apos;re allowed to type without the full qualification —
+          which is why adding or removing a <code>using</code> can only ever
+          cause a compile error (ambiguous or missing reference), never a
+          runtime behavior change.
         </p>
         <p>
           Namespaces organize types and avoid name collisions. Modern C#
@@ -1848,27 +1831,27 @@ bag[<span class="str">"Potion"</span>] = 3;
         />
         <p>
           <code>{'<ImplicitUsings>enable</ImplicitUsings>'}</code> in the{' '}
-          <code>.csproj</code> (the default for new projects) auto-adds the
-          most common ones for you — part of why Module 1&apos;s Hello World
-          needed zero <code>using</code> statements.
+          <code>.csproj</code> (the default for new projects) auto-adds the most
+          common ones for you — part of why Module 1&apos;s Hello World needed
+          zero <code>using</code> statements.
         </p>
       </Topic>
 
       <Topic id="t38" no="38" title="Closures & Anonymous Types">
         <p>
-          A closure works by the compiler secretly generating a hidden class
-          to hold any local variable a lambda references from its enclosing
-          scope — the lambda doesn&apos;t actually capture the variable&apos;s
-          current value, it captures a reference to that hidden holder object,
-          which is why the counter example keeps incrementing across calls
-          rather than resetting. This is also the real explanation for the
-          classic pre-C#5 <code>foreach</code> capture bug: older C# reused a
-          single loop-variable holder across every iteration, so every closure
-          ended up sharing (and reading the final value of) the same holder —
-          fixed since C# 5, which gives each iteration its own fresh variable
-          instead. Anonymous types get similar hidden-class treatment: the
-          compiler generates a real (but unnamed, unreachable-by-name) class
-          with read-only properties and value-based <code>Equals</code>/
+          A closure works by the compiler secretly generating a hidden class to
+          hold any local variable a lambda references from its enclosing scope —
+          the lambda doesn&apos;t actually capture the variable&apos;s current
+          value, it captures a reference to that hidden holder object, which is
+          why the counter example keeps incrementing across calls rather than
+          resetting. This is also the real explanation for the classic pre-C#5{' '}
+          <code>foreach</code> capture bug: older C# reused a single
+          loop-variable holder across every iteration, so every closure ended up
+          sharing (and reading the final value of) the same holder — fixed since
+          C# 5, which gives each iteration its own fresh variable instead.
+          Anonymous types get similar hidden-class treatment: the compiler
+          generates a real (but unnamed, unreachable-by-name) class with
+          read-only properties and value-based <code>Equals</code>/
           <code>GetHashCode</code>, scoped so you can only refer to it via{' '}
           <code>var</code>.
         </p>
@@ -1912,17 +1895,16 @@ bag[<span class="str">"Potion"</span>] = 3;
         <p>
           <code>required</code> is a compile-time-only guarantee, enforced by
           the compiler at every object-creation call site — it adds no runtime
-          check and no performance cost, it simply refuses to compile code
-          that forgets to set the member. Generic math (
-          <code>static abstract</code> interface members) solves a problem
-          that had no clean solution before C# 11: previously, writing one
-          generic <code>Sum</code> function that worked across{' '}
-          <code>int</code>, <code>double</code>, and <code>decimal</code> was
-          impossible because operators like <code>+</code> aren&apos;t defined
-          by an interface any value type can implement — static abstract
-          members finally let an interface require a static operator, which is
-          exactly what <code>{'INumber<T>'}</code> and friends in{' '}
-          <code>System.Numerics</code> are built on.
+          check and no performance cost, it simply refuses to compile code that
+          forgets to set the member. Generic math (<code>static abstract</code>{' '}
+          interface members) solves a problem that had no clean solution before
+          C# 11: previously, writing one generic <code>Sum</code> function that
+          worked across <code>int</code>, <code>double</code>, and{' '}
+          <code>decimal</code> was impossible because operators like{' '}
+          <code>+</code> aren&apos;t defined by an interface any value type can
+          implement — static abstract members finally let an interface require a
+          static operator, which is exactly what <code>{'INumber<T>'}</code> and
+          friends in <code>System.Numerics</code> are built on.
         </p>
         <p>
           A grab-bag of C# 11–13 additions that predate C# 14 but round out the
@@ -1961,8 +1943,8 @@ T SumAll&lt;T&gt;(List&lt;T&gt; values) <span class="kw">where</span> T : ISyste
       <Topic id="t40" no="40" title="Build Something Fun">
         <p>
           Reading through 39 topics builds recognition; building something is
-          what turns that into fluency you can actually reach for under
-          pressure — deciding for yourself when a <code>record</code> beats a{' '}
+          what turns that into fluency you can actually reach for under pressure
+          — deciding for yourself when a <code>record</code> beats a{' '}
           <code>class</code>, noticing you&apos;ve written the same LINQ chain
           three times and pulling it into an extension method, hitting a real{' '}
           <code>NullReferenceException</code> and knowing exactly which topic

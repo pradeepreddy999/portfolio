@@ -1,3 +1,4 @@
+import type { NavGroup } from '#/lib/tutorials/shared'
 import {
   Callout,
   Code,
@@ -6,7 +7,6 @@ import {
   RefTable,
   Topic,
 } from '#/lib/tutorials/shared'
-import type { NavGroup } from '#/lib/tutorials/shared'
 
 export const webApiNav: Array<NavGroup> = [
   {
@@ -422,9 +422,9 @@ export function WebApiContent() {
 
       <Topic id="extmembers" no="01" title="Extension Members">
         <p>
-          For years, extension methods could only add <em>methods</em> to a
-          type you don't own. Extension blocks widen that to properties,
-          static members, indexers, and operators.
+          For years, extension methods could only add <em>methods</em> to a type
+          you don't own. Extension blocks widen that to properties, static
+          members, indexers, and operators.
         </p>
         <Cs
           code={`public static class PizzaExtensions
@@ -450,24 +450,23 @@ var starter = Pizza.Margherita;`}
         />
         <p>
           The older <code>this</code>-parameter syntax (
-          <code>public static bool IsLarge(this Pizza p)</code>) still
-          compiles and works identically — extension members are additive.
-          Reach for the block syntax whenever what you're adding conceptually{' '}
-          <em>is</em> a property or a static factory, not an action.
+          <code>public static bool IsLarge(this Pizza p)</code>) still compiles
+          and works identically — extension members are additive. Reach for the
+          block syntax whenever what you're adding conceptually <em>is</em> a
+          property or a static factory, not an action.
         </p>
         <Callout>
-          Where this shines in a Web API: adding read-only computed
-          properties to types from a library you don't own — like{' '}
-          <code>IsExpired</code> on a token response, or a{' '}
-          <code>ToProblemDetails()</code>-style conversion — without wrapping
-          every DTO in a new class.
+          Where this shines in a Web API: adding read-only computed properties
+          to types from a library you don't own — like <code>IsExpired</code> on
+          a token response, or a <code>ToProblemDetails()</code>-style
+          conversion — without wrapping every DTO in a new class.
         </Callout>
       </Topic>
 
       <Topic id="fieldkeyword" no="02" title="Field-Backed Properties">
         <p>
-          A middle ground between an auto-property and a fully manual one —
-          add validation or clamping logic without declaring a backing field
+          A middle ground between an auto-property and a fully manual one — add
+          validation or clamping logic without declaring a backing field
           yourself.
         </p>
         <Cs
@@ -490,18 +489,17 @@ var starter = Pizza.Margherita;`}
         <p>
           Adding logic to a setter used to mean giving up the auto-property
           entirely and writing out a private backing field by hand. The{' '}
-          <code>field</code> contextual keyword refers to the
-          compiler-generated backing field directly inside the accessor, so
-          DTOs and entities can enforce simple invariants without the
-          ceremony.
+          <code>field</code> contextual keyword refers to the compiler-generated
+          backing field directly inside the accessor, so DTOs and entities can
+          enforce simple invariants without the ceremony.
         </p>
       </Topic>
 
       <Topic id="nullcondassign" no="03" title="Null-Conditional Assignment">
         <p>
-          <code>?.</code> has worked on the right-hand side of an expression
-          for years. It can now appear on the <em>left</em> side of an
-          assignment too.
+          <code>?.</code> has worked on the right-hand side of an expression for
+          years. It can now appear on the <em>left</em> side of an assignment
+          too.
         </p>
         <Cs
           code={`// Needs an explicit null check to assign safely:
@@ -516,16 +514,16 @@ order.Customer?.LastOrderDate = DateTime.UtcNow;
         />
         <p>
           A small feature, but it removes a very common four-line
-          null-guard-then-assign pattern that shows up constantly in mapping
-          and update logic.
+          null-guard-then-assign pattern that shows up constantly in mapping and
+          update logic.
         </p>
       </Topic>
 
       <Topic id="spanparams" no="04" title="Span<T> & params Collections">
         <p>
-          <code>{'Span<T>'}</code> and <code>{'ReadOnlySpan<T>'}</code>{' '}
-          convert implicitly in more places, and <code>params</code> accepts
-          any collection type, not just arrays.
+          <code>{'Span<T>'}</code> and <code>{'ReadOnlySpan<T>'}</code> convert
+          implicitly in more places, and <code>params</code> accepts any
+          collection type, not just arrays.
         </p>
         <Cs
           code={`// params works with List<T>, Span<T>, or anything collection-like -- not just T[]
@@ -541,16 +539,16 @@ ProcessOrderIds(ids); // array-to-span conversion, no extra copy`}
         />
         <p>
           You won't reach for <code>{'Span<T>'}</code> in everyday
-          CRUD-controller code, but it's exactly what the runtime itself
-          leans on for the throughput gains you'll see in the JIT and EF
-          Core's query pipeline.
+          CRUD-controller code, but it's exactly what the runtime itself leans
+          on for the throughput gains you'll see in the JIT and EF Core's query
+          pipeline.
         </p>
       </Topic>
 
       <Topic id="filebasedapps" no="05" title="File-Based Apps">
         <p>
-          You can run a single <code>.cs</code> file directly — no project
-          file required at all.
+          You can run a single <code>.cs</code> file directly — no project file
+          required at all.
         </p>
         <Cs
           code={`// PingApi.cs
@@ -564,11 +562,11 @@ app.Run();`}
         />
         <Bash code={`dotnet run PingApi.cs`} />
         <p>
-          The <code>#:sdk</code> and <code>#:package</code> directives tell
-          the SDK what it needs at the top of the file itself. This isn't
-          meant to replace real projects — it's for quick health-check
-          scripts, throwaway prototypes, or a tiny internal tool you don't
-          want to scaffold a whole solution for. When it outgrows one file,{' '}
+          The <code>#:sdk</code> and <code>#:package</code> directives tell the
+          SDK what it needs at the top of the file itself. This isn't meant to
+          replace real projects — it's for quick health-check scripts, throwaway
+          prototypes, or a tiny internal tool you don't want to scaffold a whole
+          solution for. When it outgrows one file,{' '}
           <code>dotnet project convert</code> turns it into a normal project.
         </p>
       </Topic>
@@ -606,20 +604,23 @@ public struct Money
         />
         <p>
           You're most likely to encounter these inside source-generated code
-          (like EF Core's or a mapping library's generated partials) rather
-          than write them yourself day to day — but recognizing the syntax
-          saves confusion when you open generated files.
+          (like EF Core's or a mapping library's generated partials) rather than
+          write them yourself day to day — but recognizing the syntax saves
+          confusion when you open generated files.
         </p>
       </Topic>
 
       <ModuleTitle>Foundations</ModuleTitle>
 
-      <Topic id="anatomy" no="07" title="Project Anatomy & the Minimal Hosting Model">
+      <Topic
+        id="anatomy"
+        no="07"
+        title="Project Anatomy & the Minimal Hosting Model"
+      >
         <p>
-          Every ASP.NET Core API starts from one file: <code>Program.cs</code>
-          , targeting <code>net10.0</code>. Every example in this guide
-          builds the same fictional <strong>Pizza Ordering API</strong> a
-          little further.
+          Every ASP.NET Core API starts from one file: <code>Program.cs</code>,
+          targeting <code>net10.0</code>. Every example in this guide builds the
+          same fictional <strong>Pizza Ordering API</strong> a little further.
         </p>
         <Cs
           code={`var builder = WebApplication.CreateBuilder(args);
@@ -656,19 +657,18 @@ app.Run();`}
 </Project>`}
         />
         <p>
-          Two phases, always: first you <strong>register</strong> everything
-          the app needs, then you <strong>configure</strong> how a request
-          flows through it. Every concept in this guide plugs into one of
-          those two phases. For a quick throwaway endpoint, remember you
-          don't even need the <code>.csproj</code> at all — see file-based
-          apps above.
+          Two phases, always: first you <strong>register</strong> everything the
+          app needs, then you <strong>configure</strong> how a request flows
+          through it. Every concept in this guide plugs into one of those two
+          phases. For a quick throwaway endpoint, remember you don't even need
+          the <code>.csproj</code> at all — see file-based apps above.
         </p>
       </Topic>
 
       <Topic id="routing" no="08" title="Controllers, Routing & Action Results">
         <p>
-          A controller groups related endpoints; routing decides which
-          method handles which URL.
+          A controller groups related endpoints; routing decides which method
+          handles which URL.
         </p>
         <Cs
           code={`[ApiController]
@@ -695,8 +695,8 @@ public class PizzasController : ControllerBase
         <ul>
           <li>
             <code>[ApiController]</code> turns on automatic 400 responses for
-            invalid models, binding source inference, and problem-details
-            error formatting.
+            invalid models, binding source inference, and problem-details error
+            formatting.
           </li>
           <li>
             <code>[Route("api/[controller]")]</code> uses the{' '}
@@ -704,8 +704,8 @@ public class PizzasController : ControllerBase
             automatically maps to <code>/api/pizzas</code>.
           </li>
           <li>
-            Route constraints like <code>{'{id:int}'}</code> reject
-            non-numeric IDs before your code even runs.
+            Route constraints like <code>{'{id:int}'}</code> reject non-numeric
+            IDs before your code even runs.
           </li>
         </ul>
         <Callout>
@@ -743,8 +743,8 @@ public IActionResult PlaceOrder([FromBody] CreateOrderDto order, [FromHeader(Nam
             <strong>Query string</strong> — simple types on GET requests
           </li>
           <li>
-            <strong>Request body</strong> — complex types, inferred as JSON
-            via <code>[FromBody]</code>
+            <strong>Request body</strong> — complex types, inferred as JSON via{' '}
+            <code>[FromBody]</code>
           </li>
           <li>
             <strong>Headers, form data, services</strong> — opt-in with{' '}
@@ -753,13 +753,17 @@ public IActionResult PlaceOrder([FromBody] CreateOrderDto order, [FromHeader(Nam
           </li>
         </ul>
         <Callout variant="warn">
-          Only one <code>[FromBody]</code> parameter is allowed per action —
-          the request body stream can only be read once. Wrap multiple
-          pieces of data in one DTO.
+          Only one <code>[FromBody]</code> parameter is allowed per action — the
+          request body stream can only be read once. Wrap multiple pieces of
+          data in one DTO.
         </Callout>
       </Topic>
 
-      <Topic id="validation" no="10" title="Validation: DataAnnotations & FluentValidation">
+      <Topic
+        id="validation"
+        no="10"
+        title="Validation: DataAnnotations & FluentValidation"
+      >
         <p>Reject bad input before it touches your business logic.</p>
         <h4>Built in: DataAnnotations</h4>
         <Cs
@@ -774,9 +778,9 @@ public IActionResult PlaceOrder([FromBody] CreateOrderDto order, [FromHeader(Nam
           problem-details body is returned automatically.
         </p>
         <Callout>
-          <strong>FluentValidation</strong> is the go-to library once
-          validation rules get conditional, cross-field, or reused across
-          DTOs — far more expressive than attributes.
+          <strong>FluentValidation</strong> is the go-to library once validation
+          rules get conditional, cross-field, or reused across DTOs — far more
+          expressive than attributes.
         </Callout>
         <Cs
           code={`public class CreateOrderValidator : AbstractValidator<CreateOrderDto>
@@ -797,7 +801,11 @@ builder.Services.AddFluentValidationAutoValidation();`}
         />
       </Topic>
 
-      <Topic id="di" no="11" title="Dependency Injection, Service Lifetimes & Keyed Services">
+      <Topic
+        id="di"
+        no="11"
+        title="Dependency Injection, Service Lifetimes & Keyed Services"
+      >
         <p>
           The built-in DI container is how every class gets its dependencies
           handed to it instead of constructing them itself.
@@ -815,23 +823,32 @@ public class PizzasController(IPizzaOven oven) : ControllerBase
         <RefTable
           headers={['Lifetime', 'Created', 'Good for']}
           rows={[
-            ['Singleton', 'Once, ever', 'Caches, config objects, stateless clients'],
-            ['Scoped', 'Once per request', <><code>DbContext</code>, per-request state</>],
+            [
+              'Singleton',
+              'Once, ever',
+              'Caches, config objects, stateless clients',
+            ],
+            [
+              'Scoped',
+              'Once per request',
+              <>
+                <code>DbContext</code>, per-request state
+              </>,
+            ],
             ['Transient', 'Every injection', 'Lightweight, stateless helpers'],
           ]}
         />
         <Callout variant="warn">
-          Injecting a <code>Scoped</code> service (like <code>DbContext</code>
-          ) into a <code>Singleton</code> throws at runtime. If you must,
-          inject <code>IServiceScopeFactory</code> and create a scope
-          manually.
+          Injecting a <code>Scoped</code> service (like <code>DbContext</code>)
+          into a <code>Singleton</code> throws at runtime. If you must, inject{' '}
+          <code>IServiceScopeFactory</code> and create a scope manually.
         </Callout>
         <h4>Keyed services</h4>
         <p>
-          Register multiple implementations of the same interface,
-          distinguished by a key, and resolve the right one at the injection
-          site — no more juggling a factory class just to pick between two
-          flavors of the same dependency:
+          Register multiple implementations of the same interface, distinguished
+          by a key, and resolve the right one at the injection site — no more
+          juggling a factory class just to pick between two flavors of the same
+          dependency:
         </p>
         <Cs
           code={`builder.Services.AddKeyedSingleton<IPaymentGateway, StripeGateway>("stripe");
@@ -874,8 +891,8 @@ public class PizzaOven(IOptions<PizzaSettings> options)
             lifetime
           </li>
           <li>
-            <code>{'IOptionsSnapshot<T>'}</code> — re-read per request,
-            useful in dev
+            <code>{'IOptionsSnapshot<T>'}</code> — re-read per request, useful
+            in dev
           </li>
           <li>
             <code>{'IOptionsMonitor<T>'}</code> — live-reloads when config
@@ -887,8 +904,8 @@ public class PizzaOven(IOptions<PizzaSettings> options)
       <Topic id="middleware" no="13" title="The Middleware Pipeline">
         <p>
           Middleware is a chain of "onion layers" that every request passes
-          through on the way in, and every response passes through on the
-          way out.
+          through on the way in, and every response passes through on the way
+          out.
         </p>
         <Cs
           code={`app.Use(async (context, next) =>
@@ -903,10 +920,9 @@ app.UseAuthorization();
 app.MapControllers();`}
         />
         <p>
-          Order is not cosmetic. <code>UseAuthentication</code> must run
-          before <code>UseAuthorization</code>, and exception handling
-          should sit near the top so it can catch failures from everything
-          beneath it.
+          Order is not cosmetic. <code>UseAuthentication</code> must run before{' '}
+          <code>UseAuthorization</code>, and exception handling should sit near
+          the top so it can catch failures from everything beneath it.
         </p>
       </Topic>
 
@@ -914,9 +930,9 @@ app.MapControllers();`}
 
       <Topic id="efcore" no="14" title="Entity Framework Core Basics">
         <p>
-          EF Core is Microsoft's ORM — it maps C# classes to database tables
-          and turns LINQ into SQL. EF Core 10 targets <code>net10.0</code>{' '}
-          and ships as an LTS pairing.
+          EF Core is Microsoft's ORM — it maps C# classes to database tables and
+          turns LINQ into SQL. EF Core 10 targets <code>net10.0</code> and ships
+          as an LTS pairing.
         </p>
         <Callout>
           <strong>Microsoft.EntityFrameworkCore.SqlServer</strong> — swap for{' '}
@@ -945,16 +961,20 @@ public async Task<ActionResult<List<Pizza>>> GetAll()
     => await _db.Pizzas.AsNoTracking().ToListAsync();`}
         />
         <Deepdive>
-          Call <code>.AsNoTracking()</code> on any query you're only
-          reading. EF Core 10 also does its expression-tree analysis in a
-          single pass, so query translation itself is measurably cheaper.
+          Call <code>.AsNoTracking()</code> on any query you're only reading. EF
+          Core 10 also does its expression-tree analysis in a single pass, so
+          query translation itself is measurably cheaper.
         </Deepdive>
       </Topic>
 
-      <Topic id="efcore10" no="15" title="JSON Columns, Named Filters & LeftJoin">
+      <Topic
+        id="efcore10"
+        no="15"
+        title="JSON Columns, Named Filters & LeftJoin"
+      >
         <p>
-          A handful of EF Core additions solve problems developers have hit
-          for years.
+          A handful of EF Core additions solve problems developers have hit for
+          years.
         </p>
         <h4>Complex properties mapped to a JSON column</h4>
         <Cs
@@ -968,7 +988,10 @@ var highProtein = await db.Pizzas
     .Where(p => p.NutritionInfo.ProteinGrams > 20)
     .ToListAsync();`}
         />
-        <h4>Named query filters — multiple filters per entity, toggled independently</h4>
+        <h4>
+          Named query filters — multiple filters per entity, toggled
+          independently
+        </h4>
         <Cs
           code={`modelBuilder.Entity<Pizza>()
     .HasQueryFilter("ActiveOnly", p => !p.IsDiscontinued)
@@ -978,10 +1001,10 @@ var highProtein = await db.Pizzas
 var allRegions = db.Pizzas.IgnoreQueryFilters(["RegionFilter"]);`}
         />
         <p>
-          A single entity can carry a "soft delete" filter and a
-          "multi-tenant region" filter as two independent, named conditions,
-          rather than merging both into one expression and losing the
-          ability to toggle just one of them off.
+          A single entity can carry a "soft delete" filter and a "multi-tenant
+          region" filter as two independent, named conditions, rather than
+          merging both into one expression and losing the ability to toggle just
+          one of them off.
         </p>
         <h4>Explicit LEFT/RIGHT JOIN & simpler bulk updates</h4>
         <Cs
@@ -996,8 +1019,8 @@ await db.Pizzas
         />
         <Callout>
           EF Core 10 also redacts inline SQL parameter values from logs by
-          default, and adds SQL Server <strong>vector search</strong> support
-          (<code>EF.Functions.VectorDistance</code>) for embeddings-based
+          default, and adds SQL Server <strong>vector search</strong> support (
+          <code>EF.Functions.VectorDistance</code>) for embeddings-based
           similarity queries — handy if your API layers in AI-driven
           recommendations.
         </Callout>
@@ -1034,20 +1057,21 @@ dotnet ef database update`}
           Eager-load related data explicitly with <code>.Include()</code> to
           avoid the classic "N+1 query" problem:
         </p>
-        <Cs code={`var orders = await db.Orders.Include(o => o.Pizza).ToListAsync();`} />
+        <Cs
+          code={`var orders = await db.Orders.Include(o => o.Pizza).ToListAsync();`}
+        />
         <Callout variant="warn">
-          Each migration runs inside its own transaction rather than one
-          global transaction spanning your entire migration history — review
-          any pipeline that assumes an all-or-nothing rollback across
-          multiple migrations.
+          Each migration runs inside its own transaction rather than one global
+          transaction spanning your entire migration history — review any
+          pipeline that assumes an all-or-nothing rollback across multiple
+          migrations.
         </Callout>
       </Topic>
 
       <Topic id="dapper" no="17" title="Dapper: the Lightweight Alternative">
         <p>
-          Sometimes a full ORM is more overhead than you need. Dapper maps
-          raw SQL results to objects, fast, with none of EF's tracking
-          machinery.
+          Sometimes a full ORM is more overhead than you need. Dapper maps raw
+          SQL results to objects, fast, with none of EF's tracking machinery.
         </p>
         <Callout>
           <strong>Dapper</strong> is common in high-throughput services,
@@ -1088,8 +1112,8 @@ public class PizzaRepository(PizzaDbContext db) : IPizzaRepository
         <Callout variant="warn">
           <code>DbContext</code> already implements the repository and
           unit-of-work patterns internally. A custom repository is worth it
-          mainly for swapping data sources or mocking in tests — not a
-          mandatory layer for every project.
+          mainly for swapping data sources or mocking in tests — not a mandatory
+          layer for every project.
         </Callout>
       </Topic>
 
@@ -1097,14 +1121,15 @@ public class PizzaRepository(PizzaDbContext db) : IPizzaRepository
 
       <Topic id="dtos" no="19" title="DTOs & Object Mapping">
         <p>
-          Never return your EF entities directly from an API — a Data
-          Transfer Object controls exactly what the outside world sees.
+          Never return your EF entities directly from an API — a Data Transfer
+          Object controls exactly what the outside world sees.
         </p>
-        <Cs code={`public record PizzaDto(int Id, string Name, decimal Price);`} />
+        <Cs
+          code={`public record PizzaDto(int Id, string Name, decimal Price);`}
+        />
         <Callout>
-          <strong>Mapster</strong> is a fast, low-ceremony mapper many
-          projects prefer:{' '}
-          <code>var dto = pizza.Adapt&lt;PizzaDto&gt;();</code> with no
+          <strong>Mapster</strong> is a fast, low-ceremony mapper many projects
+          prefer: <code>var dto = pizza.Adapt&lt;PizzaDto&gt;();</code> with no
           profile class needed for simple cases.
         </Callout>
         <Callout>
@@ -1123,12 +1148,12 @@ var dto = _mapper.Map<PizzaDto>(pizzaEntity);`}
 
       <Topic id="openapi" no="20" title="API Documentation: OpenAPI & Scalar">
         <p>
-          ASP.NET Core generates an OpenAPI document natively — no
-          third-party package required for the document itself.
+          ASP.NET Core generates an OpenAPI document natively — no third-party
+          package required for the document itself.
         </p>
         <Callout>
-          <strong>Microsoft.AspNetCore.OpenApi</strong> generates an OpenAPI
-          3.1 document straight from your controllers or minimal endpoints.
+          <strong>Microsoft.AspNetCore.OpenApi</strong> generates an OpenAPI 3.1
+          document straight from your controllers or minimal endpoints.
         </Callout>
         <Cs
           code={`builder.Services.AddOpenApi();
@@ -1156,17 +1181,17 @@ app.MapScalarApiReference(); // browse at /scalar/v1`}
         />
         <p>
           If you'd rather have the classic Swagger UI,{' '}
-          <code>Swashbuckle.AspNetCore.SwaggerUI</code> is still maintained
-          and works fine against the same OpenAPI document. Either choice
-          documents your API for the frontend team without a hand-maintained
-          Postman collection.
+          <code>Swashbuckle.AspNetCore.SwaggerUI</code> is still maintained and
+          works fine against the same OpenAPI document. Either choice documents
+          your API for the frontend team without a hand-maintained Postman
+          collection.
         </p>
       </Topic>
 
       <Topic id="versioning" no="21" title="API Versioning">
         <p>
-          Once real consumers depend on your contract, you can't just change
-          it — you version it.
+          Once real consumers depend on your contract, you can't just change it
+          — you version it.
         </p>
         <Callout>
           <strong>Asp.Versioning.Mvc</strong> is the community-maintained
@@ -1191,11 +1216,15 @@ public class PizzasV2Controller : ControllerBase { }`}
         </p>
       </Topic>
 
-      <Topic id="minimalapi" no="22" title="Minimal APIs, TypedResults & Controllers">
+      <Topic
+        id="minimalapi"
+        no="22"
+        title="Minimal APIs, TypedResults & Controllers"
+      >
         <p>
           You can skip the controller class entirely for small endpoints;{' '}
-          <code>TypedResults</code> makes the return type explicit for
-          OpenAPI and testing.
+          <code>TypedResults</code> makes the return type explicit for OpenAPI
+          and testing.
         </p>
         <Cs
           code={`app.MapGet("/api/pizzas/{id}", async Task<Results<Ok<Pizza>, NotFound>> (int id, PizzaDbContext db) =>
@@ -1213,9 +1242,9 @@ app.MapPost("/api/pizzas", async Task<Created<Pizza>> (Pizza pizza, PizzaDbConte
         <p>
           <code>TypedResults</code> (over the plainer{' '}
           <code>Results.Ok(...)</code>) gives the compiler — and the OpenAPI
-          generator — a concrete return type to describe, and makes
-          unit-testing the handler's return value straightforward without
-          inspecting an <code>IResult</code> at runtime.
+          generator — a concrete return type to describe, and makes unit-testing
+          the handler's return value straightforward without inspecting an{' '}
+          <code>IResult</code> at runtime.
         </p>
         <RefTable
           headers={['Choose Controllers when…', 'Choose Minimal APIs when…']}
@@ -1232,13 +1261,13 @@ app.MapPost("/api/pizzas", async Task<Created<Pizza>> (Pizza pizza, PizzaDbConte
 
       <Topic id="jwt" no="23" title="Authentication with JWT Bearer Tokens">
         <p>
-          Authentication answers "who are you?" — JWTs are the most common
-          way a stateless API answers that.
+          Authentication answers "who are you?" — JWTs are the most common way a
+          stateless API answers that.
         </p>
         <Callout>
           <strong>Microsoft.AspNetCore.Authentication.JwtBearer</strong>{' '}
-          validates a signed token on every request without the server
-          needing to keep session state.
+          validates a signed token on every request without the server needing
+          to keep session state.
         </Callout>
         <Cs
           code={`builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -1257,15 +1286,15 @@ app.MapPost("/api/pizzas", async Task<Created<Pizza>> (Pizza pizza, PizzaDbConte
         <Callout>
           On Windows / IIS, internal enterprise apps often use{' '}
           <strong>Windows Authentication</strong> (<code>Negotiate</code>{' '}
-          scheme) instead of JWTs. Same <code>AddAuthentication</code>{' '}
-          pipeline, different scheme.
+          scheme) instead of JWTs. Same <code>AddAuthentication</code> pipeline,
+          different scheme.
         </Callout>
       </Topic>
 
       <Topic id="authz" no="24" title="Authorization: Roles, Policies & Claims">
         <p>
-          Authorization answers "are you allowed to do this?" — always
-          checked after authentication.
+          Authorization answers "are you allowed to do this?" — always checked
+          after authentication.
         </p>
         <Cs
           code={`builder.Services.AddAuthorization(options =>
@@ -1281,8 +1310,8 @@ app.MapPost("/api/pizzas", async Task<Created<Pizza>> (Pizza pizza, PizzaDbConte
 public IActionResult DeletePizza(int id) => NoContent();`}
         />
         <p>
-          Custom, reusable rules go in an <code>IAuthorizationHandler</code>{' '}
-          for a requirement-based policy — more testable than scattering{' '}
+          Custom, reusable rules go in an <code>IAuthorizationHandler</code> for
+          a requirement-based policy — more testable than scattering{' '}
           <code>if</code> statements through controllers.
         </p>
       </Topic>
@@ -1302,39 +1331,38 @@ public IActionResult DeletePizza(int id) => NoContent();`}
 app.UseCors("AllowFrontend"); // must sit before UseAuthorization`}
         />
         <p>
-          This is almost certainly the first error you'll ever see in a
-          browser console on a new project: <code>blocked by CORS
-          policy</code>. It's a browser-side protection — tools like Postman
-          ignore it, which is why "it works in Postman but not the browser"
-          is a classic CORS symptom.
+          This is almost certainly the first error you'll ever see in a browser
+          console on a new project: <code>blocked by CORS policy</code>. It's a
+          browser-side protection — tools like Postman ignore it, which is why
+          "it works in Postman but not the browser" is a classic CORS symptom.
         </p>
       </Topic>
 
       <Topic id="secrets" no="26" title="Secrets, Data Protection & Passkeys">
         <p>
-          Connection strings and API keys should never live in source
-          control.
+          Connection strings and API keys should never live in source control.
         </p>
         <Bash
           code={`dotnet user-secrets init
 dotnet user-secrets set "PizzaDb:ConnectionString" "Server=.;Database=Pizza;..."`}
         />
         <Callout>
-          <strong>Azure Key Vault (Azure.Extensions.AspNetCore.Configuration.Secrets)</strong>{' '}
-          — in production, secrets are pulled from a managed vault at
-          startup and rotated without a redeploy.
+          <strong>
+            Azure Key Vault (Azure.Extensions.AspNetCore.Configuration.Secrets)
+          </strong>{' '}
+          — in production, secrets are pulled from a managed vault at startup
+          and rotated without a redeploy.
         </Callout>
         <p>
           ASP.NET Core's <strong>Data Protection API</strong> automatically
           encrypts things like authentication cookies. In a multi-server
-          deployment, configure a shared key ring (e.g., Redis) so one
-          server can decrypt what another encrypted.
+          deployment, configure a shared key ring (e.g., Redis) so one server
+          can decrypt what another encrypted.
         </p>
         <p>
           ASP.NET Core Identity also supports <strong>passkeys</strong>{' '}
           (WebAuthn/FIDO2), letting users authenticate with a device passkey
-          instead of, or alongside, a password, without a third-party
-          library.
+          instead of, or alongside, a password, without a third-party library.
         </p>
       </Topic>
 
@@ -1359,16 +1387,16 @@ dotnet user-secrets set "PizzaDb:ConnectionString" "Server=.;Database=Pizza;..."
 _logger.LogInformation("Order {OrderId} placed by {Customer} for {Amount:C}", order.Id, order.Customer, order.Total);`}
         />
         <p>
-          The named placeholders become structured, queryable fields instead
-          of raw text you'd have to grep.
+          The named placeholders become structured, queryable fields instead of
+          raw text you'd have to grep.
         </p>
       </Topic>
 
       <Topic id="filters" no="28" title="Filters, Exceptions & ProblemDetails">
         <p>
-          Filters run cross-cutting logic around actions. For centralizing
-          error handling, ASP.NET Core represents every unhandled error in
-          the <strong>ProblemDetails</strong> format (RFC 7807).
+          Filters run cross-cutting logic around actions. For centralizing error
+          handling, ASP.NET Core represents every unhandled error in the{' '}
+          <strong>ProblemDetails</strong> format (RFC 7807).
         </p>
         <Cs
           code={`public class LogTimeFilter : IActionFilter
@@ -1395,8 +1423,8 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
 // builder.Services.AddExceptionHandler<GlobalExceptionHandler>();`}
         />
         <p>
-          A <code>ProblemDetails</code> response gives every consumer of
-          your API a predictable JSON shape for errors — <code>title</code>,{' '}
+          A <code>ProblemDetails</code> response gives every consumer of your
+          API a predictable JSON shape for errors — <code>title</code>,{' '}
           <code>status</code>, <code>detail</code>, <code>traceId</code> —
           instead of a different ad-hoc error format per endpoint.
         </p>
@@ -1406,15 +1434,15 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         <p>
           Don't ask the database the same question twice in five seconds.{' '}
           <strong>HybridCache</strong> unifies the old split between{' '}
-          <code>IMemoryCache</code> and <code>IDistributedCache</code> into
-          one API.
+          <code>IMemoryCache</code> and <code>IDistributedCache</code> into one
+          API.
         </p>
         <Callout>
           <strong>Microsoft.Extensions.Caching.Hybrid</strong> is a two-tier
           cache (fast in-process L1 + shared L2 like Redis) behind a single
           call, with built-in <strong>cache-stampede protection</strong> —
-          concurrent requests for the same missing key are coalesced into
-          one fetch instead of hammering the database N times.
+          concurrent requests for the same missing key are coalesced into one
+          fetch instead of hammering the database N times.
         </Callout>
         <Cs
           code={`builder.Services.AddHybridCache();
@@ -1432,9 +1460,9 @@ public class PizzaService(HybridCache cache, PizzaDbContext db)
 }`}
         />
         <p>
-          Under the hood it still uses <code>IMemoryCache</code> for L1 and,
-          if registered, any <code>IDistributedCache</code> implementation
-          for L2 — so an existing Redis setup plugs straight in.
+          Under the hood it still uses <code>IMemoryCache</code> for L1 and, if
+          registered, any <code>IDistributedCache</code> implementation for L2 —
+          so an existing Redis setup plugs straight in.
         </p>
         <h4>Output caching (built into ASP.NET Core)</h4>
         <Cs
@@ -1444,15 +1472,13 @@ app.MapGet("/api/pizzas", GetPizzas).CacheOutput(p => p.Expire(TimeSpan.FromSeco
         />
         <p>
           Use output caching for whole-response caching at the edge of the
-          pipeline; use <code>HybridCache</code> for caching a specific
-          piece of data inside your business logic.
+          pipeline; use <code>HybridCache</code> for caching a specific piece of
+          data inside your business logic.
         </p>
       </Topic>
 
       <Topic id="ratelimit" no="30" title="Rate Limiting">
-        <p>
-          Built into ASP.NET Core — no extra library required.
-        </p>
+        <p>Built into ASP.NET Core — no extra library required.</p>
         <Cs
           code={`builder.Services.AddRateLimiter(options =>
 {
@@ -1468,16 +1494,15 @@ app.UseRateLimiter();
 app.MapGet("/api/pizzas", GetPizzas).RequireRateLimiting("fixed");`}
         />
         <p>
-          Other strategies available out of the box: <code>SlidingWindow</code>
-          , <code>TokenBucket</code>, and <code>Concurrency</code> limiters.
+          Other strategies available out of the box: <code>SlidingWindow</code>,{' '}
+          <code>TokenBucket</code>, and <code>Concurrency</code> limiters.
         </p>
       </Topic>
 
       <Topic id="health" no="31" title="Health Checks">
         <p>
           A dedicated endpoint that says "is this instance okay?" — load
-          balancers and orchestrators poll it to decide whether to send
-          traffic.
+          balancers and orchestrators poll it to decide whether to send traffic.
         </p>
         <Cs
           code={`builder.Services.AddHealthChecks()
@@ -1488,8 +1513,8 @@ app.MapHealthChecks("/health");`}
         />
         <p>
           On an IIS deployment with Application Request Routing in front of
-          multiple servers, this is exactly what determines whether a given
-          VM keeps receiving requests during a rolling deployment.
+          multiple servers, this is exactly what determines whether a given VM
+          keeps receiving requests during a rolling deployment.
         </p>
       </Topic>
 
@@ -1514,12 +1539,16 @@ app.MapHealthChecks("/health");`}
         />
         <p>
           The retry handles a transient blip; the circuit breaker stops
-          hammering a supplier that's genuinely down; the timeout stops one
-          slow dependency from stalling your whole request.
+          hammering a supplier that's genuinely down; the timeout stops one slow
+          dependency from stalling your whole request.
         </p>
       </Topic>
 
-      <Topic id="hostedservices" no="33" title="Background Work & Hosted Services">
+      <Topic
+        id="hostedservices"
+        no="33"
+        title="Background Work & Hosted Services"
+      >
         <p>Not everything happens in response to an HTTP request.</p>
         <Cs
           code={`public class PizzaReminderService(ILogger<PizzaReminderService> logger) : BackgroundService
@@ -1537,8 +1566,8 @@ app.MapHealthChecks("/health");`}
         />
         <Callout>
           <strong>Hangfire / Quartz.NET</strong> replace hand-rolled{' '}
-          <code>BackgroundService</code> loops for anything beyond a simple
-          loop — cron-style scheduling, retries, a dashboard of job history.
+          <code>BackgroundService</code> loops for anything beyond a simple loop
+          — cron-style scheduling, retries, a dashboard of job history.
         </Callout>
       </Topic>
 
@@ -1558,32 +1587,35 @@ app.MapHealthChecks("/health");`}
         <Bash code={`dotnet publish -c Release -r linux-x64`} />
         <p>
           The payoff: near-instant cold starts and a much smaller memory
-          footprint — exactly what matters for containerized microservices
-          that scale to zero, or serverless functions. The tradeoff: no
-          runtime reflection, so libraries relying on it (some serializers,
-          some mapping profiles) need AOT-compatible alternatives, and
-          minimal APIs generally fit this model far better than full MVC
-          controllers.
+          footprint — exactly what matters for containerized microservices that
+          scale to zero, or serverless functions. The tradeoff: no runtime
+          reflection, so libraries relying on it (some serializers, some mapping
+          profiles) need AOT-compatible alternatives, and minimal APIs generally
+          fit this model far better than full MVC controllers.
         </p>
         <Callout variant="warn">
           Not every API needs this. It shines for high-density, high-scale
           microservices where startup time and memory directly translate to
-          cost. A typical internal enterprise API usually gets little
-          practical benefit from the added AOT constraints.
+          cost. A typical internal enterprise API usually gets little practical
+          benefit from the added AOT constraints.
         </Callout>
       </Topic>
 
-      <Topic id="observability" no="35" title="Observability with OpenTelemetry">
+      <Topic
+        id="observability"
+        no="35"
+        title="Observability with OpenTelemetry"
+      >
         <p>
           .NET has built-in tracing and metrics APIs (
           <code>System.Diagnostics.Activity</code>, <code>Meter</code>);
           OpenTelemetry is the vendor-neutral standard for exporting them.
         </p>
         <Callout>
-          <strong>OpenTelemetry.Extensions.Hosting</strong> wires ASP.NET
-          Core, HttpClient, and EF Core instrumentation together and exports
-          to any backend — Azure Monitor, Grafana, Jaeger, Honeycomb —
-          without changing app code when you switch vendors.
+          <strong>OpenTelemetry.Extensions.Hosting</strong> wires ASP.NET Core,
+          HttpClient, and EF Core instrumentation together and exports to any
+          backend — Azure Monitor, Grafana, Jaeger, Honeycomb — without changing
+          app code when you switch vendors.
         </Callout>
         <Cs
           code={`builder.Services.AddOpenTelemetry()
@@ -1597,18 +1629,18 @@ app.MapHealthChecks("/health");`}
         .AddRuntimeInstrumentation());`}
         />
         <p>
-          Once wired up, a single request into your Pizza API is traced end
-          to end — the HTTP call in, the EF Core query, any outbound call to
-          a supplier's API — as one connected timeline, instead of stitching
+          Once wired up, a single request into your Pizza API is traced end to
+          end — the HTTP call in, the EF Core query, any outbound call to a
+          supplier's API — as one connected timeline, instead of stitching
           together separate logs by hand.
         </p>
       </Topic>
 
       <Topic id="timeprovider" no="36" title="TimeProvider for Testable Time">
         <p>
-          Code that calls <code>DateTime.UtcNow</code> directly is
-          notoriously hard to unit test. <code>TimeProvider</code> is the
-          built-in abstraction that fixes this.
+          Code that calls <code>DateTime.UtcNow</code> directly is notoriously
+          hard to unit test. <code>TimeProvider</code> is the built-in
+          abstraction that fixes this.
         </p>
         <Cs
           code={`public class OrderService(TimeProvider timeProvider)
@@ -1629,10 +1661,9 @@ var order = service.PlaceOrder("Gordon Ramsay");
 Assert.Equal(DateTimeOffset.Parse("2026-01-01"), order.PlacedAt);`}
         />
         <p>
-          No wrapping <code>DateTime.UtcNow</code> in your own custom
-          interface just to make a class testable — it's part of the base
-          class library, and output caching and rate limiting already use it
-          internally.
+          No wrapping <code>DateTime.UtcNow</code> in your own custom interface
+          just to make a class testable — it's part of the base class library,
+          and output caching and rate limiting already use it internally.
         </p>
       </Topic>
 
@@ -1640,8 +1671,8 @@ Assert.Equal(DateTimeOffset.Parse("2026-01-01"), order.PlacedAt);`}
 
       <Topic id="mediatr" no="37" title="CQRS with MediatR">
         <p>
-          As controllers grow, CQRS separates "read" and "write" operations
-          into their own small, testable handler classes.
+          As controllers grow, CQRS separates "read" and "write" operations into
+          their own small, testable handler classes.
         </p>
         <Callout>
           <strong>MediatR</strong> dispatches a request object to exactly one
@@ -1664,16 +1695,15 @@ public class GetPizzaHandler(PizzaDbContext db) : IRequestHandler<GetPizzaQuery,
 public async Task<PizzaDto> Get(int id) => await _mediator.Send(new GetPizzaQuery(id));`}
         />
         <p>
-          Worth adopting once a controller's actions start accumulating
-          business logic that's hard to unit test in isolation from HTTP
-          concerns.
+          Worth adopting once a controller's actions start accumulating business
+          logic that's hard to unit test in isolation from HTTP concerns.
         </p>
       </Topic>
 
       <Topic id="cleanarch" no="38" title="Clean / Onion Architecture">
         <p>
-          A way of arranging entire projects so business rules don't depend
-          on frameworks, databases, or UI.
+          A way of arranging entire projects so business rules don't depend on
+          frameworks, databases, or UI.
         </p>
         <Bash
           code={`PizzaApi.Domain          <- entities, no dependencies on anything
@@ -1682,23 +1712,22 @@ PizzaApi.Infrastructure   <- EF Core, external APIs - implements Application's i
 PizzaApi.Api              <- controllers, DI wiring - the "outermost" layer`}
         />
         <p>
-          The dependency rule: outer layers can reference inner layers,
-          never the reverse. This is what lets you swap SQL Server for
-          Postgres, or REST for gRPC, without touching business logic.
+          The dependency rule: outer layers can reference inner layers, never
+          the reverse. This is what lets you swap SQL Server for Postgres, or
+          REST for gRPC, without touching business logic.
         </p>
         <Callout variant="warn">
           This pays off on large, long-lived systems with real business
-          complexity. For a small CRUD API, a well-organized single project
-          with clear folders is not a failure to adopt Clean Architecture —
-          it's the right call for the problem's size.
+          complexity. For a small CRUD API, a well-organized single project with
+          clear folders is not a failure to adopt Clean Architecture — it's the
+          right call for the problem's size.
         </Callout>
       </Topic>
 
       <Topic id="signalr" no="39" title="Real-Time Updates with SignalR">
         <p>
           REST is request/response. When the server needs to push data to
-          clients the moment something happens, SignalR is the built-in
-          answer.
+          clients the moment something happens, SignalR is the built-in answer.
         </p>
         <Cs
           code={`public class OrderHub : Hub
@@ -1709,15 +1738,15 @@ PizzaApi.Api              <- controllers, DI wiring - the "outermost" layer`}
 await _hubContext.Clients.Group("kitchen").SendAsync("NewOrder", orderDto);`}
         />
         <p>
-          Perfect for a live "orders coming into the kitchen" screen updating
-          in real time, without the frontend polling every few seconds.
+          Perfect for a live "orders coming into the kitchen" screen updating in
+          real time, without the frontend polling every few seconds.
         </p>
       </Topic>
 
       <Topic id="grpc" no="40" title="gRPC vs. REST">
         <p>
-          REST isn't the only protocol .NET speaks — gRPC is worth knowing
-          when you control both ends of a call.
+          REST isn't the only protocol .NET speaks — gRPC is worth knowing when
+          you control both ends of a call.
         </p>
         <RefTable
           headers={['REST + JSON', 'gRPC + Protobuf']}
@@ -1746,11 +1775,14 @@ await _hubContext.Clients.Group("kitchen").SendAsync("NewOrder", orderDto);`}
               'Test project is a library',
               <>
                 Test project is an executable (
-                <code>{'<OutputType>Exe</OutputType>'}</code>) that runs
-                itself directly
+                <code>{'<OutputType>Exe</OutputType>'}</code>) that runs itself
+                directly
               </>,
             ],
-            ['Runs via VSTest', 'Runs natively via Microsoft.Testing.Platform, with VSTest still supported'],
+            [
+              'Runs via VSTest',
+              'Runs natively via Microsoft.Testing.Platform, with VSTest still supported',
+            ],
             [
               <code>IAsyncLifetime.InitializeAsync()</code>,
               <>
@@ -1782,17 +1814,20 @@ await _hubContext.Clients.Group("kitchen").SendAsync("NewOrder", orderDto);`}
 }`}
         />
         <p>
-          Migrating an existing suite is mostly mechanical — swap the
-          package reference, flip <code>OutputType</code> to{' '}
-          <code>Exe</code> — and the official migration guide covers the
-          small number of behavioral edge cases.
+          Migrating an existing suite is mostly mechanical — swap the package
+          reference, flip <code>OutputType</code> to <code>Exe</code> — and the
+          official migration guide covers the small number of behavioral edge
+          cases.
         </p>
       </Topic>
 
-      <Topic id="integrationtest" no="42" title="Integration Testing with WebApplicationFactory">
+      <Topic
+        id="integrationtest"
+        no="42"
+        title="Integration Testing with WebApplicationFactory"
+      >
         <p>
-          Spin up your entire API in memory and hit it with real HTTP
-          requests.
+          Spin up your entire API in memory and hit it with real HTTP requests.
         </p>
         <Cs
           code={`public class PizzaApiTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
@@ -1808,16 +1843,16 @@ await _hubContext.Clients.Group("kitchen").SendAsync("NewOrder", orderDto);`}
 }`}
         />
         <p>
-          Swap the real database for an in-memory or test-container database
-          by overriding service registration inside a custom{' '}
+          Swap the real database for an in-memory or test-container database by
+          overriding service registration inside a custom{' '}
           <code>WebApplicationFactory</code> subclass.
         </p>
       </Topic>
 
       <Topic id="manualtest" no="43" title="Exploratory & Manual Testing Tools">
         <p>
-          Automated tests don't replace poking at an API by hand while
-          building it.
+          Automated tests don't replace poking at an API by hand while building
+          it.
         </p>
         <ul>
           <li>
@@ -1845,14 +1880,14 @@ Authorization: Bearer {{token}}`}
 
       <Topic id="iis" no="44" title="Kestrel, IIS & Reverse Proxies">
         <p>
-          ASP.NET Core always runs on its own built-in web server, Kestrel —
-          IIS just sits in front of it.
+          ASP.NET Core always runs on its own built-in web server, Kestrel — IIS
+          just sits in front of it.
         </p>
         <p>
-          On Windows, you typically deploy with <strong>IIS as a reverse
-          proxy</strong>, using the <strong>ASP.NET Core Module (ANCM)</strong>
-          , which forwards requests from IIS to Kestrel running your app as a
-          background process.
+          On Windows, you typically deploy with{' '}
+          <strong>IIS as a reverse proxy</strong>, using the{' '}
+          <strong>ASP.NET Core Module (ANCM)</strong>, which forwards requests
+          from IIS to Kestrel running your app as a background process.
         </p>
         <Xml
           code={`<!-- web.config, generated by \`dotnet publish\` -->
@@ -1868,8 +1903,8 @@ Authorization: Bearer {{token}}`}
 
       <Topic id="docker" no="45" title="Containerizing with Docker">
         <p>
-          Package the app, the runtime, and every dependency into one
-          portable image.
+          Package the app, the runtime, and every dependency into one portable
+          image.
         </p>
         <Bash
           code={`FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
@@ -1887,12 +1922,11 @@ COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "PizzaApi.dll"]`}
         />
         <p>
-          A multi-stage build like this keeps the final image small — the
-          bulky SDK stays in the build stage; only the compiled output ships
-          in the final image. Pair this with <code>PublishAot</code> and a{' '}
-          <code>chiseled</code> base image for the smallest possible
-          container if startup time and image size matter for your
-          deployment.
+          A multi-stage build like this keeps the final image small — the bulky
+          SDK stays in the build stage; only the compiled output ships in the
+          final image. Pair this with <code>PublishAot</code> and a{' '}
+          <code>chiseled</code> base image for the smallest possible container
+          if startup time and image size matter for your deployment.
         </p>
       </Topic>
     </>

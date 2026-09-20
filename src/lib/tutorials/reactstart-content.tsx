@@ -1,3 +1,4 @@
+import type { NavGroup } from '#/lib/tutorials/shared'
 import {
   Callout,
   Code,
@@ -6,7 +7,6 @@ import {
   RefTable,
   Topic,
 } from '#/lib/tutorials/shared'
-import type { NavGroup } from '#/lib/tutorials/shared'
 
 export const reactStartNav: Array<NavGroup> = [
   {
@@ -266,8 +266,8 @@ const element = React.createElement("h1", null, "Hello, ", name, "!");`}
             <code>&lt;&gt;...&lt;/&gt;</code>
           </li>
           <li>
-            <code>className</code> not <code>class</code>,{' '}
-            <code>htmlFor</code> not <code>for</code>
+            <code>className</code> not <code>class</code>, <code>htmlFor</code>{' '}
+            not <code>for</code>
           </li>
           <li>
             Curly braces take <em>expressions</em>, not statements — ternaries
@@ -290,10 +290,10 @@ const element = React.createElement("h1", null, "Hello, ", name, "!");`}
         />
         <Callout>
           <strong>Mental model:</strong> React re-runs your component function
-          on every render and diffs the returned tree against the last one
-          (the &quot;virtual DOM&quot;). You describe <em>what</em> the UI
-          should look like for the current state — React figures out the
-          minimal DOM changes.
+          on every render and diffs the returned tree against the last one (the
+          &quot;virtual DOM&quot;). You describe <em>what</em> the UI should
+          look like for the current state — React figures out the minimal DOM
+          changes.
         </Callout>
       </Topic>
 
@@ -385,8 +385,8 @@ setUser(prev => ({ ...prev, role: "lead" })); // spread + override`}
         title="Events & Conditional Rendering"
       >
         <p>
-          Event handlers are camelCase props that take a function reference
-          (not a call — <code>onClick={'{fn}'}</code>, never{' '}
+          Event handlers are camelCase props that take a function reference (not
+          a call — <code>onClick={'{fn}'}</code>, never{' '}
           <code>onClick={'{fn()}'}</code>).
         </p>
         <Tsx
@@ -418,13 +418,13 @@ setUser(prev => ({ ...prev, role: "lead" })); // spread + override`}
 </ul>`}
         />
         <p>
-          React uses <code>key</code> to match array items across renders so
-          it can reuse DOM nodes instead of rebuilding the list from scratch.
-          Using the array <code>index</code> as a key works only if the list
-          never reorders or has items removed from the middle — otherwise
-          inputs and focus can &quot;jump&quot; to the wrong row because React
-          reuses a DOM node for what it thinks is the same item. Always reach
-          for a stable, unique ID from your data.
+          React uses <code>key</code> to match array items across renders so it
+          can reuse DOM nodes instead of rebuilding the list from scratch. Using
+          the array <code>index</code> as a key works only if the list never
+          reorders or has items removed from the middle — otherwise inputs and
+          focus can &quot;jump&quot; to the wrong row because React reuses a DOM
+          node for what it thinks is the same item. Always reach for a stable,
+          unique ID from your data.
         </p>
       </Topic>
 
@@ -435,8 +435,8 @@ setUser(prev => ({ ...prev, role: "lead" })); // spread + override`}
           <code>useEffect</code> synchronizes a component with an{' '}
           <em>external system</em> — the network, the DOM, a subscription, a
           timer. It is <strong>not</strong> a generic &quot;run this after
-          render&quot; hook, and treating it that way is the single most
-          common source of React bugs.
+          render&quot; hook, and treating it that way is the single most common
+          source of React bugs.
         </p>
         <Tsx
           code={`useEffect(() => {
@@ -468,8 +468,8 @@ const fullName = firstName + " " + lastName;`}
         </Deepdive>
         <p>
           Reach for <code>useEffect</code> when React doesn&apos;t already own
-          the thing you&apos;re syncing: fetch calls, subscriptions,
-          imperative DOM manipulation on a non-React widget, analytics pings.
+          the thing you&apos;re syncing: fetch calls, subscriptions, imperative
+          DOM manipulation on a non-React widget, analytics pings.
         </p>
       </Topic>
 
@@ -494,8 +494,8 @@ function StopWatch() {
         />
         <Callout>
           If updating a ref should also update what&apos;s on screen, you want{' '}
-          <code>useState</code>, not <code>useRef</code>. Refs are invisible
-          to rendering by design.
+          <code>useState</code>, not <code>useRef</code>. Refs are invisible to
+          rendering by design.
         </Callout>
       </Topic>
 
@@ -521,11 +521,11 @@ function Toolbar() {
 }`}
         />
         <p>
-          Good fits: theme, the logged-in user, locale/i18n — values that
-          change rarely and are needed widely. Poor fit: high-frequency
-          updates, since every consumer re-renders whenever the context value
-          changes. For that, split contexts by concern or reach for a
-          dedicated state library.
+          Good fits: theme, the logged-in user, locale/i18n — values that change
+          rarely and are needed widely. Poor fit: high-frequency updates, since
+          every consumer re-renders whenever the context value changes. For
+          that, split contexts by concern or reach for a dedicated state
+          library.
         </p>
       </Topic>
 
@@ -566,9 +566,9 @@ function Counter() {
 
       <Topic id="custom-hooks" no="10" title="Custom Hooks">
         <p>
-          Extract reusable stateful logic into a function whose name starts
-          with <code>use</code>. It&apos;s just a normal function that happens
-          to call other hooks.
+          Extract reusable stateful logic into a function whose name starts with{' '}
+          <code>use</code>. It&apos;s just a normal function that happens to
+          call other hooks.
         </p>
         <Tsx
           code={`function useLocalStorage<T>(key: string, initial: T) {
@@ -596,11 +596,7 @@ const [theme, setTheme] = useLocalStorage("theme", "light");`}
 
       <ModuleTitle>Part 3 — Intermediate React</ModuleTitle>
 
-      <Topic
-        id="composition-children"
-        no="11"
-        title="Composition & Children"
-      >
+      <Topic id="composition-children" no="11" title="Composition & Children">
         <p>
           The <code>children</code> prop is React&apos;s slot mechanism — it
           lets a parent hand arbitrary JSX to a child component to render
@@ -650,8 +646,8 @@ function Layout({ header, sidebar, children }: LayoutProps) {
       >
         <p>
           When two sibling components need to share state, move that state to
-          their nearest common parent and pass it down — this is
-          &quot;lifting state up.&quot;
+          their nearest common parent and pass it down — this is &quot;lifting
+          state up.&quot;
         </p>
         <Tsx
           code={`function Parent() {
@@ -665,13 +661,13 @@ function Layout({ header, sidebar, children }: LayoutProps) {
 }`}
         />
         <p>
-          The downside appears at scale: passing a value through five layers
-          of components that don&apos;t use it themselves — just forward it —
-          is &quot;prop drilling.&quot; The fix isn&apos;t always Context;
-          often it&apos;s restructuring the component tree so the state lives
-          closer to where it&apos;s used, or composing components so the deep
-          child is passed in as <code>children</code> rather than rendered by
-          a distant ancestor.
+          The downside appears at scale: passing a value through five layers of
+          components that don&apos;t use it themselves — just forward it — is
+          &quot;prop drilling.&quot; The fix isn&apos;t always Context; often
+          it&apos;s restructuring the component tree so the state lives closer
+          to where it&apos;s used, or composing components so the deep child is
+          passed in as <code>children</code> rather than rendered by a distant
+          ancestor.
         </p>
       </Topic>
 
@@ -681,9 +677,9 @@ function Layout({ header, sidebar, children }: LayoutProps) {
         title="Performance: useMemo, useCallback, React.memo"
       >
         <p>
-          All three exist to skip unnecessary work — but they add complexity,
-          so reach for them only after you&apos;ve noticed an actual
-          performance problem, not by default.
+          All three exist to skip unnecessary work — but they add complexity, so
+          reach for them only after you&apos;ve noticed an actual performance
+          problem, not by default.
         </p>
         <Tsx
           code={`// useMemo — cache an expensive computed VALUE between renders
@@ -700,26 +696,26 @@ const Row = React.memo(function Row({ item }: { item: Item }) {
         <Callout>
           <strong>Why they&apos;re often paired:</strong>{' '}
           <code>React.memo</code> only helps if the props stay referentially
-          equal. If you pass an inline function or object as a prop, it&apos;s
-          a new reference every render, which defeats <code>memo</code> —
+          equal. If you pass an inline function or object as a prop, it&apos;s a
+          new reference every render, which defeats <code>memo</code> —
           that&apos;s exactly the case <code>useCallback</code> and{' '}
           <code>useMemo</code> exist for.
         </Callout>
         <p>
-          Rule of thumb: profile first (React DevTools Profiler), then
-          memoize the specific spot that&apos;s slow. Wrapping everything in{' '}
-          <code>useMemo</code>/<code>useCallback</code> &quot;just in
-          case&quot; adds cognitive overhead and can even make things slower.
+          Rule of thumb: profile first (React DevTools Profiler), then memoize
+          the specific spot that&apos;s slow. Wrapping everything in{' '}
+          <code>useMemo</code>/<code>useCallback</code> &quot;just in case&quot;
+          adds cognitive overhead and can even make things slower.
         </p>
       </Topic>
 
       <Topic id="portals-refs" no="14" title="Portals & Refs to the DOM">
         <p>
-          A portal renders children into a different part of the actual DOM
-          tree while keeping them in the same place in the React tree —
-          essential for modals, tooltips, and dropdowns that need to escape a
-          parent&apos;s <code>overflow: hidden</code> or <code>z-index</code>{' '}
-          stacking context.
+          A portal renders children into a different part of the actual DOM tree
+          while keeping them in the same place in the React tree — essential for
+          modals, tooltips, and dropdowns that need to escape a parent&apos;s{' '}
+          <code>overflow: hidden</code> or <code>z-index</code> stacking
+          context.
         </p>
         <Tsx
           code={`import { createPortal } from "react-dom";
@@ -734,17 +730,17 @@ function Tooltip({ children }: { children: React.ReactNode }) {
         <p>
           Events still bubble through the React tree as if the portal
           weren&apos;t there — a click inside the portal will trigger a
-          parent&apos;s <code>onClick</code> in React terms, even though in
-          the actual DOM it&apos;s nested somewhere else entirely.
+          parent&apos;s <code>onClick</code> in React terms, even though in the
+          actual DOM it&apos;s nested somewhere else entirely.
         </p>
       </Topic>
 
       <Topic id="error-boundaries" no="15" title="Error Boundaries">
         <p>
           A JavaScript error inside a component used to crash the whole tree.
-          Error boundaries catch render-time errors in their child tree and
-          show a fallback UI instead. They must currently be class components
-          — there&apos;s no hook equivalent yet.
+          Error boundaries catch render-time errors in their child tree and show
+          a fallback UI instead. They must currently be class components —
+          there&apos;s no hook equivalent yet.
         </p>
         <Tsx
           code={`class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
@@ -784,8 +780,8 @@ function Tooltip({ children }: { children: React.ReactNode }) {
         title="Render Props & Compound Components"
       >
         <p>
-          <strong>Render props</strong> hand rendering control to the caller
-          via a function prop:
+          <strong>Render props</strong> hand rendering control to the caller via
+          a function prop:
         </p>
         <Tsx
           code={`function MouseTracker({ render }: { render: (pos: { x: number; y: number }) => React.ReactNode }) {
@@ -801,9 +797,8 @@ function Tooltip({ children }: { children: React.ReactNode }) {
         />
         <p>
           <strong>Compound components</strong> share implicit state across a
-          family of related components via context, so the API reads
-          naturally — like native <code>&lt;select&gt;</code>/
-          <code>&lt;option&gt;</code>:
+          family of related components via context, so the API reads naturally —
+          like native <code>&lt;select&gt;</code>/<code>&lt;option&gt;</code>:
         </p>
         <Tsx
           code={`const TabsContext = createContext<{ active: string; setActive: (id: string) => void } | null>(null);
@@ -896,11 +891,10 @@ function useCart() {
         <p>
           Under the hood, React 18+ can work on rendering in the background
           without blocking the browser from responding to input — this is
-          &quot;concurrent rendering.&quot; A render can be interrupted,
-          thrown away, or resumed. This is what makes{' '}
-          <code>useTransition</code> and streaming SSR possible: React can
-          start showing what&apos;s ready while still-loading parts stay
-          behind a Suspense boundary.
+          &quot;concurrent rendering.&quot; A render can be interrupted, thrown
+          away, or resumed. This is what makes <code>useTransition</code> and
+          streaming SSR possible: React can start showing what&apos;s ready
+          while still-loading parts stay behind a Suspense boundary.
         </p>
         <Callout>
           Suspense for data fetching needs a library or framework wired for it
@@ -960,11 +954,10 @@ const results = useMemo(() => expensiveSearch(deferredQuery), [deferredQuery]);`
         title="Actions & useActionState"
       >
         <p>
-          React 19 formalizes &quot;Actions&quot; — async functions you can
-          pass directly to <code>&lt;form action=&#123;...&#125;&gt;</code> or
-          a transition, with pending state, errors, and optimistic updates
-          handled by React instead of hand-rolled <code>useState</code>{' '}
-          juggling.
+          React 19 formalizes &quot;Actions&quot; — async functions you can pass
+          directly to <code>&lt;form action=&#123;...&#125;&gt;</code> or a
+          transition, with pending state, errors, and optimistic updates handled
+          by React instead of hand-rolled <code>useState</code> juggling.
         </p>
         <Tsx
           code={`function ChangeName({ currentName }: { currentName: string }) {
@@ -988,11 +981,11 @@ const results = useMemo(() => expensiveSearch(deferredQuery), [deferredQuery]);`
 }`}
         />
         <p>
-          <code>useActionState</code> replaces the old dance of a submit
-          handler plus three separate <code>useState</code> calls for
+          <code>useActionState</code> replaces the old dance of a submit handler
+          plus three separate <code>useState</code> calls for
           pending/error/result — the form&apos;s <code>action</code>, the
-          pending flag, and the latest returned state are all wired together
-          for you.
+          pending flag, and the latest returned state are all wired together for
+          you.
         </p>
       </Topic>
 
@@ -1023,17 +1016,17 @@ const results = useMemo(() => expensiveSearch(deferredQuery), [deferredQuery]);`
 }`}
         />
         <p>
-          If the real update fails, React quietly reverts to the actual state
-          — no manual rollback code needed.
+          If the real update fails, React quietly reverts to the actual state —
+          no manual rollback code needed.
         </p>
       </Topic>
 
       <Topic id="use-api" no="22" title="The use() API">
         <p>
           <code>use()</code> reads the value of a Promise or a Context, and —
-          unlike hooks — it can be called conditionally, inside loops, or
-          after early returns. It&apos;s not a hook itself, which is exactly
-          why it doesn&apos;t follow the &quot;Rules of Hooks.&quot;
+          unlike hooks — it can be called conditionally, inside loops, or after
+          early returns. It&apos;s not a hook itself, which is exactly why it
+          doesn&apos;t follow the &quot;Rules of Hooks.&quot;
         </p>
         <Tsx
           code={`function Comments({ commentsPromise }: { commentsPromise: Promise<Comment[]> }) {
@@ -1100,9 +1093,9 @@ function AddToCartButton({ productId }: { productId: string }) {
 
       <Topic id="ref-as-prop" no="24" title="ref as a Prop">
         <p>
-          Before React 19, passing a ref through to a child required wrapping
-          it in <code>forwardRef</code>. React 19 lets function components
-          accept <code>ref</code> as a plain prop.
+          Before React 19, passing a ref through to a child required wrapping it
+          in <code>forwardRef</code>. React 19 lets function components accept{' '}
+          <code>ref</code> as a plain prop.
         </p>
         <Tsx
           code={`// Old way (React 18 and earlier)
@@ -1121,9 +1114,8 @@ function Input({ label, ref }: { label: string; ref: React.Ref<HTMLInputElement>
 }`}
         />
         <p>
-          Existing <code>forwardRef</code> code still works — this is
-          additive, not a breaking change — but new components no longer need
-          it.
+          Existing <code>forwardRef</code> code still works — this is additive,
+          not a breaking change — but new components no longer need it.
         </p>
       </Topic>
 
@@ -1135,15 +1127,14 @@ function Input({ label, ref }: { label: string; ref: React.Ref<HTMLInputElement>
           <strong>TanStack Router</strong> and <strong>Vite</strong>. Where
           TanStack Router alone gives you type-safe client-side routing, Start
           adds server-side rendering, streaming, server functions, and
-          full-document rendering — putting it in the same category as
-          Next.js or Remix, but built router-first rather than
-          pages-first.
+          full-document rendering — putting it in the same category as Next.js
+          or Remix, but built router-first rather than pages-first.
         </p>
         <h4>What makes it distinct</h4>
         <ul>
           <li>
-            <strong>Router-first, not file-convention-first.</strong> Routes
-            are TypeScript objects you compose; file-based routing is a
+            <strong>Router-first, not file-convention-first.</strong> Routes are
+            TypeScript objects you compose; file-based routing is a
             code-generation layer on top, not the only way in.
           </li>
           <li>
@@ -1152,10 +1143,9 @@ function Input({ label, ref }: { label: string; ref: React.Ref<HTMLInputElement>
             inferred — no manual typing of <code>useParams()</code>.
           </li>
           <li>
-            <strong>Server functions</strong> (<code>createServerFn</code>)
-            let you call server-only code from client components as if it
-            were a local async function, with the network boundary handled
-            for you.
+            <strong>Server functions</strong> (<code>createServerFn</code>) let
+            you call server-only code from client components as if it were a
+            local async function, with the network boundary handled for you.
           </li>
           <li>
             <strong>Built on Vite</strong>, so you get its dev server, plugin
@@ -1165,8 +1155,8 @@ function Input({ label, ref }: { label: string; ref: React.Ref<HTMLInputElement>
         <Callout>
           If TanStack Query is TanStack&apos;s answer to &quot;how do I cache
           server data on the client,&quot; TanStack Start is its answer to
-          &quot;how do I build the whole app&quot; — and the two are designed
-          to work together, not compete.
+          &quot;how do I build the whole app&quot; — and the two are designed to
+          work together, not compete.
         </Callout>
       </Topic>
 
@@ -1219,9 +1209,9 @@ npm run dev`}
 
       <Topic id="file-routing" no="27" title="File-Based Routing">
         <p>
-          Each file under <code>app/routes/</code> becomes a route. A
-          generator watches the folder and produces a fully-typed route tree —
-          you never hand-write a route config object for the common case.
+          Each file under <code>app/routes/</code> becomes a route. A generator
+          watches the folder and produces a fully-typed route tree — you never
+          hand-write a route config object for the common case.
         </p>
         <Tsx
           code={`// app/routes/posts/$postId.tsx
@@ -1259,17 +1249,17 @@ function PostPage() {
         <Callout>
           Because routes are plain objects under the hood, you can also build
           the whole tree by hand with <code>createRoute()</code> calls if
-          you&apos;d rather not use file-based generation — Start
-          doesn&apos;t force either style.
+          you&apos;d rather not use file-based generation — Start doesn&apos;t
+          force either style.
         </Callout>
       </Topic>
 
       <Topic id="loaders" no="28" title="Route Loaders & useLoaderData">
         <p>
           A <code>loader</code> fetches data <em>before</em> a route renders —
-          on the server during SSR, and client-side on subsequent navigations
-          — so your component never shows a loading spinner for data the
-          router already knows it needs.
+          on the server during SSR, and client-side on subsequent navigations —
+          so your component never shows a loading spinner for data the router
+          already knows it needs.
         </p>
         <Tsx
           code={`export const Route = createFileRoute("/posts/$postId")({
@@ -1286,10 +1276,10 @@ function PostPage() {
 }`}
         />
         <p>
-          Loaders run in parallel across nested matched routes, and results
-          are cached by the router — navigating back to a page you&apos;ve
-          already visited can render instantly from cache while it revalidates
-          in the background.
+          Loaders run in parallel across nested matched routes, and results are
+          cached by the router — navigating back to a page you&apos;ve already
+          visited can render instantly from cache while it revalidates in the
+          background.
         </p>
         <Tsx
           code={`export const Route = createFileRoute("/posts/$postId")({
@@ -1307,9 +1297,9 @@ function PostPage() {
         title="Server Functions — createServerFn"
       >
         <p>
-          A server function is code that only ever runs on the server,
-          callable from client code as if it were a normal async function — no
-          manually wiring up a REST or RPC endpoint.
+          A server function is code that only ever runs on the server, callable
+          from client code as if it were a normal async function — no manually
+          wiring up a REST or RPC endpoint.
         </p>
         <Tsx
           code={`import { createServerFn } from "@tanstack/react-start";
@@ -1340,8 +1330,8 @@ function Profile({ userId }: { userId: string }) {
         <Callout>
           Under the hood, Start compiles server functions into real HTTP
           endpoints and swaps the client-side call for a <code>fetch</code> —
-          but you write and call it as one continuous piece of TypeScript,
-          with full type inference across the network boundary.
+          but you write and call it as one continuous piece of TypeScript, with
+          full type inference across the network boundary.
         </Callout>
       </Topic>
 
@@ -1382,16 +1372,12 @@ function NewPostForm() {
         </p>
       </Topic>
 
-      <Topic
-        id="query-integration"
-        no="31"
-        title="TanStack Query Integration"
-      >
+      <Topic id="query-integration" no="31" title="TanStack Query Integration">
         <p>
-          Router loaders handle the &quot;data this route needs to
-          render&quot; case well, but for caching, background refetching,
-          mutations with optimistic updates, and infinite queries, Start is
-          commonly paired with TanStack Query rather than replacing it.
+          Router loaders handle the &quot;data this route needs to render&quot;
+          case well, but for caching, background refetching, mutations with
+          optimistic updates, and infinite queries, Start is commonly paired
+          with TanStack Query rather than replacing it.
         </p>
         <Tsx
           code={`// app/router.tsx
@@ -1426,10 +1412,10 @@ function PostPage() {
 }`}
         />
         <Callout>
-          The loader&apos;s job becomes &quot;make sure the cache is warm
-          before the route renders&quot; — Query then owns caching,
-          refetch-on-focus, retries, and mutation state, which the router
-          doesn&apos;t try to replicate.
+          The loader&apos;s job becomes &quot;make sure the cache is warm before
+          the route renders&quot; — Query then owns caching, refetch-on-focus,
+          retries, and mutation state, which the router doesn&apos;t try to
+          replicate.
         </Callout>
       </Topic>
 
@@ -1437,8 +1423,8 @@ function PostPage() {
         <p>
           TanStack Router treats URL search params as fully typed, validated
           state — not raw strings you parse by hand. This makes filters,
-          pagination, and sort order shareable via URL and safe to read like
-          any other typed value.
+          pagination, and sort order shareable via URL and safe to read like any
+          other typed value.
         </p>
         <Tsx
           code={`const searchSchema = z.object({
@@ -1464,25 +1450,20 @@ function PostsPage() {
         />
         <p>
           Because search params are validated with a schema (Zod here, though
-          any standard-schema library works), a malformed or missing param
-          falls back to your <code>.catch()</code> default instead of
-          producing <code>undefined</code> deep in a component.
+          any standard-schema library works), a malformed or missing param falls
+          back to your <code>.catch()</code> default instead of producing{' '}
+          <code>undefined</code> deep in a component.
         </p>
       </Topic>
 
       <ModuleTitle>Part 8 — TanStack Start: Advanced</ModuleTitle>
 
-      <Topic
-        id="ssr-streaming"
-        no="33"
-        title="SSR Streaming & Deferred Data"
-      >
+      <Topic id="ssr-streaming" no="33" title="SSR Streaming & Deferred Data">
         <p>
-          Not every piece of data on a page needs to block the initial
-          response. <code>defer</code>-style loading lets Start send the HTML
-          shell immediately and stream in slower data as it resolves, using
-          Suspense boundaries on the client to show placeholders in the
-          meantime.
+          Not every piece of data on a page needs to block the initial response.{' '}
+          <code>defer</code>-style loading lets Start send the HTML shell
+          immediately and stream in slower data as it resolves, using Suspense
+          boundaries on the client to show placeholders in the meantime.
         </p>
         <Tsx
           code={`export const Route = createFileRoute("/dashboard")({
@@ -1520,8 +1501,8 @@ function Dashboard() {
       <Topic id="middleware" no="34" title="Middleware">
         <p>
           Server function middleware wraps handlers with cross-cutting logic —
-          auth checks, logging, request context — without repeating it in
-          every function.
+          auth checks, logging, request context — without repeating it in every
+          function.
         </p>
         <Tsx
           code={`const authMiddleware = createMiddleware().server(async ({ next, context }) => {
@@ -1537,9 +1518,9 @@ const getMyOrders = createServerFn({ method: "GET" })
   });`}
         />
         <p>
-          Middleware composes — a server function can use several, and each
-          can add to the typed <code>context</code> object the next one (and
-          the final handler) receives.
+          Middleware composes — a server function can use several, and each can
+          add to the typed <code>context</code> object the next one (and the
+          final handler) receives.
         </p>
       </Topic>
 
@@ -1563,17 +1544,17 @@ const getMyOrders = createServerFn({ method: "GET" })
 });`}
         />
         <p>
-          Because <code>beforeLoad</code> runs during SSR, a logged-out
-          visitor is redirected in the server response itself — no flash of
-          protected content before a client-side redirect kicks in.
+          Because <code>beforeLoad</code> runs during SSR, a logged-out visitor
+          is redirected in the server response itself — no flash of protected
+          content before a client-side redirect kicks in.
         </p>
       </Topic>
 
       <Topic id="deployment" no="36" title="Deployment">
         <p>
-          TanStack Start builds to standard, portable server output rather
-          than locking you to one host — it ships adapters (via Nitro, the
-          same engine behind Nuxt) for most common targets.
+          TanStack Start builds to standard, portable server output rather than
+          locking you to one host — it ships adapters (via Nitro, the same
+          engine behind Nuxt) for most common targets.
         </p>
         <Tsx
           code={`// vite.config.ts

@@ -1,3 +1,4 @@
+import type { NavGroup } from '#/lib/tutorials/shared'
 import {
   Callout,
   Code,
@@ -7,7 +8,6 @@ import {
   RefTable,
   Topic,
 } from '#/lib/tutorials/shared'
-import type { NavGroup } from '#/lib/tutorials/shared'
 
 export const sqlNovaPizzaNav: Array<NavGroup> = [
   {
@@ -298,13 +298,13 @@ export function SqlContent() {
         <Deepdive>
           <strong>Under the hood</strong> — SQL is <strong>declarative</strong>:
           a SELECT statement describes the shape of the answer you want, not the
-          steps to get it. You never say &quot;loop over rows and check
-          each one&quot; — the database&apos;s query planner decides whether to
-          scan the table or use an index, in what order, and hands you back a
-          result set. Under the hood, every table is a set of rows with typed
-          columns, and WHERE is evaluated once per row: the boolean expression
-          runs against that row&apos;s values, and only rows where it evaluates
-          to true survive.
+          steps to get it. You never say &quot;loop over rows and check each
+          one&quot; — the database&apos;s query planner decides whether to scan
+          the table or use an index, in what order, and hands you back a result
+          set. Under the hood, every table is a set of rows with typed columns,
+          and WHERE is evaluated once per row: the boolean expression runs
+          against that row&apos;s values, and only rows where it evaluates to
+          true survive.
         </Deepdive>
         <p>
           <code>SELECT</code> picks columns, <code>FROM</code> picks the table,
@@ -386,13 +386,13 @@ WHERE planet_id = 2;`}
           in whatever order it found them (often insertion order or index
           order), and that can silently change after a rebuild, a vacuum, or a
           version upgrade. ORDER BY sorts the finished result set as a last
-          step, after all filtering and grouping is done, which is why
-          it&apos;s allowed to reference column aliases defined in the SELECT
-          list even though WHERE can&apos;t. Sorts are stable within most
-          engines when you provide enough sort keys to fully disambiguate ties,
-          and NULLs are treated as either the lowest or highest possible value
-          depending on the database (NULLS FIRST / NULLS LAST let you control
-          this explicitly on Postgres).
+          step, after all filtering and grouping is done, which is why it&apos;s
+          allowed to reference column aliases defined in the SELECT list even
+          though WHERE can&apos;t. Sorts are stable within most engines when you
+          provide enough sort keys to fully disambiguate ties, and NULLs are
+          treated as either the lowest or highest possible value depending on
+          the database (NULLS FIRST / NULLS LAST let you control this explicitly
+          on Postgres).
         </Deepdive>
         <p>
           <code>ORDER BY</code> sorts the result set; <code>ASC</code> (default)
@@ -538,13 +538,12 @@ HAVING COUNT(*) > 50;`}
           (UPPER, ROUND) take one row&apos;s values and return one value per
           row; <strong>aggregate</strong> functions (SUM, COUNT) collapse many
           rows into one; <strong>window</strong> functions (covered later) sit
-          in between. Almost every scalar function is{' '}
-          <em>NULL-propagating</em> — if any input is NULL, the result is NULL,
-          on the logic that you can&apos;t meaningfully uppercase or round
-          &quot;unknown.&quot; COALESCE and NULLIF are two of the few functions
-          built specifically to reason about NULL itself rather than propagate
-          it, which is exactly why they exist as separate tools instead of
-          ordinary functions.
+          in between. Almost every scalar function is <em>NULL-propagating</em>{' '}
+          — if any input is NULL, the result is NULL, on the logic that you
+          can&apos;t meaningfully uppercase or round &quot;unknown.&quot;
+          COALESCE and NULLIF are two of the few functions built specifically to
+          reason about NULL itself rather than propagate it, which is exactly
+          why they exist as separate tools instead of ordinary functions.
         </Deepdive>
         <p>
           <strong>String functions</strong> reshape text. Exact names vary
@@ -614,22 +613,22 @@ FROM customers;`}
 
       <Topic id="datatypes" no="05" title="Data types">
         <p>
-          Every column commits to a type up front — it&apos;s what keeps a
-          price from silently becoming text and a date from being sorted
+          Every column commits to a type up front — it&apos;s what keeps a price
+          from silently becoming text and a date from being sorted
           alphabetically.
         </p>
         <Deepdive>
-          <strong>Under the hood</strong> — A column&apos;s type isn&apos;t
-          just documentation — it determines how many bytes each value takes on
-          disk, which comparison and sort rules apply, and what an index built
-          on that column can do. Fixed-width types (INTEGER, DATE) are cheap to
-          compare and index; variable-width types (VARCHAR, TEXT) cost a little
-          more bookkeeping. Comparing values across mismatched types usually
-          triggers an <em>implicit cast</em>, which can quietly disable an index
-          that would otherwise have been used — this is a common,
-          easy-to-miss cause of a slow query that &quot;should&quot; be fast,
-          and it&apos;s why explicit CAST is worth reaching for the moment a
-          comparison feels type-ambiguous.
+          <strong>Under the hood</strong> — A column&apos;s type isn&apos;t just
+          documentation — it determines how many bytes each value takes on disk,
+          which comparison and sort rules apply, and what an index built on that
+          column can do. Fixed-width types (INTEGER, DATE) are cheap to compare
+          and index; variable-width types (VARCHAR, TEXT) cost a little more
+          bookkeeping. Comparing values across mismatched types usually triggers
+          an <em>implicit cast</em>, which can quietly disable an index that
+          would otherwise have been used — this is a common, easy-to-miss cause
+          of a slow query that &quot;should&quot; be fast, and it&apos;s why
+          explicit CAST is worth reaching for the moment a comparison feels
+          type-ambiguous.
         </Deepdive>
         <p>
           The families you&apos;ll use constantly, with common names across
@@ -648,12 +647,11 @@ FROM customers;`}
         />
         <Callout variant="warn">
           <strong>Never use FLOAT for money</strong> — floating-point types
-          (FLOAT, REAL, DOUBLE) store approximations, so{' '}
-          <code>0.1 + 0.2</code> can come back as{' '}
-          <code>0.30000000000000004</code>. <strong>DECIMAL(precision, scale)</strong>{' '}
-          stores exact values instead — that&apos;s why <code>base_price</code>{' '}
-          above is DECIMAL(5,2): up to 5 total digits, 2 after the decimal
-          point.
+          (FLOAT, REAL, DOUBLE) store approximations, so <code>0.1 + 0.2</code>{' '}
+          can come back as <code>0.30000000000000004</code>.{' '}
+          <strong>DECIMAL(precision, scale)</strong> stores exact values instead
+          — that&apos;s why <code>base_price</code> above is DECIMAL(5,2): up to
+          5 total digits, 2 after the decimal point.
         </Callout>
         <p>
           Beyond the basics, most databases also offer: <strong>SERIAL</strong>{' '}
@@ -661,8 +659,7 @@ FROM customers;`}
           self-incrementing primary keys, <strong>ENUM</strong> for a fixed set
           of allowed text values (like order status), <strong>UUID</strong> for
           globally unique identifiers, and array or JSON types for structured
-          values inside a single column (more on JSON in its own section
-          later).
+          values inside a single column (more on JSON in its own section later).
         </p>
         <Sql
           code={`CREATE TABLE orders (
@@ -678,9 +675,9 @@ FROM customers;`}
         >
           <p className="mt-2 mb-0 text-muted-foreground">
             INTEGER (with a CHECK constraint for non-negative, if you want to
-            enforce it at the schema level). Points are always whole numbers,
-            so DECIMAL would just add unnecessary storage and comparison
-            overhead for a fractional precision you&apos;ll never use.
+            enforce it at the schema level). Points are always whole numbers, so
+            DECIMAL would just add unnecessary storage and comparison overhead
+            for a fractional precision you&apos;ll never use.
           </p>
         </Exercise>
       </Topic>
@@ -689,22 +686,22 @@ FROM customers;`}
 
       <Topic id="joins" no="06" title="Joins">
         <p>
-          The single most important concept in SQL: combining rows across
-          tables via a shared key.
+          The single most important concept in SQL: combining rows across tables
+          via a shared key.
         </p>
         <Deepdive>
-          <strong>Under the hood</strong> — The cleanest mental model for a
-          join is: compute the full Cartesian product of both tables (every row
+          <strong>Under the hood</strong> — The cleanest mental model for a join
+          is: compute the full Cartesian product of both tables (every row
           paired with every row), then keep only the pairs where the ON
           condition is true. No real database actually does that — it would be
           catastrophically slow on large tables — but it&apos;s the correct
           logical definition, and it&apos;s exactly what happens if you forget
-          the ON clause entirely. In practice the query planner picks a
-          physical strategy (a <strong>nested loop</strong> for small tables, a{' '}
+          the ON clause entirely. In practice the query planner picks a physical
+          strategy (a <strong>nested loop</strong> for small tables, a{' '}
           <strong>hash join</strong> that builds a lookup table from one side,
-          or a <strong>merge join</strong> when both sides are already sorted
-          on the join key) that produces the identical result far more
-          efficiently — which one it picks is visible in EXPLAIN output.
+          or a <strong>merge join</strong> when both sides are already sorted on
+          the join key) that produces the identical result far more efficiently
+          — which one it picks is visible in EXPLAIN output.
         </Deepdive>
         <p>
           <strong>INNER JOIN</strong> keeps only rows that match on both sides.
@@ -796,11 +793,11 @@ JOIN planets pl ON pl.planet_id = c.planet_id;`}
           row&apos;s value in each time — which is the right mental model even
           though real query planners often rewrite it internally into an
           equivalent join for speed, especially for EXISTS/IN patterns. Where a
-          subquery sits changes what it&apos;s allowed to be: in the SELECT
-          list it must return exactly one value per outer row (a scalar); in
-          FROM it stands in for an entire table (a derived table) and can
-          return many rows and columns; in WHERE it&apos;s evaluated as part of
-          the filter, most often with IN, EXISTS, or a scalar comparison.
+          subquery sits changes what it&apos;s allowed to be: in the SELECT list
+          it must return exactly one value per outer row (a scalar); in FROM it
+          stands in for an entire table (a derived table) and can return many
+          rows and columns; in WHERE it&apos;s evaluated as part of the filter,
+          most often with IN, EXISTS, or a scalar comparison.
         </Deepdive>
         <p>
           A <strong>scalar subquery</strong> returns one value and can be used
@@ -943,16 +940,16 @@ WHERE o.status = 'cancelled';`}
           computed columns.
         </p>
         <Deepdive>
-          <strong>Under the hood</strong> — CASE is an <strong>expression</strong>,
-          not a control-flow statement — it evaluates to a single value and can
-          be dropped in anywhere a column or literal could go: in SELECT,
-          WHERE, ORDER BY, or nested inside another function call. Like
-          short-circuit evaluation in most programming languages, it checks
-          WHEN clauses top to bottom and stops at the first one that&apos;s
-          true, so ordering matters when conditions could overlap — put the
-          most specific condition first. With no ELSE and no branch matching,
-          the whole expression simply evaluates to NULL, which is a deliberate
-          design choice, not an error.
+          <strong>Under the hood</strong> — CASE is an{' '}
+          <strong>expression</strong>, not a control-flow statement — it
+          evaluates to a single value and can be dropped in anywhere a column or
+          literal could go: in SELECT, WHERE, ORDER BY, or nested inside another
+          function call. Like short-circuit evaluation in most programming
+          languages, it checks WHEN clauses top to bottom and stops at the first
+          one that&apos;s true, so ordering matters when conditions could
+          overlap — put the most specific condition first. With no ELSE and no
+          branch matching, the whole expression simply evaluates to NULL, which
+          is a deliberate design choice, not an error.
         </Deepdive>
         <Sql
           code={`SELECT name,
@@ -1018,8 +1015,8 @@ FROM pizzas;`}
           cost; it buys you readability and access control, not speed. This
           substitution also means a view always reflects live data with zero
           staleness, which is the opposite trade-off from a materialized view,
-          where the query runs once up front and the result is physically
-          stored until you explicitly refresh it.
+          where the query runs once up front and the result is physically stored
+          until you explicitly refresh it.
         </Deepdive>
         <Sql
           code={`CREATE VIEW vegetarian_menu AS
@@ -1161,19 +1158,19 @@ ADD COLUMN delivery_notes TEXT NOT NULL DEFAULT '';`}
         <Deepdive>
           <strong>Under the hood</strong> — The reason a naive &quot;SELECT to
           check, then INSERT or UPDATE&quot; is unsafe under concurrency comes
-          down to a gap between the read and the write: two connections can
-          both run the SELECT, both see no existing row, and both then INSERT
-          — one succeeds and the other hits a duplicate-key error, or worse,
-          both succeed and you get silent duplicate data if there&apos;s no
-          unique constraint at all. An upsert statement pushes the whole
+          down to a gap between the read and the write: two connections can both
+          run the SELECT, both see no existing row, and both then INSERT — one
+          succeeds and the other hits a duplicate-key error, or worse, both
+          succeed and you get silent duplicate data if there&apos;s no unique
+          constraint at all. An upsert statement pushes the whole
           check-and-write into a single atomic operation handled by the storage
           engine itself, using the row&apos;s own locking mechanism, so
           there&apos;s no window for another transaction to interleave.
         </Deepdive>
         <p>
           <strong>INSERT INTO ... SELECT</strong> writes the results of a query
-          straight into a table — no need to pull rows out and reinsert them
-          one at a time:
+          straight into a table — no need to pull rows out and reinsert them one
+          at a time:
         </p>
         <Sql
           code={`CREATE TABLE archived_orders (LIKE orders INCLUDING ALL);
@@ -1208,12 +1205,11 @@ WHEN MATCHED THEN UPDATE SET orders_count = orders_count + 1
 WHEN NOT MATCHED THEN INSERT (customer_id, orders_count) VALUES (101, 1);`}
         />
         <Callout>
-          <strong>Why not just SELECT-then-INSERT-or-UPDATE?</strong> —
-          checking whether a row exists and then deciding what to do is two
-          round trips with a race condition in between: another connection
-          could insert the same row in the gap. Upsert statements do the
-          check-and-write atomically in one round trip, avoiding that race
-          entirely.
+          <strong>Why not just SELECT-then-INSERT-or-UPDATE?</strong> — checking
+          whether a row exists and then deciding what to do is two round trips
+          with a race condition in between: another connection could insert the
+          same row in the gap. Upsert statements do the check-and-write
+          atomically in one round trip, avoiding that race entirely.
         </Callout>
         <Exercise
           id="ans-upsert"
@@ -1245,15 +1241,15 @@ DO UPDATE SET pizza_id = EXCLUDED.pizza_id;`}
         </p>
         <Deepdive>
           <strong>Under the hood</strong> — The defining feature of a window
-          function is the <strong>frame</strong> — the subset of rows visible
-          to the calculation for the &quot;current&quot; row, defined by
-          PARTITION BY (which rows are in scope) and an optional ROWS/RANGE
-          BETWEEN clause (how much of that partition, relative to the current
-          row, participates — e.g. &quot;from the start of the partition to the
-          current row&quot; for a running total). This is precisely why window
-          functions don&apos;t collapse rows the way GROUP BY does: each row
-          keeps its own identity, computed against its own frame, rather than
-          every row in a group being reduced to one output row.
+          function is the <strong>frame</strong> — the subset of rows visible to
+          the calculation for the &quot;current&quot; row, defined by PARTITION
+          BY (which rows are in scope) and an optional ROWS/RANGE BETWEEN clause
+          (how much of that partition, relative to the current row, participates
+          — e.g. &quot;from the start of the partition to the current row&quot;
+          for a running total). This is precisely why window functions
+          don&apos;t collapse rows the way GROUP BY does: each row keeps its own
+          identity, computed against its own frame, rather than every row in a
+          group being reduced to one output row.
         </Deepdive>
         <p>
           The giveaway syntax is <strong>OVER (...)</strong>.{' '}
@@ -1329,17 +1325,16 @@ JOIN order_items oi ON oi.order_id = o.order_id;`}
         <Deepdive>
           <strong>Under the hood</strong> — Whether a CTE runs as an
           independent, one-time computation or gets folded directly into the
-          surrounding query (the way a subquery would) depends on the engine
-          and version — Postgres before version 12 always materialized every
-          CTE as an <em>optimization fence</em> (compute it fully, once, in
-          isolation), which was sometimes a deliberate performance trick and
-          sometimes an accidental slowdown; Postgres 12+ inlines CTEs by
-          default like ordinary subqueries unless you force materialization
-          with the MATERIALIZED keyword. A recursive CTE runs as a fixed-point
-          loop: it executes the anchor once, then repeatedly re-runs the
-          recursive part against only the rows produced by the previous
-          iteration, stopping automatically the moment an iteration produces
-          zero new rows.
+          surrounding query (the way a subquery would) depends on the engine and
+          version — Postgres before version 12 always materialized every CTE as
+          an <em>optimization fence</em> (compute it fully, once, in isolation),
+          which was sometimes a deliberate performance trick and sometimes an
+          accidental slowdown; Postgres 12+ inlines CTEs by default like
+          ordinary subqueries unless you force materialization with the
+          MATERIALIZED keyword. A recursive CTE runs as a fixed-point loop: it
+          executes the anchor once, then repeatedly re-runs the recursive part
+          against only the rows produced by the previous iteration, stopping
+          automatically the moment an iteration produces zero new rows.
         </Deepdive>
         <Sql
           code={`WITH planet_totals AS (
@@ -1427,22 +1422,22 @@ LIMIT 1;`}
         </p>
         <Deepdive>
           <strong>Under the hood</strong> — Conceptually, ROLLUP(a, b) is
-          shorthand for running GROUP BY (a, b), then GROUP BY (a), then a
-          grand total GROUP BY (), and UNION ALL-ing the three result sets
-          together — the database does this far more efficiently than three
-          separate scans, but that&apos;s the logical output you get: one row
-          per grouping level, with NULL standing in for &quot;this column
-          isn&apos;t part of this particular subtotal.&quot; CUBE generalizes
-          this to every possible combination of the grouped columns rather than
-          just the nested hierarchy ROLLUP assumes, and GROUPING SETS lets you
-          hand-pick exactly which of those combinations you want, skipping ones
-          you don&apos;t need.
+          shorthand for running GROUP BY (a, b), then GROUP BY (a), then a grand
+          total GROUP BY (), and UNION ALL-ing the three result sets together —
+          the database does this far more efficiently than three separate scans,
+          but that&apos;s the logical output you get: one row per grouping
+          level, with NULL standing in for &quot;this column isn&apos;t part of
+          this particular subtotal.&quot; CUBE generalizes this to every
+          possible combination of the grouped columns rather than just the
+          nested hierarchy ROLLUP assumes, and GROUPING SETS lets you hand-pick
+          exactly which of those combinations you want, skipping ones you
+          don&apos;t need.
         </Deepdive>
         <p>
-          Plain GROUP BY gives you one row per combination. <strong>ROLLUP</strong>{' '}
-          adds subtotal rows going from the most detailed grouping up to a
-          grand total — think of a sales report with per-planet subtotals and
-          one grand total at the bottom:
+          Plain GROUP BY gives you one row per combination.{' '}
+          <strong>ROLLUP</strong> adds subtotal rows going from the most
+          detailed grouping up to a grand total — think of a sales report with
+          per-planet subtotals and one grand total at the bottom:
         </p>
         <Sql
           code={`SELECT planet_id, status, COUNT(*) AS order_count
@@ -1508,15 +1503,17 @@ GROUP BY ROLLUP(pl.name);`}
         <Deepdive>
           <strong>Under the hood</strong> — Pivoting is really just conditional
           aggregation wearing a different hat:{' '}
-          <code>SUM(CASE WHEN status = &apos;delivered&apos; THEN 1 ELSE 0 END)</code>{' '}
+          <code>
+            SUM(CASE WHEN status = &apos;delivered&apos; THEN 1 ELSE 0 END)
+          </code>{' '}
           is doing exactly what a dedicated PIVOT clause does, just spelled out
           explicitly. The underlying trade-off is <strong>long vs wide</strong>{' '}
-          data: a long, normalized table (one row per fact) is flexible, easy
-          to extend with a new category without touching the schema, and
-          simple to constrain and index — a wide, pivoted table is what a human
-          reading a report wants to see, but adding a new category means adding
-          a new column. Most systems store data long and pivot only at the
-          final reporting step, right before it reaches a person.
+          data: a long, normalized table (one row per fact) is flexible, easy to
+          extend with a new category without touching the schema, and simple to
+          constrain and index — a wide, pivoted table is what a human reading a
+          report wants to see, but adding a new category means adding a new
+          column. Most systems store data long and pivot only at the final
+          reporting step, right before it reaches a person.
         </Deepdive>
         <p>
           SQL is naturally &quot;long&quot;: one row per fact. Reports often
@@ -1548,8 +1545,8 @@ GROUP BY pl.name;`}
           you already know the column list ahead of time. Postgres has no
           built-in PIVOT — the <code>crosstab()</code> function from the{' '}
           <code>tablefunc</code> extension covers the same ground, but
-          conditional aggregation works everywhere with zero setup, which is
-          why it&apos;s worth knowing regardless of dialect.
+          conditional aggregation works everywhere with zero setup, which is why
+          it&apos;s worth knowing regardless of dialect.
         </p>
         <Callout>
           <strong>UNPIVOT</strong> is the reverse — turning columns back into
@@ -1669,17 +1666,16 @@ COMMIT;`}
         </p>
         <Deepdive>
           <strong>Under the hood</strong> — The mechanism most modern databases
-          (Postgres, MySQL&apos;s InnoDB, Oracle) use to deliver these
-          isolation levels without constantly blocking readers behind writers
-          is called <strong>MVCC — multi-version concurrency control</strong>.
-          Instead of locking a row every time it&apos;s read, the database
-          keeps multiple versions of a row around and hands each transaction a
-          consistent snapshot as of some point in time, so readers never wait
-          on writers and writers never wait on readers — only writer-vs-writer
-          conflicts on the same row need actual locks. This is why READ
-          COMMITTED is usually cheap: it just means &quot;take a fresh snapshot
-          for each statement&quot; rather than &quot;acquire a lock for each
-          read.&quot;
+          (Postgres, MySQL&apos;s InnoDB, Oracle) use to deliver these isolation
+          levels without constantly blocking readers behind writers is called{' '}
+          <strong>MVCC — multi-version concurrency control</strong>. Instead of
+          locking a row every time it&apos;s read, the database keeps multiple
+          versions of a row around and hands each transaction a consistent
+          snapshot as of some point in time, so readers never wait on writers
+          and writers never wait on readers — only writer-vs-writer conflicts on
+          the same row need actual locks. This is why READ COMMITTED is usually
+          cheap: it just means &quot;take a fresh snapshot for each
+          statement&quot; rather than &quot;acquire a lock for each read.&quot;
         </Deepdive>
         <p>
           Perfect isolation (every transaction behaves as if it ran completely
@@ -1730,20 +1726,21 @@ COMMIT;`}
           <strong>Deadlocks</strong> — if transaction A locks row 1 and waits
           for row 2, while transaction B locks row 2 and waits for row 1,
           neither can proceed. The database detects this and kills one of them
-          automatically (returning a deadlock error to retry). Locking rows in
-          a consistent order across your application is the usual way to avoid
+          automatically (returning a deadlock error to retry). Locking rows in a
+          consistent order across your application is the usual way to avoid
           triggering it in the first place.
         </Callout>
         <Exercise
           id="ans-isolation"
           prompt="You're decrementing pizza stock when an order is placed, and two customers could order the last pizza at the same instant. What should you add to the SELECT that checks current stock, to prevent both orders from succeeding?"
         >
-          <Sql code={`SELECT stock FROM pizzas WHERE pizza_id = 3 FOR UPDATE;`} />
+          <Sql
+            code={`SELECT stock FROM pizzas WHERE pizza_id = 3 FOR UPDATE;`}
+          />
           <p className="mt-2 mb-0 text-muted-foreground">
             FOR UPDATE locks that row so the second transaction has to wait
-            until the first one commits (and sees the now-updated stock),
-            rather than both reading the same stale stock value and both
-            proceeding.
+            until the first one commits (and sees the now-updated stock), rather
+            than both reading the same stale stock value and both proceeding.
           </p>
         </Exercise>
       </Topic>
@@ -1751,20 +1748,19 @@ COMMIT;`}
       <Topic id="json" no="19" title="JSON & semi-structured data">
         <p>
           Sometimes a column&apos;s shape genuinely varies row to row — modern
-          SQL databases let you store and query JSON without giving up the
-          rest of SQL.
+          SQL databases let you store and query JSON without giving up the rest
+          of SQL.
         </p>
         <Deepdive>
           <strong>Under the hood</strong> — A JSON/JSONB column trades the
-          database&apos;s normal type system for flexibility: instead of a
-          fixed set of typed columns the planner can reason about precisely,
-          you get a single opaque blob that has to be parsed and traversed at
-          query time. Postgres&apos;s JSONB specifically pre-parses the JSON
-          into a binary, indexable form at write time (unlike plain JSON, which
-          is stored as text and re-parsed on every read), which is why JSONB is
-          almost always the better default when the underlying data is
-          structured JSON rather than a JSON string you&apos;re just passing
-          through unchanged.
+          database&apos;s normal type system for flexibility: instead of a fixed
+          set of typed columns the planner can reason about precisely, you get a
+          single opaque blob that has to be parsed and traversed at query time.
+          Postgres&apos;s JSONB specifically pre-parses the JSON into a binary,
+          indexable form at write time (unlike plain JSON, which is stored as
+          text and re-parsed on every read), which is why JSONB is almost always
+          the better default when the underlying data is structured JSON rather
+          than a JSON string you&apos;re just passing through unchanged.
         </Deepdive>
         <p>
           Say each pizza has flexible, changing nutritional metadata that
@@ -1778,8 +1774,8 @@ SET metadata = '{"calories": 820, "allergens": ["gluten", "dairy"], "spice_level
 WHERE pizza_id = 3;`}
         />
         <p>
-          Querying inside the JSON uses operators or functions rather than
-          plain column names:
+          Querying inside the JSON uses operators or functions rather than plain
+          column names:
         </p>
         <Sql
           code={`-- Postgres: ->> extracts as text, -> extracts as JSON
@@ -1794,12 +1790,11 @@ WHERE JSON_EXTRACT(metadata, '$.spice_level') >= 2;`}
         />
         <Callout>
           <strong>When to reach for JSON vs a real column</strong> — JSON is
-          great for data whose shape genuinely varies or evolves (metadata,
-          user preferences, webhook payloads) or that you rarely filter on.
-          Anything you query, join, or index constantly belongs in its own
-          typed column — you lose most of SQL&apos;s type-checking, constraint
-          enforcement, and query-planner efficiency once data is buried inside
-          JSON.
+          great for data whose shape genuinely varies or evolves (metadata, user
+          preferences, webhook payloads) or that you rarely filter on. Anything
+          you query, join, or index constantly belongs in its own typed column —
+          you lose most of SQL&apos;s type-checking, constraint enforcement, and
+          query-planner efficiency once data is buried inside JSON.
         </Callout>
         <p>
           Most engines also support indexing into JSON for the fields you do
@@ -1827,16 +1822,15 @@ WHERE metadata -> 'allergens' ? 'dairy';`}
         </p>
         <Deepdive>
           <strong>Under the hood</strong> — The relational model underneath all
-          of this represents the real world as <strong>entities</strong>{' '}
-          (things — customers, pizzas), their <strong>attributes</strong>{' '}
-          (columns), and the <strong>relationships</strong> between them
-          (foreign keys). A foreign key isn&apos;t just documentation either —
-          it&apos;s an enforced constraint: the database physically checks, on
-          every insert or update, that the referenced row actually exists, and
-          by default refuses to let you delete a parent row (like a customer)
-          while child rows (their orders) still point at it, unless
-          you&apos;ve explicitly configured a cascade or set-null behavior for
-          that foreign key.
+          of this represents the real world as <strong>entities</strong> (things
+          — customers, pizzas), their <strong>attributes</strong> (columns), and
+          the <strong>relationships</strong> between them (foreign keys). A
+          foreign key isn&apos;t just documentation either — it&apos;s an
+          enforced constraint: the database physically checks, on every insert
+          or update, that the referenced row actually exists, and by default
+          refuses to let you delete a parent row (like a customer) while child
+          rows (their orders) still point at it, unless you&apos;ve explicitly
+          configured a cascade or set-null behavior for that foreign key.
         </Deepdive>
         <Sql
           code={`CREATE TABLE pizzas (
@@ -2017,16 +2011,16 @@ CREATE INDEX idx_customers_planet ON customers(planet_id);`}
         </p>
         <Deepdive>
           <strong>Under the hood</strong> — The core distinction here is{' '}
-          <strong>procedural vs declarative</strong>: everything earlier in
-          this tutorial (SELECT, JOIN, GROUP BY) is declarative — you describe
-          the result, the database figures out how. A stored procedure or
-          function is procedural: you write step-by-step logic, with
-          variables, IF branches, and loops, that runs inside the database
-          engine itself rather than in your application. Many databases also
-          cache a procedure&apos;s compiled execution plan the first time it
-          runs, so repeated calls skip the parsing/planning overhead a fresh
-          ad-hoc query would pay each time — part of why hot, frequently-called
-          operations are sometimes moved into a procedure.
+          <strong>procedural vs declarative</strong>: everything earlier in this
+          tutorial (SELECT, JOIN, GROUP BY) is declarative — you describe the
+          result, the database figures out how. A stored procedure or function
+          is procedural: you write step-by-step logic, with variables, IF
+          branches, and loops, that runs inside the database engine itself
+          rather than in your application. Many databases also cache a
+          procedure&apos;s compiled execution plan the first time it runs, so
+          repeated calls skip the parsing/planning overhead a fresh ad-hoc query
+          would pay each time — part of why hot, frequently-called operations
+          are sometimes moved into a procedure.
         </Deepdive>
         <p>
           A <strong>stored procedure</strong> is a named, reusable routine that
@@ -2110,15 +2104,15 @@ EXECUTE FUNCTION bump_customer_order_count();`}
           <strong>Under the hood</strong> — Access control here rests on two
           separate questions that are easy to conflate:{' '}
           <strong>authentication</strong> (proving who you are — a username and
-          password, a certificate) and <strong>authorization</strong> (what
-          that verified identity is actually allowed to do — which GRANT and
-          REVOKE control). The guiding principle for authorization is{' '}
-          <strong>least privilege</strong>: every account, human or
-          application, should hold the smallest set of permissions it needs to
-          do its job and nothing more, so that a compromised or buggy component
-          can only do limited damage. SQL injection is really an authorization
-          failure in disguise — untrusted input is allowed to redefine what SQL
-          the database executes, temporarily inheriting whatever privileges the
+          password, a certificate) and <strong>authorization</strong> (what that
+          verified identity is actually allowed to do — which GRANT and REVOKE
+          control). The guiding principle for authorization is{' '}
+          <strong>least privilege</strong>: every account, human or application,
+          should hold the smallest set of permissions it needs to do its job and
+          nothing more, so that a compromised or buggy component can only do
+          limited damage. SQL injection is really an authorization failure in
+          disguise — untrusted input is allowed to redefine what SQL the
+          database executes, temporarily inheriting whatever privileges the
           connecting account holds.
         </Deepdive>
         <p>
@@ -2135,9 +2129,9 @@ REVOKE DELETE ON orders FROM app_service;`}
         <p>
           A common pattern: grant broad application accounts only the CRUD
           access they actually need, and grant read-only analysts SELECT on
-          views (like the <code>customer_order_summary</code> view from
-          earlier) rather than direct table access — so sensitive columns can
-          simply be left out of the view.
+          views (like the <code>customer_order_summary</code> view from earlier)
+          rather than direct table access — so sensitive columns can simply be
+          left out of the view.
         </p>
         <Callout variant="warn">
           <strong>SQL injection</strong> — the most well-known SQL security
@@ -2150,9 +2144,9 @@ REVOKE DELETE ON orders FROM app_service;`}
           lets someone type <code>&apos; OR &apos;1&apos;=&apos;1</code> and
           return every row, or worse. The fix is always{' '}
           <strong>parameterized queries</strong> (placeholders like{' '}
-          <code>?</code> or <code>$1</code> that the driver binds safely),
-          never manual string-building with untrusted input — this is a rule
-          with no exceptions in practice.
+          <code>?</code> or <code>$1</code> that the driver binds safely), never
+          manual string-building with untrusted input — this is a rule with no
+          exceptions in practice.
         </Callout>
         <Sql
           code={`-- Vulnerable
@@ -2164,11 +2158,11 @@ execute(query, [userInput])`}
         />
         <p>
           <strong>Row-level security</strong> (Postgres, SQL Server) goes a
-          level deeper than table grants — it lets you restrict which
-          individual <em>rows</em> a user can see or modify, based on a policy,
-          so two customers querying the same orders table each only ever see
-          their own rows without the application needing to remember a WHERE
-          clause everywhere.
+          level deeper than table grants — it lets you restrict which individual{' '}
+          <em>rows</em> a user can see or modify, based on a policy, so two
+          customers querying the same orders table each only ever see their own
+          rows without the application needing to remember a WHERE clause
+          everywhere.
         </p>
         <Exercise
           id="ans-security"
