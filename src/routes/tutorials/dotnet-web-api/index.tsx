@@ -12,7 +12,7 @@ export const Route = createFileRoute('/tutorials/dotnet-web-api/')({
       {
         name: 'description',
         content:
-          'Everything a Web API needs, in the order you’ll actually need it — 45 concepts built around one running Pizza Ordering API example, targeting .NET 10, EF Core 10, and xUnit v3.',
+          'Everything a Web API needs, in the order you’ll actually need it — 45 concepts built around one running Library API example, targeting .NET 10, EF Core 10, and xUnit v3.',
       },
     ],
   }),

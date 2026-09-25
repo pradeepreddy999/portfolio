@@ -2,7 +2,8 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { Badge } from '#/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { tutorials } from '#/lib/tutorials'
-import { ArrowLeft, Calendar, Clock } from 'lucide-react'
+import { useTutorialProgress } from '#/lib/tutorials/progress'
+import { ArrowLeft, Calendar, Check, Clock } from 'lucide-react'
 
 export const Route = createFileRoute('/tutorials/')({
   component: TutorialsPage,
@@ -44,8 +45,11 @@ function TutorialsPage() {
                     <Badge variant="secondary" className="text-xs">
                       {tutorial.difficulty}
                     </Badge>
-                    <span className="text-xs text-muted-foreground flex items-center">
-                      <Clock className="mr-1 size-3" /> {tutorial.readTime}
+                    <span className="flex items-center gap-3">
+                      <ProgressBadge slug={tutorial.slug} />
+                      <span className="text-xs text-muted-foreground flex items-center">
+                        <Clock className="mr-1 size-3" /> {tutorial.readTime}
+                      </span>
                     </span>
                   </div>
                   <CardTitle className="text-2xl group-hover:text-primary">
@@ -67,5 +71,16 @@ function TutorialsPage() {
         </div>
       )}
     </div>
+  )
+}
+
+function ProgressBadge({ slug }: { slug: string }) {
+  const { visited, total } = useTutorialProgress(`/tutorials/${slug}`)
+  if (visited.length === 0 || total === 0) return null
+  const done = Math.min(visited.length, total)
+  return (
+    <span className="flex items-center text-xs text-emerald-600 dark:text-emerald-400">
+      <Check className="mr-1 size-3" /> {done}/{total} visited
+    </span>
   )
 }

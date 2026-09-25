@@ -121,7 +121,7 @@ export function Csharp14Content() {
         </p>
         <Code
           html={`<span class="cm">// Program.cs — the entire file, no boilerplate</span>
-<span class="ty">Console</span>.WriteLine(<span class="str">"A wild bug appears!"</span>);`}
+<span class="ty">Console</span>.WriteLine(<span class="str">"Welcome to Maple Street Library!"</span>);`}
         />
         <p>
           The compiler-generated <code>Main</code> still accepts{' '}
@@ -137,9 +137,9 @@ export function Csharp14Content() {
           headers={['Command', 'What it does']}
           rows={[
             [
-              <code>dotnet new console -n MyGame</code>,
+              <code>dotnet new console -n MapleLibrary</code>,
               <>
-                Scaffolds a new console app in folder <code>MyGame</code>
+                Scaffolds a new console app in folder <code>MapleLibrary</code>
               </>,
             ],
             [
@@ -204,10 +204,10 @@ export function Csharp14Content() {
           inferred, the type is fixed forever for that variable.
         </p>
         <Code
-          html={`<span class="kw">int</span> hp = 100;
-<span class="kw">string</span> name = <span class="str">"Goblin"</span>;
-<span class="kw">var</span> isAngry = <span class="kw">true</span>;      <span class="cm">// inferred as bool — cannot later become a string</span>
-<span class="kw">var</span> loot = <span class="kw">new</span> List&lt;<span class="kw">string</span>&gt;(); <span class="cm">// inferred as List&lt;string&gt;</span>`}
+          html={`<span class="kw">int</span> copiesAvailable = 3;
+<span class="kw">string</span> title = <span class="str">"Frankenstein"</span>;
+<span class="kw">var</span> isOverdue = <span class="kw">true</span>;    <span class="cm">// inferred as bool — cannot later become a string</span>
+<span class="kw">var</span> loans = <span class="kw">new</span> List&lt;<span class="kw">string</span>&gt;(); <span class="cm">// inferred as List&lt;string&gt;</span>`}
         />
         <h4>Value types vs. reference types</h4>
         <p>
@@ -224,9 +224,9 @@ export function Csharp14Content() {
 <span class="kw">int</span> b = a;      <span class="cm">// full copy — independent value</span>
 b = 10;          <span class="cm">// a is still 5</span>
 
-<span class="kw">var</span> partyA = <span class="kw">new</span> List&lt;<span class="kw">string</span>&gt; { <span class="str">"Hero"</span> };
-<span class="kw">var</span> partyB = partyA;   <span class="cm">// same list! not a copy</span>
-partyB.Add(<span class="str">"Mage"</span>);       <span class="cm">// partyA now has 2 members too</span>`}
+<span class="kw">var</span> shelfA = <span class="kw">new</span> List&lt;<span class="kw">string</span>&gt; { <span class="str">"Frankenstein"</span> };
+<span class="kw">var</span> shelfB = shelfA;   <span class="cm">// same list! not a copy</span>
+shelfB.Add(<span class="str">"Dracula"</span>);    <span class="cm">// shelfA now has 2 books too</span>`}
         />
         <Callout variant="warn">
           <strong>Gotcha:</strong> <code>string</code> is a reference type but
@@ -237,8 +237,8 @@ partyB.Add(<span class="str">"Mage"</span>);       <span class="cm">// partyA no
         </Callout>
         <h4>const vs. readonly</h4>
         <Code
-          html={`<span class="kw">const</span> <span class="kw">int</span> MaxPartySize = 4;      <span class="cm">// compile-time constant, must be a literal</span>
-<span class="kw">readonly</span> <span class="kw">int</span> _startingGold;    <span class="cm">// set once, in constructor, can vary per instance</span>`}
+          html={`<span class="kw">const</span> <span class="kw">int</span> MaxActiveLoans = 5;     <span class="cm">// compile-time constant, must be a literal</span>
+<span class="kw">readonly</span> <span class="kw">int</span> _loanPeriodDays;  <span class="cm">// set once, in constructor, can vary per instance</span>`}
         />
       </Topic>
 
@@ -247,8 +247,8 @@ partyB.Add(<span class="str">"Mage"</span>);       <span class="cm">// partyA no
           Two behaviors worth internalizing early: <code>&amp;&amp;</code> and{' '}
           <code>||</code> <strong>short-circuit</strong> — the right-hand side
           is never evaluated if the left already determines the result, which is
-          why <code>{'character != null && character.Hp > 0'}</code> is safe and
-          won&apos;t throw even if <code>character</code> is null. C# also
+          why <code>{'member != null && member.ActiveLoans > 0'}</code> is safe
+          and won&apos;t throw even if <code>member</code> is null. C# also
           enforces <strong>definite assignment</strong>: the compiler refuses to
           build if a variable might be read before every code path has assigned
           it, eliminating a whole class of &quot;uninitialized variable&quot;
@@ -262,13 +262,13 @@ partyB.Add(<span class="str">"Mage"</span>);       <span class="cm">// partyA no
         </p>
         <Code
           html={`<span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; 3; i++)
-    <span class="ty">Console</span>.WriteLine($<span class="str">"Attack #{i + 1}"</span>);
+    <span class="ty">Console</span>.WriteLine($<span class="str">"Reminder #{i + 1}"</span>);
 
-<span class="kw">foreach</span> (<span class="kw">var</span> item <span class="kw">in</span> loot)
-    <span class="ty">Console</span>.WriteLine(item);
+<span class="kw">foreach</span> (<span class="kw">var</span> loan <span class="kw">in</span> loans)
+    <span class="ty">Console</span>.WriteLine(loan);
 
-<span class="kw">int</span> turnsLeft = 3;
-<span class="kw">while</span> (turnsLeft &gt; 0) { turnsLeft--; }
+<span class="kw">int</span> renewalsLeft = 3;
+<span class="kw">while</span> (renewalsLeft &gt; 0) { renewalsLeft--; }
 
 <span class="kw">do</span> { <span class="ty">Console</span>.WriteLine(<span class="str">"Runs at least once"</span>); } <span class="kw">while</span> (<span class="kw">false</span>);`}
         />
@@ -280,29 +280,31 @@ partyB.Add(<span class="str">"Mage"</span>);       <span class="cm">// partyA no
           output&quot; logic.
         </p>
         <Code
-          html={`<span class="kw">int</span> roll = <span class="kw">new</span> <span class="ty">Random</span>().Next(1, 21); <span class="cm">// d20</span>
+          html={`<span class="kw">int</span> daysOverdue = (<span class="ty">DateTime</span>.Today - dueOn).Days;
 
 <span class="cm">// classic statement form</span>
-<span class="kw">switch</span> (roll)
+<span class="kw">switch</span> (daysOverdue)
 {
-    <span class="kw">case</span> 20: <span class="ty">Console</span>.WriteLine(<span class="str">"Crit!"</span>); <span class="kw">break</span>;
-    <span class="kw">case</span> 1:  <span class="ty">Console</span>.WriteLine(<span class="str">"Fumble!"</span>); <span class="kw">break</span>;
-    <span class="kw">default</span>: <span class="ty">Console</span>.WriteLine(<span class="str">"Normal roll"</span>); <span class="kw">break</span>;
+    <span class="kw">case</span> 0: <span class="ty">Console</span>.WriteLine(<span class="str">"Due today"</span>); <span class="kw">break</span>;
+    <span class="kw">case</span> 1: <span class="ty">Console</span>.WriteLine(<span class="str">"Overdue by 1 day"</span>); <span class="kw">break</span>;
+    <span class="kw">default</span>: <span class="ty">Console</span>.WriteLine(<span class="str">"Check the due date"</span>); <span class="kw">break</span>;
 }
 
 <span class="cm">// expression form — assigns a value, no break needed</span>
-<span class="kw">string</span> result = roll <span class="kw">switch</span>
+<span class="kw">string</span> notice = daysOverdue <span class="kw">switch</span>
 {
-    20   =&gt; <span class="str">"Critical hit!"</span>,
-    1    =&gt; <span class="str">"Critical fail!"</span>,
-    &gt; 10 =&gt; <span class="str">"Hit"</span>,
-    _    =&gt; <span class="str">"Miss"</span>
+    0    =&gt; <span class="str">"Due today"</span>,
+    &lt; 0  =&gt; <span class="str">"Not due yet"</span>,
+    &gt; 30 =&gt; <span class="str">"Long overdue"</span>,
+    _    =&gt; <span class="str">"Overdue"</span>
 };`}
         />
         <p>
           Ternary for one-liners:{' '}
-          <code>{'string status = hp > 0 ? "Alive" : "Dead";'}</code>.{' '}
-          <code>break</code>/<code>continue</code> control loop flow;{' '}
+          <code>
+            {'string status = copiesAvailable > 0 ? "Available" : "On loan";'}
+          </code>
+          . <code>break</code>/<code>continue</code> control loop flow;{' '}
           <code>goto</code> exists but is rarely used outside generated code or
           complex <code>switch</code> fall-through.
         </p>
@@ -326,15 +328,15 @@ partyB.Add(<span class="str">"Mage"</span>);       <span class="cm">// partyA no
           and shortcuts worth knowing early.
         </p>
         <Code
-          html={`<span class="kw">void</span> LevelUp(<span class="kw">ref</span> <span class="kw">int</span> hp, <span class="kw">out</span> <span class="kw">int</span> bonus)
+          html={`<span class="kw">void</span> Renew(<span class="kw">ref</span> <span class="kw">int</span> daysLeft, <span class="kw">out</span> <span class="kw">int</span> extraDays)
 {
-    bonus = 10;         <span class="cm">// out params MUST be assigned before returning</span>
-    hp += bonus;        <span class="cm">// ref modifies the caller's variable directly</span>
+    extraDays = 14;         <span class="cm">// out params MUST be assigned before returning</span>
+    daysLeft += extraDays;  <span class="cm">// ref modifies the caller's variable directly</span>
 }
 
-<span class="kw">int</span> hp = 100;
-LevelUp(<span class="kw">ref</span> hp, <span class="kw">out</span> <span class="kw">int</span> gained);
-<span class="cm">// hp is 110, gained is 10</span>`}
+<span class="kw">int</span> daysLeft = 2;
+Renew(<span class="kw">ref</span> daysLeft, <span class="kw">out</span> <span class="kw">int</span> added);
+<span class="cm">// daysLeft is 16, added is 14</span>`}
         />
         <p>
           <code>in</code> is like <code>ref</code> but read-only — useful for
@@ -343,23 +345,23 @@ LevelUp(<span class="kw">ref</span> hp, <span class="kw">out</span> <span class=
         </p>
         <h4>Default parameters, named arguments, params arrays</h4>
         <Code
-          html={`<span class="kw">void</span> Attack(<span class="kw">string</span> target, <span class="kw">int</span> damage = 10, <span class="kw">bool</span> isCrit = <span class="kw">false</span>) { }
+          html={`<span class="kw">void</span> Borrow(<span class="kw">string</span> title, <span class="kw">int</span> days = 14, <span class="kw">bool</span> isPremium = <span class="kw">false</span>) { }
 
-Attack(<span class="str">"Goblin"</span>);                          <span class="cm">// uses defaults</span>
-Attack(<span class="str">"Goblin"</span>, isCrit: <span class="kw">true</span>);          <span class="cm">// named arg, skip damage</span>
-Attack(<span class="kw">target</span>: <span class="str">"Goblin"</span>, damage: 25);      <span class="cm">// any order with named args</span>
+Borrow(<span class="str">"Dracula"</span>);                          <span class="cm">// uses defaults</span>
+Borrow(<span class="str">"Dracula"</span>, isPremium: <span class="kw">true</span>);       <span class="cm">// named arg, skip days</span>
+Borrow(days: 28, title: <span class="str">"Dracula"</span>);          <span class="cm">// any order with named args</span>
 
-<span class="kw">void</span> CastSpell(<span class="kw">params</span> <span class="kw">string</span>[] targets) { } <span class="cm">// variable argument count</span>
-CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <span class="str">"Troll"</span>);`}
+<span class="kw">void</span> PlaceHolds(<span class="kw">params</span> <span class="kw">string</span>[] titles) { } <span class="cm">// variable argument count</span>
+PlaceHolds(<span class="str">"Moby-Dick"</span>, <span class="str">"The Time Machine"</span>, <span class="str">"Dracula"</span>);`}
         />
         <h4>Expression-bodied methods & local functions</h4>
         <Code
           html={`<span class="kw">int</span> Double(<span class="kw">int</span> x) =&gt; x * 2; <span class="cm">// one-liner, no braces/return needed</span>
 
-<span class="kw">int</span> ComputeDamage(<span class="kw">int</span> baseDmg)
+<span class="kw">int</span> ComputeFine(<span class="kw">int</span> daysOverdue)
 {
-    <span class="kw">int</span> ApplyCrit(<span class="kw">int</span> d) =&gt; d * 2; <span class="cm">// local function — scoped to this method</span>
-    <span class="kw">return</span> ApplyCrit(baseDmg);
+    <span class="kw">int</span> ToCents(<span class="kw">int</span> d) =&gt; d * 25; <span class="cm">// local function — scoped to this method</span>
+    <span class="kw">return</span> ToCents(daysOverdue);
 }`}
         />
       </Topic>
@@ -409,15 +411,15 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
           ]}
         />
         <Code
-          html={`<span class="kw">public</span> <span class="kw">record</span> Monster(<span class="kw">string</span> Name, <span class="kw">int</span> Hp);
+          html={`<span class="kw">public</span> <span class="kw">record</span> Book(<span class="kw">string</span> Title, <span class="kw">int</span> Year);
 
-<span class="kw">var</span> goblin1 = <span class="kw">new</span> Monster(<span class="str">"Goblin"</span>, 15);
-<span class="kw">var</span> goblin2 = <span class="kw">new</span> Monster(<span class="str">"Goblin"</span>, 15);
-<span class="ty">Console</span>.WriteLine(goblin1 == goblin2); <span class="cm">// true — compares values, not references</span>
+<span class="kw">var</span> book1 = <span class="kw">new</span> Book(<span class="str">"Frankenstein"</span>, 1818);
+<span class="kw">var</span> book2 = <span class="kw">new</span> Book(<span class="str">"Frankenstein"</span>, 1818);
+<span class="ty">Console</span>.WriteLine(book1 == book2); <span class="cm">// true — compares values, not references</span>
 
 <span class="cm">// non-destructive mutation with 'with'</span>
-<span class="kw">var</span> woundedGoblin = goblin1 <span class="kw">with</span> { Hp = 5 };
-<span class="cm">// goblin1 is untouched; woundedGoblin is a new record</span>`}
+<span class="kw">var</span> revised = book1 <span class="kw">with</span> { Year = 1831 };
+<span class="cm">// book1 is untouched; revised is a new record</span>`}
         />
         <p>
           There&apos;s also <code>record struct</code> (value-type record, C#
@@ -444,11 +446,12 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
           initializers run first (top to bottom, in declaration order), then the
           base class&apos;s constructor runs, then finally your own constructor
           body executes. A property that looks like a plain field (
-          <code>public int Hp {'{ get; set; }'}</code>) is actually compiled
-          into a private backing field plus two real methods (
-          <code>get_Hp()</code>/<code>set_Hp()</code>) — which is exactly why
-          you can later add validation logic to the setter without breaking any
-          code that calls <code>hero.Hp = 50</code>, since callers were never
+          <code>public int CopiesAvailable {'{ get; set; }'}</code>) is actually
+          compiled into a private backing field plus two real methods (
+          <code>get_CopiesAvailable()</code>/<code>set_CopiesAvailable()</code>)
+          — which is exactly why you can later add validation logic to the
+          setter without breaking any code that calls{' '}
+          <code>book.CopiesAvailable = 2</code>, since callers were never
           touching a raw field to begin with.
         </p>
         <p>
@@ -458,15 +461,15 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
           field.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">class</span> Character
+          html={`<span class="kw">public</span> <span class="kw">class</span> Book
 {
-    <span class="kw">public</span> <span class="kw">string</span> Name { get; init; }
-    <span class="kw">public</span> <span class="kw">int</span> Hp { get; <span class="kw">set</span>; } = 100; <span class="cm">// default value</span>
+    <span class="kw">public</span> <span class="kw">string</span> Title { get; init; }
+    <span class="kw">public</span> <span class="kw">int</span> CopiesAvailable { get; <span class="kw">set</span>; } = 1; <span class="cm">// default value</span>
 
-    <span class="kw">public</span> Character(<span class="kw">string</span> name) =&gt; Name = name;
+    <span class="kw">public</span> Book(<span class="kw">string</span> title) =&gt; Title = title;
 }
 
-<span class="kw">var</span> hero = <span class="kw">new</span> Character(<span class="str">"Pradeep the Bold"</span>) { Hp = 150 }; <span class="cm">// object initializer</span>`}
+<span class="kw">var</span> book = <span class="kw">new</span> Book(<span class="str">"Pride and Prejudice"</span>) { CopiesAvailable = 3 }; <span class="cm">// object initializer</span>`}
         />
         <h4>Primary constructors (C# 12+)</h4>
         <p>
@@ -475,18 +478,18 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
           cases.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">class</span> Character(<span class="kw">string</span> name)
+          html={`<span class="kw">public</span> <span class="kw">class</span> Book(<span class="kw">string</span> title)
 {
-    <span class="kw">public</span> <span class="kw">string</span> Name { get; } = name;  <span class="cm">// use the primary ctor parameter directly</span>
-    <span class="kw">public</span> <span class="kw">int</span> Hp { get; <span class="kw">set</span>; } = 100;
+    <span class="kw">public</span> <span class="kw">string</span> Title { get; } = title;  <span class="cm">// use the primary ctor parameter directly</span>
+    <span class="kw">public</span> <span class="kw">int</span> CopiesAvailable { get; <span class="kw">set</span>; } = 1;
 }`}
         />
         <h4>Static constructors</h4>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">class</span> GameConfig
+          html={`<span class="kw">public</span> <span class="kw">class</span> LibraryConfig
 {
-    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">readonly</span> <span class="kw">int</span> MaxLevel;
-    <span class="kw">static</span> GameConfig() =&gt; MaxLevel = 99; <span class="cm">// runs once, before first use</span>
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">readonly</span> <span class="kw">int</span> MaxActiveLoans;
+    <span class="kw">static</span> LibraryConfig() =&gt; MaxActiveLoans = 5; <span class="cm">// runs once, before first use</span>
 }`}
         />
       </Topic>
@@ -512,22 +515,23 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
           <code>sealed</code> stops further overriding.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">interface</span> IAttacker
+          html={`<span class="kw">public</span> <span class="kw">interface</span> IBorrowable
 {
-    <span class="kw">int</span> Attack();
+    <span class="kw">int</span> LoanDays();
 }
 
-<span class="kw">public</span> <span class="kw">class</span> Character
+<span class="kw">public</span> <span class="kw">class</span> LibraryItem
 {
-    <span class="kw">public</span> <span class="kw">virtual</span> <span class="kw">string</span> Describe() =&gt; <span class="str">"A character"</span>;
+    <span class="kw">public</span> <span class="kw">virtual</span> <span class="kw">string</span> Describe() =&gt; <span class="str">"A library item"</span>;
 }
 
-<span class="kw">public</span> <span class="kw">sealed</span> <span class="kw">class</span> Warrior : Character, IAttacker
+<span class="kw">public</span> <span class="kw">sealed</span> <span class="kw">class</span> Book : LibraryItem, IBorrowable
 {
-    <span class="kw">public</span> <span class="kw">int</span> Attack() =&gt; 25;
-    <span class="kw">public</span> <span class="kw">override</span> <span class="kw">string</span> Describe() =&gt; <span class="str">"A warrior, ready for battle"</span>;
-    <span class="cm">// 'sealed' means nothing can inherit from Warrior further</span>
-}`}
+    <span class="kw">public</span> <span class="kw">int</span> LoanDays() =&gt; 14;
+    <span class="kw">public</span> <span class="kw">override</span> <span class="kw">string</span> Describe() =&gt; <span class="str">"A book, borrowable for 14 days"</span>;
+    <span class="cm">// 'sealed' means nothing can inherit from Book further</span>
+}
+<span class="cm">// Dvd and Magazine derive from LibraryItem the same way</span>`}
         />
         <h4>Default interface methods (C# 8+)</h4>
         <p>
@@ -536,10 +540,10 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
           implementer.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">interface</span> IAttacker
+          html={`<span class="kw">public</span> <span class="kw">interface</span> IBorrowable
 {
-    <span class="kw">int</span> Attack();
-    <span class="kw">int</span> CriticalAttack() =&gt; Attack() * 2; <span class="cm">// default implementation</span>
+    <span class="kw">int</span> LoanDays();
+    <span class="kw">int</span> PremiumLoanDays() =&gt; LoanDays() * 2; <span class="cm">// default implementation</span>
 }`}
         />
         <p>
@@ -555,12 +559,12 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
           sake — it&apos;s that a class can change its <em>internal</em>{' '}
           implementation freely as long as its <em>public</em> contract stays
           the same, without breaking any code that depends on it. A{' '}
-          <code>Vault</code> that exposes <code>Deposit(int)</code> and a
-          read-only <code>Balance</code> can switch its internal storage from an{' '}
-          <code>int</code> field to a database call later, and every caller
-          keeps working unchanged. Exposing raw mutable fields instead locks you
-          into that exact representation forever, because any external code
-          could be reading or writing it directly.
+          <code>FineAccount</code> that exposes <code>AddFine(int)</code> and a
+          read-only <code>BalanceCents</code> can switch its internal storage
+          from an <code>int</code> field to a database call later, and every
+          caller keeps working unchanged. Exposing raw mutable fields instead
+          locks you into that exact representation forever, because any external
+          code could be reading or writing it directly.
         </p>
         <p>The full access-modifier picture:</p>
         <RefTable
@@ -584,15 +588,15 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
           ]}
         />
         <Code
-          html={`<span class="kw">public</span> <span class="kw">class</span> Vault
+          html={`<span class="kw">public</span> <span class="kw">class</span> FineAccount
 {
-    <span class="kw">private</span> <span class="kw">int</span> _gold = 0;
-    <span class="kw">public</span> <span class="kw">void</span> Deposit(<span class="kw">int</span> amount)
+    <span class="kw">private</span> <span class="kw">int</span> _balanceCents = 0;
+    <span class="kw">public</span> <span class="kw">void</span> AddFine(<span class="kw">int</span> cents)
     {
-        <span class="kw">if</span> (amount &lt; 0) <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">ArgumentException</span>(<span class="str">"Can't deposit negative gold"</span>);
-        _gold += amount;
+        <span class="kw">if</span> (cents &lt; 0) <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">ArgumentException</span>(<span class="str">"A fine can't be negative"</span>);
+        _balanceCents += cents;
     }
-    <span class="kw">public</span> <span class="kw">int</span> Balance =&gt; _gold; <span class="cm">// read-only view, get-only property</span>
+    <span class="kw">public</span> <span class="kw">int</span> BalanceCents =&gt; _balanceCents; <span class="cm">// read-only view, get-only property</span>
 }`}
         />
         <p>
@@ -601,7 +605,7 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
           everywhere, writable only inside the class&quot;:
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">int</span> Balance { get; <span class="kw">private</span> <span class="kw">set</span>; }`}
+          html={`<span class="kw">public</span> <span class="kw">int</span> BalanceCents { get; <span class="kw">private</span> <span class="kw">set</span>; }`}
         />
       </Topic>
 
@@ -625,19 +629,19 @@ CastSpell(<span class="str">"Goblin"</span>, <span class="str">"Orc"</span>, <sp
           boxing, no casting, full compile-time checking.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">class</span> LootBag&lt;T&gt;
+          html={`<span class="kw">public</span> <span class="kw">class</span> Shelf&lt;T&gt;
 {
     <span class="kw">private</span> <span class="kw">readonly</span> List&lt;T&gt; _items = <span class="kw">new</span>();
     <span class="kw">public</span> <span class="kw">void</span> Add(T item) =&gt; _items.Add(item);
-    <span class="kw">public</span> T Random() =&gt; _items[<span class="kw">new</span> <span class="ty">Random</span>().Next(_items.Count)];
+    <span class="kw">public</span> T StaffPick() =&gt; _items[<span class="kw">new</span> <span class="ty">Random</span>().Next(_items.Count)];
 }
 
-<span class="kw">var</span> bag = <span class="kw">new</span> LootBag&lt;<span class="kw">string</span>&gt;();
-bag.Add(<span class="str">"Sword"</span>); bag.Add(<span class="str">"Potion"</span>);`}
+<span class="kw">var</span> shelf = <span class="kw">new</span> Shelf&lt;<span class="kw">string</span>&gt;();
+shelf.Add(<span class="str">"Dracula"</span>); shelf.Add(<span class="str">"Frankenstein"</span>);`}
         />
         <h4>Constraints — narrowing what T can be</h4>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">class</span> Repository&lt;T&gt; <span class="kw">where</span> T : <span class="kw">class</span>, <span class="kw">new</span>()
+          html={`<span class="kw">public</span> <span class="kw">class</span> Repository&lt;T&gt; <span class="kw">where</span> T : <span class="kw">class</span>, <span class="kw">new</span>() <span class="cm">// e.g. Repository&lt;Member&gt;</span>
 {
     <span class="kw">public</span> T CreateDefault() =&gt; <span class="kw">new</span> T(); <span class="cm">// 'new()' constraint allows this</span>
 }
@@ -682,19 +686,22 @@ bag.Add(<span class="str">"Sword"</span>); bag.Add(<span class="str">"Potion"</s
               <code>{'HashSet<T>'}</code>,
               'Unique items, fast membership checks',
             ],
-            [<code>{'Queue<T>'}</code>, 'FIFO — turn order, task queues'],
+            [
+              <code>{'Queue<T>'}</code>,
+              'FIFO — reservation queues, task queues',
+            ],
             [<code>{'Stack<T>'}</code>, 'LIFO — undo history, DFS traversal'],
           ]}
         />
         <Code
-          html={`<span class="kw">var</span> party = <span class="kw">new</span> List&lt;Character&gt; { hero, <span class="kw">new</span>(<span class="str">"Mage"</span>) { Hp = 60 } };
+          html={`<span class="kw">var</span> books = <span class="kw">new</span> List&lt;Book&gt; { book, <span class="kw">new</span>(<span class="str">"Moby-Dick"</span>) { CopiesAvailable = 1 } };
 
-<span class="kw">var</span> lowHp = party.Where(c =&gt; c.Hp &lt; 100)
-                     .Select(c =&gt; c.Name)
-                     .ToList();
+<span class="kw">var</span> lastCopies = books.Where(b =&gt; b.CopiesAvailable &lt; 2)
+                       .Select(b =&gt; b.Title)
+                       .ToList();
 
-<span class="kw">var</span> strongest = party.OrderByDescending(c =&gt; c.Hp).First();
-<span class="kw">var</span> byName = party.ToDictionary(c =&gt; c.Name);`}
+<span class="kw">var</span> mostCopies = books.OrderByDescending(b =&gt; b.CopiesAvailable).First();
+<span class="kw">var</span> byTitle = books.ToDictionary(b =&gt; b.Title);`}
         />
       </Topic>
 
@@ -720,14 +727,14 @@ bag.Add(<span class="str">"Sword"</span>); bag.Add(<span class="str">"Potion"</s
           zero runtime cost.
         </p>
         <Code
-          html={`<span class="kw">string</span>? maybeName = FindBoss();       <span class="cm">// explicitly nullable</span>
-<span class="kw">string</span> greeting = maybeName?.ToUpper() ?? <span class="str">"No boss found"</span>;
+          html={`<span class="kw">string</span>? maybeTitle = FindTitleByIsbn(isbn); <span class="cm">// explicitly nullable</span>
+<span class="kw">string</span> heading = maybeTitle?.ToUpper() ?? <span class="str">"No book found"</span>;
 
 <span class="cm">// the null-forgiving operator — "trust me, compiler"</span>
-<span class="kw">string</span> definitelyThere = maybeName!;
+<span class="kw">string</span> definitelyThere = maybeTitle!;
 
 <span class="cm">// modern guard clause, .NET 7+</span>
-<span class="ty">ArgumentNullException</span>.ThrowIfNull(maybeName);`}
+<span class="ty">ArgumentNullException</span>.ThrowIfNull(maybeTitle);`}
         />
         <Callout variant="warn">
           <strong>Gotcha:</strong> nullable reference types are a
@@ -744,20 +751,20 @@ bag.Add(<span class="str">"Sword"</span>); bag.Add(<span class="str">"Potion"</s
           specify <code>byte</code>, <code>long</code>, etc.) — which is why
           casting between an enum and its numeric value is always allowed, and
           why an enum variable can technically hold a value with no matching
-          named member (nothing stops <code>(Rarity)99</code>).{' '}
+          named member (nothing stops <code>(LoanStatus)99</code>).{' '}
           <code>[Flags]</code> enums lean into this directly: each member is a
           distinct bit (1, 2, 4, 8...) so they can be combined with bitwise OR
           and tested with <code>HasFlag</code> or a bitwise AND, letting one
           variable represent several simultaneous states cheaply.
         </p>
         <Code
-          html={`<span class="kw">enum</span> Rarity { Common, Rare, Legendary }
+          html={`<span class="kw">enum</span> LoanStatus { Active, Overdue, Returned }
 
 [Flags]
-<span class="kw">enum</span> StatusEffects { <span class="kw">None</span> = 0, Poisoned = 1, Stunned = 2, Burning = 4 }
+<span class="kw">enum</span> BookFlags { <span class="kw">None</span> = 0, Damaged = 1, ReferenceOnly = 2, NewArrival = 4 }
 
-<span class="kw">var</span> status = StatusEffects.Poisoned | StatusEffects.Burning; <span class="cm">// combine flags</span>
-<span class="kw">bool</span> isPoisoned = status.HasFlag(StatusEffects.Poisoned);`}
+<span class="kw">var</span> flags = BookFlags.Damaged | BookFlags.NewArrival; <span class="cm">// combine flags</span>
+<span class="kw">bool</span> isDamaged = flags.HasFlag(BookFlags.Damaged);`}
         />
         <p>
           Pattern matching goes well beyond type checks — property patterns,
@@ -765,19 +772,19 @@ bag.Add(<span class="str">"Sword"</span>); bag.Add(<span class="str">"Potion"</s
           <code>or</code>/<code>not</code>) compose freely:
         </p>
         <Code
-          html={`<span class="kw">record</span> Item(<span class="kw">string</span> Name, Rarity Rarity, <span class="kw">int</span> Power);
+          html={`<span class="kw">record</span> Loan(<span class="kw">string</span> Title, LoanStatus Status, <span class="kw">int</span> DaysOverdue);
 
-<span class="kw">string</span> Describe(Item i) =&gt; i <span class="kw">switch</span>
+<span class="kw">string</span> Describe(Loan? l) =&gt; l <span class="kw">switch</span>
 {
-    { Rarity: Rarity.Legendary, Power: &gt; 90 } =&gt; <span class="str">"Game-breaking"</span>,
-    { Rarity: Rarity.Common } <span class="kw">or</span> { Power: &lt; 5 } =&gt; <span class="str">"Vendor trash"</span>,
-    <span class="kw">not</span> <span class="kw">null</span> =&gt; <span class="str">"Decent"</span>,
-    <span class="kw">null</span> =&gt; <span class="str">"No item"</span>
+    { Status: LoanStatus.Overdue, DaysOverdue: &gt; 30 } =&gt; <span class="str">"Bill the replacement cost"</span>,
+    { Status: LoanStatus.Returned } <span class="kw">or</span> { DaysOverdue: &lt; 1 } =&gt; <span class="str">"Nothing owed"</span>,
+    <span class="kw">not</span> <span class="kw">null</span> =&gt; <span class="str">"Fine accruing"</span>,
+    <span class="kw">null</span> =&gt; <span class="str">"No loan"</span>
 };
 
 <span class="cm">// 'is' pattern matching, outside switch entirely</span>
-<span class="kw">if</span> (i <span class="kw">is</span> { Power: &gt; 50 } strong)
-    <span class="ty">Console</span>.WriteLine($<span class="str">"{strong.Name} is strong"</span>);`}
+<span class="kw">if</span> (l <span class="kw">is</span> { DaysOverdue: &gt; 14 } late)
+    <span class="ty">Console</span>.WriteLine($<span class="str">"{late.Title} is very late"</span>);`}
         />
       </Topic>
 
@@ -807,31 +814,31 @@ bag.Add(<span class="str">"Sword"</span>); bag.Add(<span class="str">"Potion"</s
           <code>-=</code>.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">class</span> Boss
+          html={`<span class="kw">public</span> <span class="kw">class</span> Loan
 {
-    <span class="kw">public</span> <span class="kw">event</span> Action? OnDefeated;              <span class="cm">// no data</span>
-    <span class="kw">public</span> <span class="kw">event</span> Action&lt;<span class="kw">int</span>&gt;? OnDamaged;         <span class="cm">// carries an int</span>
+    <span class="kw">public</span> <span class="kw">event</span> Action? BookReturned;            <span class="cm">// no data</span>
+    <span class="kw">public</span> <span class="kw">event</span> Action&lt;<span class="kw">int</span>&gt;? FineCharged;       <span class="cm">// carries an int (cents)</span>
 
-    <span class="kw">public</span> <span class="kw">void</span> TakeDamage(<span class="kw">int</span> amount)
+    <span class="kw">public</span> <span class="kw">void</span> ChargeFine(<span class="kw">int</span> cents)
     {
-        OnDamaged?.Invoke(amount);          <span class="cm">// ?. guards against zero subscribers</span>
+        FineCharged?.Invoke(cents);         <span class="cm">// ?. guards against zero subscribers</span>
     }
-    <span class="kw">public</span> <span class="kw">void</span> Die() =&gt; OnDefeated?.Invoke();
+    <span class="kw">public</span> <span class="kw">void</span> Return() =&gt; BookReturned?.Invoke();
 }
 
-<span class="kw">var</span> boss = <span class="kw">new</span> Boss();
-boss.OnDefeated += () =&gt; <span class="ty">Console</span>.WriteLine(<span class="str">"Victory fanfare!"</span>);
-boss.OnDamaged  += dmg =&gt; <span class="ty">Console</span>.WriteLine($<span class="str">"Ouch, {dmg}"</span>);
-boss.OnDamaged  += dmg =&gt; <span class="ty">Console</span>.WriteLine(<span class="str">"(second handler, multicast!)"</span>);
-boss.TakeDamage(15);
-boss.Die();`}
+<span class="kw">var</span> loan = <span class="kw">new</span> Loan();
+loan.BookReturned += () =&gt; <span class="ty">Console</span>.WriteLine(<span class="str">"Notify the next hold in the queue"</span>);
+loan.FineCharged  += cents =&gt; <span class="ty">Console</span>.WriteLine($<span class="str">"Fine: {cents} cents"</span>);
+loan.FineCharged  += cents =&gt; <span class="ty">Console</span>.WriteLine(<span class="str">"(second handler, multicast!)"</span>);
+loan.ChargeFine(75);
+loan.Return();`}
         />
         <Callout variant="warn">
           <strong>Why events instead of a public delegate field?</strong> A
           public <code>Action</code> field lets any outside code call{' '}
-          <code>OnDefeated = null</code>, wiping out every other subscriber, or
-          invoke it directly. <code>event</code> prevents both — encapsulation
-          applied to callbacks.
+          <code>BookReturned = null</code>, wiping out every other subscriber,
+          or invoke it directly. <code>event</code> prevents both —
+          encapsulation applied to callbacks.
         </Callout>
       </Topic>
 
@@ -850,13 +857,13 @@ boss.Die();`}
           actual throw/catch path, not on entry to the block.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">class</span> CharacterDeadException(<span class="kw">string</span> name) : <span class="ty">Exception</span>($<span class="str">"{name} is already dead"</span>);
+          html={`<span class="kw">public</span> <span class="kw">class</span> BookUnavailableException(<span class="kw">string</span> title) : <span class="ty">Exception</span>($<span class="str">"{title} has no copies available"</span>);
 
 <span class="kw">try</span>
 {
-    <span class="kw">if</span> (hp &lt;= 0) <span class="kw">throw</span> <span class="kw">new</span> CharacterDeadException(<span class="str">"Hero"</span>);
+    <span class="kw">if</span> (copiesAvailable &lt;= 0) <span class="kw">throw</span> <span class="kw">new</span> BookUnavailableException(<span class="str">"Moby-Dick"</span>);
 }
-<span class="kw">catch</span> (CharacterDeadException ex) <span class="kw">when</span> (ex.Message.Contains(<span class="str">"Hero"</span>)) <span class="cm">// exception filter</span>
+<span class="kw">catch</span> (BookUnavailableException ex) <span class="kw">when</span> (ex.Message.Contains(<span class="str">"Moby-Dick"</span>)) <span class="cm">// exception filter</span>
 {
     <span class="ty">Console</span>.WriteLine($<span class="str">"Special handling: {ex.Message}"</span>);
 }
@@ -867,7 +874,7 @@ boss.Die();`}
 }
 <span class="kw">finally</span>
 {
-    <span class="ty">Console</span>.WriteLine(<span class="str">"Turn ended."</span>); <span class="cm">// always runs, even after a throw</span>
+    <span class="ty">Console</span>.WriteLine(<span class="str">"Checkout attempt finished."</span>); <span class="cm">// always runs, even after a throw</span>
 }`}
         />
         <Callout variant="warn">
@@ -883,16 +890,18 @@ boss.Die();`}
         <p>
           The reason the exact same LINQ syntax can run either in-process or as
           a SQL query comes down to what a lambda compiles into. Against{' '}
-          <code>{'IEnumerable<T>'}</code>, <code>{'c => c.Hp > 0'}</code>{' '}
-          compiles to an ordinary delegate — actual executable code. Against{' '}
+          <code>{'IEnumerable<T>'}</code>,{' '}
+          <code>{'b => b.CopiesAvailable > 0'}</code> compiles to an ordinary
+          delegate — actual executable code. Against{' '}
           <code>{'IQueryable<T>'}</code> (Entity Framework and similar), the
           same lambda instead compiles to an <strong>expression tree</strong> —
-          a data structure describing the logic (&quot;compare property Hp to
-          constant 0&quot;) rather than executable code — which the provider
-          then walks and translates into SQL before anything runs. That&apos;s
-          also why certain things work in LINQ-to-Objects but throw at runtime
-          in EF queries: an arbitrary C# method has no SQL translation, so it
-          can&apos;t be turned into an expression tree the database understands.
+          a data structure describing the logic (&quot;compare property
+          CopiesAvailable to constant 0&quot;) rather than executable code —
+          which the provider then walks and translates into SQL before anything
+          runs. That&apos;s also why certain things work in LINQ-to-Objects but
+          throw at runtime in EF queries: an arbitrary C# method has no SQL
+          translation, so it can&apos;t be turned into an expression tree the
+          database understands.
         </p>
         <p>
           Most LINQ operators are <strong>lazily evaluated (deferred)</strong> —
@@ -901,9 +910,9 @@ boss.Die();`}
           etc.).
         </p>
         <Code
-          html={`<span class="kw">var</span> query = party.Where(c =&gt; c.Hp &gt; 0); <span class="cm">// not executed yet — just a plan</span>
-party.Add(<span class="kw">new</span>(<span class="str">"Rogue"</span>) { Hp = 80 });
-<span class="kw">foreach</span> (<span class="kw">var</span> c <span class="kw">in</span> query) { }         <span class="cm">// NOW it runs — Rogue IS included</span>`}
+          html={`<span class="kw">var</span> query = books.Where(b =&gt; b.CopiesAvailable &gt; 0); <span class="cm">// not executed yet — just a plan</span>
+books.Add(<span class="kw">new</span>(<span class="str">"Dracula"</span>) { CopiesAvailable = 2 });
+<span class="kw">foreach</span> (<span class="kw">var</span> b <span class="kw">in</span> query) { }         <span class="cm">// NOW it runs — Dracula IS included</span>`}
         />
         <Callout variant="warn">
           <strong>Gotcha — multiple enumeration:</strong> if you enumerate the
@@ -914,9 +923,9 @@ party.Add(<span class="kw">new</span>(<span class="str">"Rogue"</span>) { Hp = 8
           results more than once.
         </Callout>
         <Code
-          html={`<span class="kw">var</span> byRarity = items.GroupBy(i =&gt; i.Rarity);
-<span class="kw">var</span> totalPower = items.Aggregate(0, (sum, i) =&gt; sum + i.Power);
-<span class="kw">var</span> parties = partyA.Join(partyB, a =&gt; a.Name, b =&gt; b.Name, (a, b) =&gt; a);`}
+          html={`<span class="kw">var</span> byGenre = catalog.GroupBy(b =&gt; b.Genre);
+<span class="kw">var</span> totalCopies = catalog.Aggregate(0, (sum, b) =&gt; sum + b.CopiesTotal);
+<span class="kw">var</span> atBoth = downtown.Join(riverside, d =&gt; d.Title, r =&gt; r.Title, (d, r) =&gt; d);`}
         />
         <p>
           <code>{'IEnumerable<T>'}</code> runs in-memory, C# code, item by item.{' '}
@@ -929,18 +938,17 @@ party.Add(<span class="kw">new</span>(<span class="str">"Rogue"</span>) { Hp = 8
       <Topic id="t16" no="16" title="Extension Methods (classic)">
         <p>
           Extension methods are pure compiler sugar —{' '}
-          <code>hero.IsAlive()</code> compiles to exactly{' '}
-          <code>CharacterExtensions.IsAlive(hero)</code>, an ordinary static
-          call with the instance passed as the first argument. Nothing is
-          actually added to the <code>Character</code> type itself; there&apos;s
-          no way to extend private state, and an extension method can never
-          override or hide a real instance method (instance members always win
-          overload resolution). This is precisely why LINQ&apos;s{' '}
-          <code>.Where()</code>/<code>.Select()</code> can appear to
-          &quot;add&quot; query methods to every <code>{'IEnumerable<T>'}</code>{' '}
-          in existence — they&apos;re just extension methods in{' '}
-          <code>System.Linq</code>, brought into scope the moment you add{' '}
-          <code>using System.Linq;</code>.
+          <code>book.IsAvailable()</code> compiles to exactly{' '}
+          <code>BookExtensions.IsAvailable(book)</code>, an ordinary static call
+          with the instance passed as the first argument. Nothing is actually
+          added to the <code>Book</code> type itself; there&apos;s no way to
+          extend private state, and an extension method can never override or
+          hide a real instance method (instance members always win overload
+          resolution). This is precisely why LINQ&apos;s <code>.Where()</code>/
+          <code>.Select()</code> can appear to &quot;add&quot; query methods to
+          every <code>{'IEnumerable<T>'}</code> in existence — they&apos;re just
+          extension methods in <code>System.Linq</code>, brought into scope the
+          moment you add <code>using System.Linq;</code>.
         </p>
         <p>
           Static methods in a static class, with <code>this</code> on the first
@@ -948,18 +956,18 @@ party.Add(<span class="kw">new</span>(<span class="str">"Rogue"</span>) { Hp = 8
           own.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">static</span> <span class="kw">class</span> CharacterExtensions
+          html={`<span class="kw">public</span> <span class="kw">static</span> <span class="kw">class</span> BookExtensions
 {
-    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">bool</span> IsAlive(<span class="kw">this</span> Character c) =&gt; c.Hp &gt; 0;
-    <span class="kw">public</span> <span class="kw">static</span> Character Heal(<span class="kw">this</span> Character c, <span class="kw">int</span> amount)
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">bool</span> IsAvailable(<span class="kw">this</span> Book b) =&gt; b.CopiesAvailable &gt; 0;
+    <span class="kw">public</span> <span class="kw">static</span> Book Restock(<span class="kw">this</span> Book b, <span class="kw">int</span> copies)
     {
-        c.Hp += amount;
-        <span class="kw">return</span> c; <span class="cm">// returning 'this' enables chaining</span>
+        b.CopiesAvailable += copies;
+        <span class="kw">return</span> b; <span class="cm">// returning 'this' enables chaining</span>
     }
 }
 
-hero.Heal(10).Heal(5); <span class="cm">// chained extension calls</span>
-<span class="kw">if</span> (hero.IsAlive()) <span class="ty">Console</span>.WriteLine(<span class="str">"Still standing"</span>);`}
+book.Restock(1).Restock(2); <span class="cm">// chained extension calls</span>
+<span class="kw">if</span> (book.IsAvailable()) <span class="ty">Console</span>.WriteLine(<span class="str">"Ready to borrow"</span>);`}
         />
         <p>
           If an instance method with the same name/signature exists, it always
@@ -993,19 +1001,19 @@ hero.Heal(10).Heal(5); <span class="cm">// chained extension calls</span>
           the same with a result value.
         </p>
         <Code
-          html={`<span class="kw">async</span> Task&lt;<span class="kw">string</span>&gt; FetchQuestAsync(CancellationToken ct)
+          html={`<span class="kw">async</span> Task&lt;<span class="kw">string</span>&gt; FetchIsbnDetailsAsync(CancellationToken ct)
 {
-    <span class="kw">await</span> Task.Delay(1000, ct); <span class="cm">// simulate network call, cancellable</span>
-    <span class="kw">return</span> <span class="str">"Defeat the dragon"</span>;
+    <span class="kw">await</span> Task.Delay(1000, ct); <span class="cm">// simulate an ISBN lookup over the network, cancellable</span>
+    <span class="kw">return</span> <span class="str">"Frankenstein, Mary Shelley, 1818"</span>;
 }
 
-<span class="kw">var</span> quest = <span class="kw">await</span> FetchQuestAsync(CancellationToken.None);`}
+<span class="kw">var</span> details = <span class="kw">await</span> FetchIsbnDetailsAsync(CancellationToken.None);`}
         />
         <h4>Running things concurrently</h4>
         <Code
-          html={`<span class="kw">var</span> questTask = FetchQuestAsync(CancellationToken.None);
-<span class="kw">var</span> lootTask = FetchLootAsync();
-<span class="kw">await</span> Task.WhenAll(questTask, lootTask); <span class="cm">// both run concurrently, wait for both</span>`}
+          html={`<span class="kw">var</span> detailsTask = FetchIsbnDetailsAsync(CancellationToken.None);
+<span class="kw">var</span> coverTask = FetchCoverImageAsync();
+<span class="kw">await</span> Task.WhenAll(detailsTask, coverTask); <span class="cm">// both run concurrently, wait for both</span>`}
         />
         <Callout variant="warn">
           <strong>Gotchas:</strong> never declare <code>async void</code> except
@@ -1037,9 +1045,9 @@ hero.Heal(10).Heal(5); <span class="cm">// chained extension calls</span>
           <code>stackalloc</code> — with zero heap allocation for slicing.
         </p>
         <Code
-          html={`<span class="kw">int</span>[] rolls = { 20, 15, 3, 18, 9 };
-Span&lt;<span class="kw">int</span>&gt; topThree = rolls.AsSpan(0, 3); <span class="cm">// no copy — a view over the same memory</span>
-topThree[0] = 99; <span class="cm">// mutates rolls[0] too, since it's the same backing array</span>
+          html={`<span class="kw">int</span>[] dailyLoans = { 12, 9, 3, 15, 7 };
+Span&lt;<span class="kw">int</span>&gt; firstThree = dailyLoans.AsSpan(0, 3); <span class="cm">// no copy — a view over the same memory</span>
+firstThree[0] = 99; <span class="cm">// mutates dailyLoans[0] too, since it's the same backing array</span>
 
 Span&lt;<span class="kw">int</span>&gt; stackBuffer = stackalloc <span class="kw">int</span>[4]; <span class="cm">// lives on the stack, not the heap</span>`}
         />
@@ -1079,7 +1087,7 @@ Span&lt;<span class="kw">int</span>&gt; stackBuffer = stackalloc <span class="kw
           sockets, database connections.
         </p>
         <Code
-          html={`<span class="kw">using</span> <span class="kw">var</span> file = <span class="ty">File</span>.OpenText(<span class="str">"save.dat"</span>); <span class="cm">// using declaration, C# 8+</span>
+          html={`<span class="kw">using</span> <span class="kw">var</span> file = <span class="ty">File</span>.OpenText(<span class="str">"catalog.csv"</span>); <span class="cm">// using declaration, C# 8+</span>
 <span class="kw">var</span> firstLine = file.ReadLine();
 <span class="cm">// file.Dispose() called automatically at end of enclosing scope</span>`}
         />
@@ -1088,7 +1096,7 @@ Span&lt;<span class="kw">int</span>&gt; stackBuffer = stackalloc <span class="kw
           directly:
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">class</span> SaveFile : IDisposable
+          html={`<span class="kw">public</span> <span class="kw">class</span> CatalogFile : IDisposable
 {
     <span class="kw">private</span> <span class="kw">bool</span> _disposed;
     <span class="kw">protected</span> <span class="kw">virtual</span> <span class="kw">void</span> Dispose(<span class="kw">bool</span> disposing)
@@ -1125,17 +1133,17 @@ Span&lt;<span class="kw">int</span>&gt; stackBuffer = stackalloc <span class="kw
         </p>
         <Code
           html={`[AttributeUsage(AttributeTargets.Class)]
-<span class="kw">public</span> <span class="kw">class</span> LootTableAttribute(<span class="kw">string</span> table) : Attribute
+<span class="kw">public</span> <span class="kw">class</span> LoanPolicyAttribute(<span class="kw">string</span> policy) : Attribute
 {
-    <span class="kw">public</span> <span class="kw">string</span> Table { get; } = table;
+    <span class="kw">public</span> <span class="kw">string</span> Policy { get; } = policy;
 }
 
-[LootTable(<span class="str">"dragon_hoard"</span>)]
-<span class="kw">public</span> <span class="kw">class</span> Dragon { }
+[LoanPolicy(<span class="str">"dvd_7_day"</span>)]
+<span class="kw">public</span> <span class="kw">class</span> Dvd { }
 
-<span class="kw">var</span> type = <span class="kw">typeof</span>(Dragon);
-<span class="kw">var</span> attr = type.GetCustomAttribute&lt;LootTableAttribute&gt;();
-<span class="kw">var</span> instance = Activator.CreateInstance(type); <span class="cm">// creates a Dragon via reflection</span>`}
+<span class="kw">var</span> type = <span class="kw">typeof</span>(Dvd);
+<span class="kw">var</span> attr = type.GetCustomAttribute&lt;LoanPolicyAttribute&gt;();
+<span class="kw">var</span> instance = Activator.CreateInstance(type); <span class="cm">// creates a Dvd via reflection</span>`}
         />
         <Callout variant="warn">
           Reflection is slow relative to direct calls — avoid it in hot loops.
@@ -1166,12 +1174,12 @@ Span&lt;<span class="kw">int</span>&gt; stackBuffer = stackalloc <span class="kw
           <code>[LoggerMessage]</code>) all work this way.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">partial</span> <span class="kw">class</span> RollRegex
+          html={`<span class="kw">public</span> <span class="kw">partial</span> <span class="kw">class</span> IsbnRegex
 {
-    [GeneratedRegex(@<span class="str">"(\\d+)d(\\d+)"</span>)] <span class="cm">// e.g. matches "2d6"</span>
-    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">partial</span> Regex DiceNotation();
+    [GeneratedRegex(@<span class="str">"^97[89]\\d{10}$"</span>)] <span class="cm">// e.g. matches a 13-digit ISBN</span>
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">partial</span> Regex Isbn13();
 }
-<span class="cm">// the generator fills in the actual implementation of DiceNotation() for you</span>`}
+<span class="cm">// the generator fills in the actual implementation of Isbn13() for you</span>`}
         />
         <p>
           You&apos;ll rarely author your own generator early on, but recognizing
@@ -1196,29 +1204,29 @@ Span&lt;<span class="kw">int</span>&gt; stackBuffer = stackalloc <span class="kw
         </p>
         <p>
           Records support inheritance and positional deconstruction, which
-          combines beautifully with pattern matching for tree-shaped data — game
+          combines beautifully with pattern matching for tree-shaped data — loan
           state machines, ASTs, event sourcing.
         </p>
         <Code
-          html={`<span class="kw">abstract</span> <span class="kw">record</span> GameEvent;
-<span class="kw">record</span> Damage(<span class="kw">int</span> Amount) : GameEvent;
-<span class="kw">record</span> Heal(<span class="kw">int</span> Amount) : GameEvent;
-<span class="kw">record</span> StatusApplied(<span class="kw">string</span> Effect, <span class="kw">int</span> Duration) : GameEvent;
+          html={`<span class="kw">abstract</span> <span class="kw">record</span> LoanEvent;
+<span class="kw">record</span> Returned(<span class="kw">int</span> DaysLate) : LoanEvent;
+<span class="kw">record</span> Renewed(<span class="kw">int</span> ExtraDays) : LoanEvent;
+<span class="kw">record</span> Damaged(<span class="kw">string</span> Severity, <span class="kw">int</span> RepairCents) : LoanEvent;
 
-<span class="kw">int</span> Apply(<span class="kw">int</span> hp, GameEvent e) =&gt; e <span class="kw">switch</span>
+<span class="kw">int</span> FineCents(<span class="kw">int</span> replacementCents, LoanEvent e) =&gt; e <span class="kw">switch</span>
 {
-    Damage(var amt) <span class="kw">when</span> amt &gt; 50 =&gt; hp - amt - 10, <span class="cm">// extra "overkill" penalty</span>
-    Damage(var amt)                =&gt; hp - amt,
-    Heal(var amt)                  =&gt; <span class="ty">Math</span>.Min(100, hp + amt),
-    StatusApplied(<span class="str">"Poison"</span>, _)      =&gt; hp - 5,
-    _                               =&gt; hp
+    Returned(var late) <span class="kw">when</span> late &lt;= 0 =&gt; 0,                  <span class="cm">// back on time</span>
+    Returned(var late)                  =&gt; <span class="ty">Math</span>.Min(replacementCents, late * 25),
+    Damaged(<span class="str">"Lost"</span>, _)                =&gt; replacementCents,
+    Damaged(_, var repair)              =&gt; repair,
+    _                                   =&gt; 0 <span class="cm">// Renewed costs nothing</span>
 };`}
         />
         <p>List patterns (C# 11+) match sequences directly:</p>
         <Code
-          html={`<span class="kw">int</span>[] recentRolls = { 20, 20, 3 };
-<span class="kw">if</span> (recentRolls <span class="kw">is</span> [20, 20, ..])
-    <span class="ty">Console</span>.WriteLine(<span class="str">"Suspiciously lucky start..."</span>);`}
+          html={`<span class="kw">int</span>[] recentFines = { 0, 0, 75 };
+<span class="kw">if</span> (recentFines <span class="kw">is</span> [0, 0, ..])
+    <span class="ty">Console</span>.WriteLine(<span class="str">"Two on-time returns to start"</span>);`}
         />
       </Topic>
 
@@ -1243,22 +1251,22 @@ Span&lt;<span class="kw">int</span>&gt; stackBuffer = stackalloc <span class="kw
         </p>
         <Code
           html={`<span class="kw">private</span> <span class="kw">readonly</span> <span class="kw">object</span> _lock = <span class="kw">new</span>();
-<span class="kw">private</span> <span class="kw">int</span> _gold;
+<span class="kw">private</span> <span class="kw">int</span> _copiesAvailable;
 
-<span class="kw">void</span> AddGoldSafely(<span class="kw">int</span> amount)
+<span class="kw">void</span> ReturnCopiesSafely(<span class="kw">int</span> count)
 {
-    <span class="kw">lock</span> (_lock) { _gold += amount; }
+    <span class="kw">lock</span> (_lock) { _copiesAvailable += count; }
 }
 
 <span class="cm">// simple atomic increment without a full lock</span>
-Interlocked.Increment(<span class="kw">ref</span> _killCount);`}
+Interlocked.Increment(<span class="kw">ref</span> _loanCount);`}
         />
         <p>
           <code>Parallel.For</code>/<code>Parallel.ForEach</code> parallelize
           independent CPU-bound iterations across cores:
         </p>
         <Code
-          html={`Parallel.ForEach(monsters, m =&gt; m.ComputeAggroScore());`}
+          html={`Parallel.ForEach(books, b =&gt; b.ComputePopularityScore());`}
         />
         <Callout variant="warn">
           <strong>async vs. parallel — not the same thing:</strong>{' '}
@@ -1294,12 +1302,12 @@ Interlocked.Increment(<span class="kw">ref</span> _killCount);`}
           compatible with your existing extension methods.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">static</span> <span class="kw">class</span> CharacterExtensions
+          html={`<span class="kw">public</span> <span class="kw">static</span> <span class="kw">class</span> BookExtensions
 {
-    <span class="kw">extension</span>(Character c)
+    <span class="kw">extension</span>(Book b)
     {
-        <span class="kw">public</span> <span class="kw">bool</span> IsAlive =&gt; c.Hp &gt; 0;         <span class="cm">// extension property</span>
-        <span class="kw">public</span> <span class="kw">bool</span> IsCritical =&gt; c.Hp &lt; 20;
+        <span class="kw">public</span> <span class="kw">bool</span> IsAvailable =&gt; b.CopiesAvailable &gt; 0; <span class="cm">// extension property</span>
+        <span class="kw">public</span> <span class="kw">bool</span> IsLastCopy =&gt; b.CopiesAvailable == 1;
     }
 
     <span class="kw">extension</span>(Guid)
@@ -1312,14 +1320,14 @@ Interlocked.Increment(<span class="kw">ref</span> _killCount);`}
     }
 }
 
-<span class="kw">if</span> (hero.IsAlive &amp;&amp; !hero.IsCritical) <span class="ty">Console</span>.WriteLine(<span class="str">"Fighting fit"</span>);
-<span class="kw">var</span> npcId = Guid.CreateDeterministic(<span class="str">"goblin-042"</span>); <span class="cm">// looks native to Guid</span>`}
+<span class="kw">if</span> (book.IsAvailable &amp;&amp; !book.IsLastCopy) <span class="ty">Console</span>.WriteLine(<span class="str">"Plenty on the shelf"</span>);
+<span class="kw">var</span> bookId = Guid.CreateDeterministic(<span class="str">"book-0003"</span>); <span class="cm">// looks native to Guid</span>`}
         />
         <p>
           Use extension properties when reading something feels more natural
-          than calling a method — <code>hero.IsAlive</code> reads better than{' '}
-          <code>hero.IsAlive()</code>, especially when there&apos;s no side
-          effect.
+          than calling a method — <code>book.IsAvailable</code> reads better
+          than <code>book.IsAvailable()</code>, especially when there&apos;s no
+          side effect.
         </p>
       </Topic>
 
@@ -1329,7 +1337,7 @@ Interlocked.Increment(<span class="kw">ref</span> _killCount);`}
           introduced in C# 6: reading was null-safe, writing was not, forcing an
           explicit null-check every time you wanted to conditionally assign. The
           compiler implements it exactly the way you&apos;d hand-write the guard
-          yourself — <code>maybeHero?.Hp = 100</code> desugars to
+          yourself — <code>maybeBook?.CopiesAvailable = 3</code> desugars to
           check-then-assign, not some new runtime mechanism — so there&apos;s no
           behavioral surprise, just less boilerplate for a pattern that comes up
           constantly when working with optional/nullable object graphs.
@@ -1341,12 +1349,12 @@ Interlocked.Increment(<span class="kw">ref</span> _killCount);`}
           separate null check needed.
         </p>
         <Code
-          html={`Character? maybeHero = FindHero();
-maybeHero?.Hp = 100; <span class="cm">// no-op if maybeHero is null</span>
+          html={`Book? maybeBook = FindBook(<span class="str">"Dracula"</span>);
+maybeBook?.CopiesAvailable = 3; <span class="cm">// no-op if maybeBook is null</span>
 
 <span class="cm">// compare to the old way, always needed before C# 14:</span>
-<span class="kw">if</span> (maybeHero <span class="kw">is</span> <span class="kw">not</span> <span class="kw">null</span>)
-    maybeHero.Hp = 100;`}
+<span class="kw">if</span> (maybeBook <span class="kw">is</span> <span class="kw">not</span> <span class="kw">null</span>)
+    maybeBook.CopiesAvailable = 3;`}
         />
       </Topic>
 
@@ -1362,8 +1370,8 @@ maybeHero?.Hp = 100; <span class="cm">// no-op if maybeHero is null</span>
         <p>
           Before this, the moment you needed even one line of logic in a setter,
           you lost the auto-property&apos;s conciseness entirely and had to fall
-          back to declaring your own named backing field (<code>_hp</code>) plus
-          writing both accessors by hand — a disproportionate amount of
+          back to declaring your own named backing field (<code>_copies</code>)
+          plus writing both accessors by hand — a disproportionate amount of
           boilerplate for a single <code>Math.Clamp</code> call.{' '}
           <code>field</code> is a contextual keyword that only means &quot;the
           compiler-generated backing field&quot; inside a property accessor
@@ -1379,25 +1387,29 @@ maybeHero?.Hp = 100; <span class="cm">// no-op if maybeHero is null</span>
           body.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">class</span> Character
+          html={`<span class="kw">public</span> <span class="kw">class</span> Book
 {
-    <span class="kw">public</span> <span class="kw">int</span> Hp
+    <span class="kw">public</span> <span class="kw">int</span> CopiesTotal { get; init; } = 3;
+
+    <span class="kw">public</span> <span class="kw">int</span> CopiesAvailable
     {
         get;
-        <span class="kw">set</span> =&gt; field = <span class="ty">Math</span>.Clamp(value, 0, 100); <span class="cm">// no manual backing field declared</span>
+        <span class="kw">set</span> =&gt; field = <span class="ty">Math</span>.Clamp(value, 0, CopiesTotal); <span class="cm">// no manual backing field declared</span>
     }
 
-    <span class="kw">public</span> <span class="kw">string</span> Name
+    <span class="kw">public</span> <span class="kw">string</span> Title
     {
         get =&gt; field;
-        <span class="kw">set</span> =&gt; field = value?.Trim() ?? <span class="str">"Unnamed"</span>;
+        <span class="kw">set</span> =&gt; field = value?.Trim() ?? <span class="str">"Untitled"</span>;
     }
 }`}
         />
         <p>
           Before C# 14 this required a fully manual backing field (
           <code>
-            {'private int _hp; public int Hp { get => _hp; set => _hp = ...; }'}
+            {
+              'private int _copies; public int CopiesAvailable { get => _copies; set => _copies = ...; }'
+            }
           </code>
           ) just to add one line of logic — <code>field</code> removes that
           boilerplate entirely.
@@ -1424,17 +1436,17 @@ maybeHero?.Hp = 100; <span class="cm">// no-op if maybeHero is null</span>
         </p>
         <Code
           html={`<span class="cm">// declaring half — e.g. hand-written file</span>
-<span class="kw">public</span> <span class="kw">partial</span> <span class="kw">class</span> Boss
+<span class="kw">public</span> <span class="kw">partial</span> <span class="kw">class</span> Reservation
 {
-    <span class="kw">public</span> <span class="kw">partial</span> Boss(<span class="kw">string</span> name);
-    <span class="kw">public</span> <span class="kw">partial</span> <span class="kw">event</span> Action OnEnrage;
+    <span class="kw">public</span> <span class="kw">partial</span> Reservation(<span class="kw">string</span> memberName);
+    <span class="kw">public</span> <span class="kw">partial</span> <span class="kw">event</span> Action HoldReady;
 }
 
 <span class="cm">// implementing half — could be generated by a source generator</span>
-<span class="kw">public</span> <span class="kw">partial</span> <span class="kw">class</span> Boss
+<span class="kw">public</span> <span class="kw">partial</span> <span class="kw">class</span> Reservation
 {
-    <span class="kw">public</span> <span class="kw">partial</span> Boss(<span class="kw">string</span> name) { Name = name; }
-    <span class="kw">public</span> <span class="kw">partial</span> <span class="kw">event</span> Action OnEnrage
+    <span class="kw">public</span> <span class="kw">partial</span> Reservation(<span class="kw">string</span> memberName) { MemberName = memberName; }
+    <span class="kw">public</span> <span class="kw">partial</span> <span class="kw">event</span> Action HoldReady
     {
         <span class="kw">add</span> { <span class="cm">/* wire up */</span> }
         <span class="kw">remove</span> { <span class="cm">/* unwire */</span> }
@@ -1469,16 +1481,16 @@ maybeHero?.Hp = 100; <span class="cm">// no-op if maybeHero is null</span>
           loops.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">struct</span> Health
+          html={`<span class="kw">public</span> <span class="kw">struct</span> Fine
 {
-    <span class="kw">public</span> <span class="kw">int</span> Value;
-    <span class="kw">public</span> <span class="kw">void</span> operator +=(<span class="kw">int</span> amount) =&gt; Value = <span class="ty">Math</span>.Min(100, Value + amount);
-    <span class="kw">public</span> <span class="kw">void</span> operator -=(<span class="kw">int</span> amount) =&gt; Value = <span class="ty">Math</span>.Max(0, Value - amount);
+    <span class="kw">public</span> <span class="kw">int</span> Cents; <span class="cm">// capped at a 2000-cent replacement cost</span>
+    <span class="kw">public</span> <span class="kw">void</span> operator +=(<span class="kw">int</span> cents) =&gt; Cents = <span class="ty">Math</span>.Min(2000, Cents + cents);
+    <span class="kw">public</span> <span class="kw">void</span> operator -=(<span class="kw">int</span> cents) =&gt; Cents = <span class="ty">Math</span>.Max(0, Cents - cents);
 }
 
-<span class="kw">var</span> hp = <span class="kw">new</span> Health { Value = 90 };
-hp += 20; <span class="cm">// clamps to 100, mutates Value in place — no new struct allocated</span>
-hp -= 200; <span class="cm">// clamps to 0</span>`}
+<span class="kw">var</span> fine = <span class="kw">new</span> Fine { Cents = 1900 };
+fine += 250; <span class="cm">// clamps to 2000, mutates Cents in place — no new struct allocated</span>
+fine -= 5000; <span class="cm">// clamps to 0 (paid in full)</span>`}
         />
       </Topic>
 
@@ -1504,8 +1516,8 @@ hp -= 200; <span class="cm">// clamps to 0</span>`}
         <p>A cluster of smaller-but-genuinely-handy additions:</p>
         <Code
           html={`<span class="cm">// implicit span conversion — array slices convert automatically, no .AsSpan() call</span>
-<span class="kw">int</span>[] rolls = { 20, 15, 3, 18, 9 };
-ReadOnlySpan&lt;<span class="kw">int</span>&gt; slice = rolls[..3];
+<span class="kw">int</span>[] dailyLoans = { 12, 9, 3, 15, 7 };
+ReadOnlySpan&lt;<span class="kw">int</span>&gt; slice = dailyLoans[..3];
 
 <span class="cm">// nameof on an unbound generic type</span>
 <span class="ty">Console</span>.WriteLine(<span class="kw">nameof</span>(List&lt;&gt;)); <span class="cm">// "List"</span>
@@ -1543,7 +1555,7 @@ ReadOnlySpan&lt;<span class="kw">int</span>&gt; slice = rolls[..3];
           internally.
         </p>
         <Code
-          html={`<span class="kw">int</span>[] rolls = { 20, 15, 3 };            <span class="cm">// single-dimensional</span>
+          html={`<span class="kw">int</span>[] copiesPerBook = { 3, 2, 1 };     <span class="cm">// single-dimensional</span>
 <span class="kw">int</span>[,] grid = <span class="kw">new</span> <span class="kw">int</span>[3, 3];           <span class="cm">// multi-dimensional (rectangular)</span>
 grid[1, 1] = 5;
 
@@ -1580,10 +1592,10 @@ jagged[1] = <span class="kw">new</span>[] { 1, 2, 3 };`}
           exist for different situations.
         </p>
         <Code
-          html={`<span class="kw">string</span> interpolated = $<span class="str">"{hero.Name} has {hero.Hp} HP"</span>;
-<span class="kw">string</span> verbatim     = @<span class="str">"C:\\Games\\Saves\\hero.dat"</span>;      <span class="cm">// no escape processing</span>
+          html={`<span class="kw">string</span> interpolated = $<span class="str">"{book.Title} has {book.CopiesAvailable} copies left"</span>;
+<span class="kw">string</span> verbatim     = @<span class="str">"C:\\Library\\Exports\\catalog.csv"</span>; <span class="cm">// no escape processing</span>
 <span class="kw">string</span> raw          = <span class="str">"""</span>
-    <span class="str">{ "name": "Goblin", "hp": 15 }</span>
+    <span class="str">{ "title": "Dracula", "year": 1897 }</span>
     <span class="str">"""</span>;                                       <span class="cm">// raw string literal, C# 11 — great for JSON/regex</span>`}
         />
         <p>
@@ -1593,8 +1605,8 @@ jagged[1] = <span class="kw">new</span>[] { 1, 2, 3 };`}
         </p>
         <Code
           html={`<span class="kw">var</span> sb = <span class="kw">new</span> StringBuilder();
-<span class="kw">foreach</span> (<span class="kw">var</span> item <span class="kw">in</span> loot)
-    sb.AppendLine($<span class="str">"- {item}"</span>);
+<span class="kw">foreach</span> (<span class="kw">var</span> title <span class="kw">in</span> overdueTitles)
+    sb.AppendLine($<span class="str">"- {title}"</span>);
 <span class="kw">string</span> report = sb.ToString();`}
         />
       </Topic>
@@ -1618,18 +1630,18 @@ jagged[1] = <span class="kw">new</span>[] { 1, 2, 3 };`}
           handy for a method that logically returns more than one thing.
         </p>
         <Code
-          html={`(<span class="kw">int</span> damage, <span class="kw">bool</span> isCrit) RollAttack()
+          html={`(<span class="kw">int</span> fineCents, <span class="kw">bool</span> isCapped) CalculateFine(<span class="kw">int</span> daysOverdue)
 {
-    <span class="kw">int</span> roll = <span class="kw">new</span> <span class="ty">Random</span>().Next(1, 21);
-    <span class="kw">return</span> (damage: roll * 2, isCrit: roll == 20);
+    <span class="kw">int</span> raw = daysOverdue * 25;
+    <span class="kw">return</span> (fineCents: <span class="ty">Math</span>.Min(raw, 2000), isCapped: raw &gt;= 2000);
 }
 
-<span class="kw">var</span> (dmg, crit) = RollAttack();       <span class="cm">// deconstruction</span>
-<span class="ty">Console</span>.WriteLine(crit ? $<span class="str">"CRIT for {dmg}!"</span> : $<span class="str">"{dmg} damage"</span>);`}
+<span class="kw">var</span> (cents, capped) = CalculateFine(12); <span class="cm">// deconstruction</span>
+<span class="ty">Console</span>.WriteLine(capped ? $<span class="str">"Capped at {cents} cents"</span> : $<span class="str">"{cents} cents owed"</span>);`}
         />
         <p>
           Records deconstruct automatically too (from earlier:{' '}
-          <code>Damage(var amt)</code>), and you can add custom{' '}
+          <code>Returned(var late)</code>), and you can add custom{' '}
           <code>Deconstruct</code> methods to any class or struct.
         </p>
       </Topic>
@@ -1696,28 +1708,28 @@ jagged[1] = <span class="kw">new</span>[] { 1, 2, 3 };`}
           exposing its own indexer, not receiving special compiler treatment.
           You can overload indexers by parameter type or count, just like
           methods, so a single type can support both{' '}
-          <code>inventory[&quot;Potion&quot;]</code> and{' '}
-          <code>inventory[0]</code> if that fits the domain.
+          <code>shelf[&quot;Dracula&quot;]</code> and <code>shelf[0]</code> if
+          that fits the domain.
         </p>
         <p>
           An indexer lets your own type use <code>[]</code> syntax, just like
           arrays and <code>{'List<T>'}</code> do.
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">class</span> Inventory
+          html={`<span class="kw">public</span> <span class="kw">class</span> CopyCounts
 {
-    <span class="kw">private</span> <span class="kw">readonly</span> Dictionary&lt;<span class="kw">string</span>, <span class="kw">int</span>&gt; _items = <span class="kw">new</span>();
+    <span class="kw">private</span> <span class="kw">readonly</span> Dictionary&lt;<span class="kw">string</span>, <span class="kw">int</span>&gt; _copies = <span class="kw">new</span>();
 
-    <span class="kw">public</span> <span class="kw">int</span> <span class="kw">this</span>[<span class="kw">string</span> itemName]
+    <span class="kw">public</span> <span class="kw">int</span> <span class="kw">this</span>[<span class="kw">string</span> title]
     {
-        get =&gt; _items.GetValueOrDefault(itemName, 0);
-        <span class="kw">set</span> =&gt; _items[itemName] = value;
+        get =&gt; _copies.GetValueOrDefault(title, 0);
+        <span class="kw">set</span> =&gt; _copies[title] = value;
     }
 }
 
-<span class="kw">var</span> bag = <span class="kw">new</span> Inventory();
-bag[<span class="str">"Potion"</span>] = 3;
-<span class="ty">Console</span>.WriteLine(bag[<span class="str">"Potion"</span>]); <span class="cm">// 3</span>`}
+<span class="kw">var</span> shelf = <span class="kw">new</span> CopyCounts();
+shelf[<span class="str">"Dracula"</span>] = 2;
+<span class="ty">Console</span>.WriteLine(shelf[<span class="str">"Dracula"</span>]); <span class="cm">// 2</span>`}
         />
       </Topic>
 
@@ -1742,18 +1754,18 @@ bag[<span class="str">"Potion"</span>] = 3;
           internally.
         </p>
         <Code
-          html={`<span class="ty">IEnumerable&lt;<span class="kw">int</span>&gt;</span> InfiniteXp()
+          html={`<span class="ty">IEnumerable&lt;<span class="kw">int</span>&gt;</span> RunningFine()
 {
-    <span class="kw">int</span> xp = 0;
+    <span class="kw">int</span> cents = 0;
     <span class="kw">while</span> (<span class="kw">true</span>)
     {
-        xp += 10;
-        <span class="kw">yield</span> <span class="kw">return</span> xp;   <span class="cm">// pauses here, resumes on next MoveNext()</span>
+        cents += 25;                 <span class="cm">// one more day overdue</span>
+        <span class="kw">yield</span> <span class="kw">return</span> cents;   <span class="cm">// pauses here, resumes on next MoveNext()</span>
     }
 }
 
-<span class="kw">foreach</span> (<span class="kw">var</span> xp <span class="kw">in</span> InfiniteXp().Take(5)) <span class="cm">// safe — nothing runs until pulled</span>
-    <span class="ty">Console</span>.WriteLine(xp);`}
+<span class="kw">foreach</span> (<span class="kw">var</span> cents <span class="kw">in</span> RunningFine().Take(5)) <span class="cm">// safe — nothing runs until pulled</span>
+    <span class="ty">Console</span>.WriteLine(cents);`}
         />
       </Topic>
 
@@ -1779,8 +1791,8 @@ bag[<span class="str">"Potion"</span>] = 3;
           (generics largely exist to sidestep this).
         </p>
         <Code
-          html={`<span class="kw">int</span> hp = 100;
-<span class="kw">object</span> boxed = hp;          <span class="cm">// boxing — heap allocation</span>
+          html={`<span class="kw">int</span> copies = 3;
+<span class="kw">object</span> boxed = copies;      <span class="cm">// boxing — heap allocation</span>
 <span class="kw">int</span> unboxed = (<span class="kw">int</span>)boxed;  <span class="cm">// unboxing</span>`}
         />
         <p>
@@ -1802,7 +1814,7 @@ bag[<span class="str">"Potion"</span>] = 3;
         <p>
           Namespaces are purely a compile-time organizational tool — they
           don&apos;t exist as a runtime concept the way types do; a fully
-          qualified name like <code>MyGame.Combat.DamageCalculator</code> is
+          qualified name like <code>MapleLibrary.Loans.FineCalculator</code> is
           just how the compiler disambiguates two types that happen to share a
           short name in different parts of a large codebase or across referenced
           libraries. <code>using</code> directives (and{' '}
@@ -1819,9 +1831,9 @@ bag[<span class="str">"Potion"</span>] = 3;
           common <code>using</code> statements everywhere.
         </p>
         <Code
-          html={`<span class="kw">namespace</span> MyGame.Combat; <span class="cm">// file-scoped — no braces, applies to whole file</span>
+          html={`<span class="kw">namespace</span> MapleLibrary.Loans; <span class="cm">// file-scoped — no braces, applies to whole file</span>
 
-<span class="kw">public</span> <span class="kw">class</span> DamageCalculator { }`}
+<span class="kw">public</span> <span class="kw">class</span> FineCalculator { }`}
         />
         <Code
           html={`<span class="cm">// GlobalUsings.cs — one file for the whole project</span>
@@ -1883,7 +1895,7 @@ bag[<span class="str">"Potion"</span>] = 3;
           class — mostly seen in LINQ projections:
         </p>
         <Code
-          html={`<span class="kw">var</span> summary = party.Select(c =&gt; <span class="kw">new</span> { c.Name, IsAlive = c.Hp &gt; 0 });`}
+          html={`<span class="kw">var</span> summary = books.Select(b =&gt; <span class="kw">new</span> { b.Title, IsAvailable = b.CopiesAvailable &gt; 0 });`}
         />
       </Topic>
 
@@ -1911,16 +1923,16 @@ bag[<span class="str">"Potion"</span>] = 3;
           modern language and are worth knowing:
         </p>
         <Code
-          html={`<span class="kw">public</span> <span class="kw">class</span> Character
+          html={`<span class="kw">public</span> <span class="kw">class</span> Member
 {
     <span class="kw">public</span> <span class="kw">required</span> <span class="kw">string</span> Name { get; init; } <span class="cm">// caller MUST set this, compiler-enforced</span>
-    <span class="kw">public</span> <span class="kw">int</span> Hp { get; <span class="kw">set</span>; } = 100;
+    <span class="kw">public</span> <span class="kw">string</span> Tier { get; <span class="kw">set</span>; } = <span class="str">"Standard"</span>;
 }
-<span class="kw">var</span> hero = <span class="kw">new</span> Character { Name = <span class="str">"Pradeep"</span> }; <span class="cm">// omitting Name would be a compile error</span>`}
+<span class="kw">var</span> member = <span class="kw">new</span> Member { Name = <span class="str">"Ada Lovelace"</span> }; <span class="cm">// omitting Name would be a compile error</span>`}
         />
         <Code
           html={`<span class="cm">// generic math via static abstract interface members (C# 11)</span>
-T SumAll&lt;T&gt;(List&lt;T&gt; values) <span class="kw">where</span> T : ISystem.Numerics.INumber&lt;T&gt;
+T SumAll&lt;T&gt;(List&lt;T&gt; values) <span class="kw">where</span> T : System.Numerics.INumber&lt;T&gt;
 {
     T total = T.Zero;
     <span class="kw">foreach</span> (<span class="kw">var</span> v <span class="kw">in</span> values) total += v;
@@ -1961,17 +1973,18 @@ T SumAll&lt;T&gt;(List&lt;T&gt; values) <span class="kw">where</span> T : ISyste
           <strong>Good capstone candidates:</strong>
           <ul>
             <li>
-              <strong>Text-based dungeon crawler</strong> — records for
-              rooms/monsters, pattern matching for combat resolution, extension
-              members for character stat helpers.
+              <strong>Maple Street Library console app</strong> — records for
+              books/members/loans, pattern matching for loan status and fines,
+              extension members for book availability helpers.
             </li>
             <li>
-              <strong>Mini leaderboard API</strong> — async all the way down,
-              minimal APIs, LINQ for ranking/sorting.
+              <strong>Mini catalog API</strong> — async all the way down,
+              minimal APIs, LINQ for searching and sorting books by genre or
+              year.
             </li>
             <li>
-              <strong>CLI dice-roller / TTRPG toolkit</strong> — generics for
-              dice pools, the new <code>field</code> keyword for clamped stats,
+              <strong>CLI fine calculator</strong> — generics for totalling
+              fines, the new <code>field</code> keyword for clamped copy counts,
               file-based apps to run it with zero setup.
             </li>
           </ul>

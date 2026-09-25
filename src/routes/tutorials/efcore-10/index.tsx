@@ -6,11 +6,14 @@ import { TutorialOverview } from '#/lib/tutorials/shared'
 export const Route = createFileRoute('/tutorials/efcore-10/')({
   head: () => ({
     meta: [
-      { title: 'EF Core — Basics to Advanced (Superhero Academy) | Tutorials' },
+      {
+        title:
+          'EF Core — Basics to Advanced (Maple Street Library) | Tutorials',
+      },
       {
         name: 'description',
         content:
-          'A complete walk from first DbContext to bulk operations, multi-tenancy, and provider internals — every relationship, query, and gotcha taught against one running schema: a superhero academy database.',
+          'A complete walk from first DbContext to bulk operations, multi-tenancy, and provider internals — every relationship, query, and gotcha taught against one running schema: a small lending library.',
       },
     ],
   }),
@@ -24,7 +27,7 @@ function EfCoreOverviewPage() {
     <TutorialOverview
       basePath="/tutorials/efcore-10"
       nav={efCoreNav}
-      eyebrow="Superhero Academy"
+      eyebrow="EF Core · Maple Street Library"
       title={tutorial.title}
       description={tutorial.excerpt}
       date={tutorial.date}

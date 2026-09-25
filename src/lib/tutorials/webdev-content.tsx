@@ -560,7 +560,7 @@ bun add react         # bun - currently the fastest of the four`}
         <ul>
           <li>
             <strong>REST</strong> — resources as URLs (
-            <code>/users/5/orders</code>), standard HTTP verbs, typically JSON
+            <code>/members/5/loans</code>), standard HTTP verbs, typically JSON
             responses. Simple, cacheable, widely understood.
           </li>
           <li>
@@ -652,9 +652,9 @@ bun add react         # bun - currently the fastest of the four`}
           A <strong>monolith</strong> is one codebase and deployment for the
           whole application — simpler to build and reason about early on.{' '}
           <strong>Microservices</strong> split the backend into independent
-          services (auth, payments, inventory) that communicate over the network
-          — this scales teams and infrastructure independently, at the cost of
-          operational complexity.
+          services (auth, loans, catalog search) that communicate over the
+          network — this scales teams and infrastructure independently, at the
+          cost of operational complexity.
         </p>
 
         <h4>Micro-frontends</h4>
@@ -904,8 +904,11 @@ bun add react         # bun - currently the fastest of the four`}
 </dl>
 
 <table>
-  <thead><tr><th>Name</th><th>Age</th></tr></thead>
-  <tbody><tr><td>Alice</td><td>30</td></tr></tbody>
+  <thead><tr><th>Title</th><th>Author</th><th>Year</th></tr></thead>
+  <tbody>
+    <tr><td>Pride and Prejudice</td><td>Jane Austen</td><td>1813</td></tr>
+    <tr><td>Frankenstein</td><td>Mary Shelley</td><td>1818</td></tr>
+  </tbody>
 </table>`}
         />
         <p>
@@ -957,9 +960,12 @@ bun add react         # bun - currently the fastest of the four`}
 
       <Topic id="html-forms" no="14" title="Forms in depth">
         <Html
-          code={`<form action="/submit" method="POST" novalidate>
+          code={`<form action="/members" method="POST" novalidate>
   <fieldset>
-    <legend>Contact Info</legend>
+    <legend>Member Signup</legend>
+
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" required autocomplete="name">
 
     <label for="email">Email</label>
     <input type="email" id="email" name="email" required
@@ -971,26 +977,26 @@ bun add react         # bun - currently the fastest of the four`}
     <label for="dob">Date of Birth</label>
     <input type="date" id="dob" name="dob">
 
-    <label for="volume">Volume</label>
-    <input type="range" id="volume" name="volume" min="0" max="100" step="5">
+    <label for="goal">Reading goal (books per year)</label>
+    <input type="range" id="goal" name="goal" min="0" max="100" step="5">
 
-    <label for="favColor">Favorite Color</label>
-    <input type="color" id="favColor" name="favColor">
+    <label for="cardColor">Library card color</label>
+    <input type="color" id="cardColor" name="cardColor">
 
-    <label for="resume">Upload Resume</label>
-    <input type="file" id="resume" name="resume" accept=".pdf,.docx">
+    <label for="proof">Proof of address</label>
+    <input type="file" id="proof" name="proof" accept=".pdf,.jpg,.png">
 
-    <label for="country">Country</label>
-    <select id="country" name="country">
-      <option value="us">United States</option>
-      <option value="in">India</option>
+    <label for="branch">Home branch</label>
+    <select id="branch" name="branch">
+      <option value="1">Downtown</option>
+      <option value="2">Riverside</option>
     </select>
 
     <label>
-      <input type="checkbox" name="subscribe"> Subscribe to newsletter
+      <input type="checkbox" name="premium"> Premium membership (28-day loans)
     </label>
 
-    <button type="submit">Submit</button>
+    <button type="submit">Sign up</button>
   </fieldset>
 </form>`}
         />
@@ -1076,14 +1082,14 @@ bun add react         # bun - currently the fastest of the four`}
         <p>Built-in focus trapping, Esc-to-close, and a styleable backdrop:</p>
         <Html
           code={`<dialog id="confirmDialog">
-  <p>Are you sure?</p>
+  <p>Cancel your reservation for Moby-Dick?</p>
   <form method="dialog">
-    <button value="cancel">Cancel</button>
-    <button value="confirm">Confirm</button>
+    <button value="cancel">Keep it</button>
+    <button value="confirm">Cancel reservation</button>
   </form>
 </dialog>
 
-<button onclick="confirmDialog.showModal()">Delete</button>`}
+<button onclick="confirmDialog.showModal()">Cancel reservation</button>`}
         />
         <Css code={`dialog::backdrop { background: rgba(0,0,0,0.5); }`} />
 
@@ -1093,8 +1099,8 @@ bun add react         # bun - currently the fastest of the four`}
         </h4>
         <Html
           code={`<details>
-  <summary>What's your refund policy?</summary>
-  <p>Full refunds within 30 days.</p>
+  <summary>How long can I borrow a book?</summary>
+  <p>14 days, or 28 days for premium members.</p>
 </details>`}
         />
         <p>
@@ -1151,7 +1157,7 @@ bun add react         # bun - currently the fastest of the four`}
         </p>
         <Html
           code={`<div aria-live="polite" id="status"></div>
-<!-- JS: document.getElementById('status').textContent = "Item added to cart"; -->`}
+<!-- JS: document.getElementById('status').textContent = "Frankenstein added to your wishlist"; -->`}
         />
         <p>
           <code>polite</code> waits for the screen reader to finish current
@@ -1262,9 +1268,10 @@ customElements.define('star-rating', StarRating);`}
           code={`<script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "Wireless Headphones",
-  "offers": { "@type": "Offer", "price": "99.99", "priceCurrency": "USD" }
+  "@type": "Book",
+  "name": "Frankenstein",
+  "author": { "@type": "Person", "name": "Mary Shelley" },
+  "datePublished": "1818"
 }
 </script>`}
         />
@@ -1523,7 +1530,7 @@ body {
 .card {
   display: grid;
   grid-row: span 3;
-  grid-template-rows: subgrid; /* inherits the parent's row tracks so titles/prices/buttons align */
+  grid-template-rows: subgrid; /* inherits the parent's row tracks so titles/authors/buttons align */
 }`}
         />
         <p>
@@ -1787,11 +1794,11 @@ arr.find(x => x > 2);              // 3 - first match
 arr.some(x => x > 3);              // true - any match?
 arr.every(x => x > 0);             // true - all match?
 
-const person = { name: "Alice", age: 30 };
-const { name, age } = person;       // destructuring
-const { name: n = "Unknown" } = {}; // destructuring with default + rename
-const arr2 = [...arr, 5];            // spread - creates a new array
-const merged = { ...person, city: "NYC" }; // spread - creates a new object`}
+const book = { title: "Dracula", year: 1897 };
+const { title, year } = book;          // destructuring
+const { title: t = "Untitled" } = {};  // destructuring with default + rename
+const arr2 = [...arr, 5];              // spread - creates a new array
+const merged = { ...book, genre: "Horror" }; // spread - creates a new object`}
         />
       </Topic>
 
@@ -1849,8 +1856,8 @@ const updated = arr.with(0, 99);    // replace index 0 -> new array
 const spliced = arr.toSpliced(1, 1); // remove index 1 -> new array
 
 // Object.groupBy / Map.groupBy (ES2024)
-const grouped = Object.groupBy(people, person => person.department);
-// { engineering: [...], sales: [...] }`}
+const grouped = Object.groupBy(books, book => book.genre);
+// { Horror: [...], Classics: [...] }`}
         />
         <Js
           code={`// Private class fields & methods
@@ -1882,18 +1889,18 @@ const items = await Array.fromAsync(asyncGenerator());`}
         <h4>Evolution: callbacks → Promises → async/await</h4>
         <Js
           code={`// Promise-based
-fetch('/api/data')
+fetch('/api/books')
   .then(res => res.json())
-  .then(data => console.log(data))
+  .then(books => console.log(books))
   .catch(err => console.error('Failed:', err));
 
 // async/await - reads like synchronous code, generally preferred
-async function loadData() {
+async function loadBooks() {
   try {
-    const res = await fetch('/api/data');
+    const res = await fetch('/api/books');
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    console.log(data);
+    const books = await res.json();
+    console.log(books);
   } catch (err) {
     console.error('Failed:', err);
   }
@@ -1902,7 +1909,7 @@ async function loadData() {
         <h4>Combining multiple async operations</h4>
         <Js
           code={`// Wait for all - fails fast if ANY rejects
-const [userRes, ordersRes] = await Promise.all([fetchUser(), fetchOrders()]);
+const [memberRes, loansRes] = await Promise.all([fetchMember(), fetchLoans()]);
 
 // Wait for all, get outcome of each - never fails fast
 const results = await Promise.allSettled([fetchA(), fetchB()]);
@@ -1917,14 +1924,14 @@ const winner = await Promise.race([fetchData(), timeout(5000)]);`}
         <h4>Cancelling requests</h4>
         <Js
           code={`const controller = new AbortController();
-fetch('/api/data', { signal: controller.signal })
+fetch('/api/books', { signal: controller.signal })
   .catch(err => { if (err.name === 'AbortError') console.log('Cancelled'); });
 
 // Cancel it (e.g., user navigated away)
 controller.abort();
 
 // Built-in timeout shortcut
-fetch('/api/data', { signal: AbortSignal.timeout(5000) });`}
+fetch('/api/books', { signal: AbortSignal.timeout(5000) });`}
         />
         <h4>The event loop, in detail</h4>
         <p>
@@ -2112,14 +2119,14 @@ self.addEventListener('fetch', (event) => {
         </p>
         <Js
           code={`// Conceptual example (API varies slightly per library)
-const count = signal(0);
-const doubled = computed(() => count.value * 2);
+const wishlist = signal([]);
+const wishlistCount = computed(() => wishlist.value.length);
 
 effect(() => {
-  console.log('Count is now:', count.value); // reruns automatically when count changes
+  console.log('Wishlist size:', wishlistCount.value); // reruns automatically when wishlist changes
 });
 
-count.value++; // ONLY updates the specific DOM nodes/computations that depend on \`count\``}
+wishlist.value = [...wishlist.value, 'Frankenstein']; // ONLY updates the DOM nodes/computations that depend on \`wishlist\``}
         />
         <p>
           This differs from older &quot;re-render the whole component&quot;
@@ -2334,8 +2341,9 @@ element.innerHTML = DOMPurify.sanitize(userInput);`}
           </li>
           <li>
             <strong>Vanilla JavaScript</strong> — build a small interactive app
-            (a to-do list, a weather app using <code>fetch</code>) using only
-            DOM manipulation, events, and async fundamentals. This is where it
+            (a book wishlist, or a catalog search that calls{' '}
+            <code>fetch(&apos;/api/books&apos;)</code>) using only DOM
+            manipulation, events, and async fundamentals. This is where it
             actually sinks in.
           </li>
           <li>

@@ -30,7 +30,7 @@ function SqlNovaPizzaTopicPage() {
       basePath="/tutorials/sql-nova-pizza"
       nav={sqlNovaPizzaNav}
       activeId={topicId}
-      eyebrow="Nova Pizza SQL Academy"
+      eyebrow="SQL · Maple Street Library"
       title="SQL — Basics → Advanced"
     >
       <SqlContent />

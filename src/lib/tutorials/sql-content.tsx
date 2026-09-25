@@ -12,7 +12,7 @@ import {
 export const sqlNovaPizzaNav: Array<NavGroup> = [
   {
     title: 'Start here',
-    items: [{ id: 'schema', label: 'The Nova Pizza schema' }],
+    items: [{ id: 'schema', label: 'The Maple Street Library schema' }],
   },
   {
     title: 'Basics',
@@ -228,62 +228,224 @@ export function SqlContent() {
     <>
       <ModuleTitle>Start here</ModuleTitle>
 
-      <Topic id="schema" no="00" title="The Nova Pizza schema">
+      <Topic id="schema" no="00" title="The Maple Street Library schema">
+        <p>
+          Every example in this tutorial runs against one small database: the
+          lending system of the Maple Street Library. It starts with a single
+          table, <code>books</code>, and the other tables join in only when a
+          topic needs them.
+        </p>
         <RefTable
           headers={['Table', 'Columns']}
           rows={[
             [
-              <code>planets</code>,
+              <code>books</code>,
               <>
-                <code>planet_id</code> (pk), name, distance_ly, population
+                <code>id</code> (pk), title, author_id, genre_id,
+                published_year, isbn, copies_total, copies_available,
+                replacement_cost_cents
               </>,
             ],
             [
-              <code>customers</code>,
+              <code>authors</code>,
               <>
-                <code>customer_id</code> (pk), name, planet_id, joined_date,
-                loyalty_points
+                <code>id</code> (pk), name, born_year
               </>,
             ],
             [
-              <code>pizzas</code>,
+              <code>genres</code>,
               <>
-                <code>pizza_id</code> (pk), name, base_price, is_vegetarian
+                <code>id</code> (pk), name, parent_id
               </>,
             ],
             [
-              <code>orders</code>,
+              <code>members</code>,
               <>
-                <code>order_id</code> (pk), customer_id, order_date, status
+                <code>id</code> (pk), name, email, tier, joined_on, branch_id
               </>,
             ],
             [
-              <code>order_items</code>,
+              <code>loans</code>,
               <>
-                <code>order_item_id</code> (pk), order_id, pizza_id, quantity
+                <code>id</code> (pk), book_id, member_id, borrowed_on, due_on,
+                returned_on, fine_cents
+              </>,
+            ],
+            [
+              <code>reservations</code>,
+              <>
+                <code>id</code> (pk), book_id, member_id, created_at, status
+              </>,
+            ],
+            [
+              <code>branches</code>,
+              <>
+                <code>id</code> (pk), name
               </>,
             ],
           ]}
         />
-        <p>A few things worth noticing before writing a single query:</p>
         <p>
-          <code>customers.planet_id</code> points at{' '}
-          <code>planets.planet_id</code> — that&apos;s a{' '}
-          <strong>foreign key</strong>, the thing that makes joins possible.{' '}
-          <code>orders</code> and <code>order_items</code> are split apart on
-          purpose: one order can contain several pizzas, and that one-to-many
-          relationship is the most common shape you&apos;ll model in real
-          schemas.
+          The <code>books</code> fixture, which every basic query reads from
+          (money is stored as whole cents, so $12.00 is 1200):
+        </p>
+        <RefTable
+          caption="books (with author and genre names filled in)"
+          headers={[
+            'id',
+            'title',
+            'author',
+            'published_year',
+            'genre',
+            'copies_total',
+            'copies_available',
+            'replacement_cost_cents',
+          ]}
+          rows={[
+            [
+              '1',
+              'Pride and Prejudice',
+              'Jane Austen',
+              '1813',
+              'Classics',
+              '3',
+              '2',
+              '1200',
+            ],
+            [
+              '2',
+              'Frankenstein',
+              'Mary Shelley',
+              '1818',
+              'Horror',
+              '2',
+              '2',
+              '1000',
+            ],
+            [
+              '3',
+              'Moby-Dick',
+              'Herman Melville',
+              '1851',
+              'Adventure',
+              '1',
+              '1',
+              '1500',
+            ],
+            [
+              '4',
+              'Alice’s Adventures in Wonderland',
+              'Lewis Carroll',
+              '1865',
+              'Fantasy',
+              '2',
+              '1',
+              '900',
+            ],
+            [
+              '5',
+              'The Time Machine',
+              'H. G. Wells',
+              '1895',
+              'Science Fiction',
+              '1',
+              '0',
+              '800',
+            ],
+            ['6', 'Dracula', 'Bram Stoker', '1897', 'Horror', '2', '1', '1100'],
+          ]}
+        />
+        <p>
+          Loans need someone to borrow the book, so there are four{' '}
+          <strong>members</strong>, spread over two branches (Downtown is{' '}
+          <code>branch_id</code> 1, Riverside is 2):
+        </p>
+        <RefTable
+          caption="members"
+          headers={['id', 'name', 'tier', 'joined_on', 'branch_id']}
+          rows={[
+            ['1', 'Ada Lovelace', 'premium', '2024-01-15', '1'],
+            ['2', 'Grace Hopper', 'standard', '2024-06-03', '1'],
+            ['3', 'Alan Turing', 'standard', '2025-02-20', '2'],
+            ['4', 'Katherine Johnson', 'standard', '2026-08-01', '2'],
+          ]}
+        />
+        <p>
+          <strong>genres</strong> is a tree: <code>parent_id</code> points at
+          another genre. Fiction (id 1) is the parent of Classics (3), Horror
+          (4), Adventure (5), Fantasy (6) and Science Fiction (7); Non-fiction
+          (id 2) is the parent of History (8) and Science (9).
+        </p>
+        <p>
+          And here is the full history of <strong>loans</strong>. A loan with no{' '}
+          <code>returned_on</code> is still out. Examples that use{' '}
+          <code>CURRENT_DATE</code> assume today is 2026-09-25.
+        </p>
+        <RefTable
+          caption="loans"
+          headers={[
+            'id',
+            'book_id',
+            'member_id',
+            'borrowed_on',
+            'due_on',
+            'returned_on',
+            'fine_cents',
+          ]}
+          rows={[
+            ['1', '1', '1', '2026-07-02', '2026-07-30', '2026-07-28', '0'],
+            ['2', '2', '2', '2026-07-05', '2026-07-19', '2026-07-24', '125'],
+            ['3', '3', '3', '2026-07-10', '2026-07-24', '2026-07-22', '0'],
+            ['4', '6', '2', '2026-07-20', '2026-08-03', '2026-08-01', '0'],
+            ['5', '1', '3', '2026-08-03', '2026-08-17', '2026-08-27', '250'],
+            ['6', '5', '1', '2026-08-10', '2026-09-07', '2026-09-05', '0'],
+            ['7', '2', '1', '2026-08-12', '2026-09-09', '2026-09-09', '0'],
+            ['8', '6', '3', '2026-08-20', '2026-09-03', '2026-09-06', '75'],
+            ['9', '1', '2', '2026-09-01', '2026-09-15', 'NULL', '0'],
+            ['10', '3', '1', '2026-09-02', '2026-09-30', '2026-09-12', '0'],
+            ['11', '5', '3', '2026-09-10', '2026-09-24', 'NULL', '0'],
+            ['12', '4', '1', '2026-09-14', '2026-10-12', 'NULL', '0'],
+            ['13', '6', '2', '2026-09-18', '2026-10-02', 'NULL', '0'],
+          ]}
+        />
+        <p>The library’s rules, which later queries and constraints enforce:</p>
+        <ul>
+          <li>
+            A loan lasts 14 days, or 28 for premium members (that’s why Ada’s
+            loans are due four weeks out).
+          </li>
+          <li>A member can have at most 5 active loans.</li>
+          <li>
+            An overdue fine is 25 cents per day, capped at the book’s{' '}
+            <code>replacement_cost_cents</code>. Grace returned Frankenstein 5
+            days late, so loan 2 carries a 125-cent fine.
+          </li>
+          <li>
+            Borrowing needs <code>copies_available &gt; 0</code>. Borrowing
+            decrements it and creates a loan in one transaction.
+          </li>
+          <li>
+            When every copy is out, members can join a reservation queue. On
+            return, the first person in the queue gets “your hold is ready.”
+          </li>
+        </ul>
+        <p>
+          <code>loans.book_id</code> points at <code>books.id</code>, and{' '}
+          <code>loans.member_id</code> points at <code>members.id</code>. Those
+          are <strong>foreign keys</strong>, the thing that makes joins
+          possible. One book can be borrowed many times, and that one-to-many
+          relationship is the most common shape you’ll model in real schemas.
         </p>
         <Callout>
-          <strong>Fun fact</strong> — this shape (orders + order_items) is
-          sometimes called the &quot;invoice pattern,&quot; and it&apos;s the
-          backbone of almost every e-commerce database ever built, including the
-          one behind your last online order.
+          <strong>Fun fact</strong>: <code>copies_available</code> is
+          deliberately redundant. You could always compute it by counting open
+          loans, but storing it makes “is it on the shelf?” a single-row read.
+          Moby-Dick and The Time Machine have only one copy each, which makes
+          them the go-to examples when two members race for the last copy.
         </Callout>
         <p>
           Work through the sidebar in order, or jump straight to whatever you
-          need. Each section ends with a hands-on exercise — try to write the
+          need. Each section ends with a hands-on exercise. Try to write the
           query yourself before revealing the answer.
         </p>
       </Topic>
@@ -312,16 +474,16 @@ export function SqlContent() {
           that.
         </p>
         <Sql
-          code={`SELECT name, base_price
-FROM pizzas
-WHERE is_vegetarian = true;`}
+          code={`SELECT title, published_year
+FROM books
+WHERE published_year < 1850;`}
         />
         <RefTable
           caption="result"
-          headers={['name', 'base_price']}
+          headers={['title', 'published_year']}
           rows={[
-            ['Margherita Meteor', '9.50'],
-            ['Comet Caprese', '10.25'],
+            ['Pride and Prejudice', '1813'],
+            ['Frankenstein', '1818'],
           ]}
         />
         <p>
@@ -330,22 +492,23 @@ WHERE is_vegetarian = true;`}
           SQL-specific ones that come up constantly:
         </p>
         <Sql
-          code={`SELECT name FROM pizzas
-WHERE base_price BETWEEN 9 AND 12
-  AND name LIKE '%Comet%';
+          code={`SELECT title FROM books
+WHERE published_year BETWEEN 1850 AND 1899
+  AND title LIKE '%Machine%';
 
-SELECT name FROM customers
-WHERE planet_id IN (1, 3, 7);
+SELECT title FROM books
+WHERE genre_id IN (4, 7);
 
-SELECT name FROM customers
-WHERE loyalty_points IS NOT NULL;`}
+SELECT title FROM books
+WHERE isbn IS NOT NULL;`}
         />
         <Callout variant="warn">
           <strong>The NULL trap</strong> — <code>NULL</code> means
           &quot;unknown,&quot; not &quot;empty.&quot;{' '}
-          <code>WHERE loyalty_points = NULL</code> silently matches nothing,
-          ever. Always use <code>IS NULL</code> / <code>IS NOT NULL</code> to
-          check for it. This catches almost everyone at least once.
+          <code>WHERE isbn = NULL</code> silently matches nothing, ever (and
+          donated copies do sometimes arrive without an ISBN). Always use{' '}
+          <code>IS NULL</code> / <code>IS NOT NULL</code> to check for it. This
+          catches almost everyone at least once.
         </Callout>
         <p>
           Combine conditions with <strong>AND</strong> / <strong>OR</strong>,
@@ -353,24 +516,24 @@ WHERE loyalty_points IS NOT NULL;`}
           OR, just like multiplication before addition:
         </p>
         <Sql
-          code={`SELECT name FROM pizzas
-WHERE is_vegetarian = true
-  AND (base_price < 9 OR name LIKE 'Nova%');`}
+          code={`SELECT title FROM books
+WHERE copies_available > 0
+  AND (published_year < 1820 OR title LIKE 'Moby%');`}
         />
         <Exercise
           id="ans-select"
           prompt={
             <>
-              Write a query that returns the <code>name</code> and{' '}
-              <code>joined_date</code> of every customer on planet_id 2, ordered
-              by nothing yet — just the filter.
+              Write a query that returns the <code>title</code> and{' '}
+              <code>published_year</code> of every book in genre_id 4 (Horror),
+              ordered by nothing yet — just the filter.
             </>
           }
         >
           <Sql
-            code={`SELECT name, joined_date
-FROM customers
-WHERE planet_id = 2;`}
+            code={`SELECT title, published_year
+FROM books
+WHERE genre_id = 4;`}
           />
         </Exercise>
       </Topic>
@@ -402,24 +565,24 @@ WHERE planet_id = 2;`}
           you&apos;ve ever seen.
         </p>
         <Sql
-          code={`SELECT name, loyalty_points
-FROM customers
-ORDER BY loyalty_points DESC
+          code={`SELECT title, published_year
+FROM books
+ORDER BY published_year DESC
 LIMIT 3;`}
         />
         <RefTable
-          caption="result — top 3 most loyal customers"
-          headers={['name', 'loyalty_points']}
+          caption="result — the 3 most recently published books"
+          headers={['title', 'published_year']}
           rows={[
-            ['Zeta Okonkwo', '980'],
-            ['Rin Vasquez', '875'],
-            ['Marlowe Duque', '860'],
+            ['Dracula', '1897'],
+            ['The Time Machine', '1895'],
+            ['Alice’s Adventures in Wonderland', '1865'],
           ]}
         />
         <Sql
-          code={`SELECT name, loyalty_points
-FROM customers
-ORDER BY loyalty_points DESC
+          code={`SELECT title, published_year
+FROM books
+ORDER BY published_year DESC
 LIMIT 3 OFFSET 3;   -- the next 3, i.e. "page 2"`}
         />
         <p>
@@ -427,9 +590,9 @@ LIMIT 3 OFFSET 3;   -- the next 3, i.e. "page 2"`}
           earlier ones:
         </p>
         <Sql
-          code={`SELECT name, planet_id, loyalty_points
-FROM customers
-ORDER BY planet_id ASC, loyalty_points DESC;`}
+          code={`SELECT title, genre_id, published_year
+FROM books
+ORDER BY genre_id ASC, published_year DESC;`}
         />
         <Callout>
           <strong>Tip</strong> — LIMIT/OFFSET pagination gets slow on huge
@@ -440,13 +603,13 @@ ORDER BY planet_id ASC, loyalty_points DESC;`}
         </Callout>
         <Exercise
           id="ans-sort"
-          prompt="Return the 5 cheapest pizzas, cheapest first."
+          prompt="Return the 3 cheapest books to replace, cheapest first."
         >
           <Sql
-            code={`SELECT name, base_price
-FROM pizzas
-ORDER BY base_price ASC
-LIMIT 5;`}
+            code={`SELECT title, replacement_cost_cents
+FROM books
+ORDER BY replacement_cost_cents ASC
+LIMIT 3;`}
           />
         </Exercise>
       </Topic>
@@ -471,29 +634,33 @@ LIMIT 5;`}
           alone, they collapse the whole table into a single row:
         </p>
         <Sql
-          code={`SELECT COUNT(*) AS total_pizzas,
-       AVG(base_price) AS avg_price
-FROM pizzas;`}
+          code={`SELECT COUNT(*) AS total_books,
+       SUM(copies_total) AS total_copies
+FROM books;`}
         />
         <RefTable
-          headers={['total_pizzas', 'avg_price']}
-          rows={[['8', '10.85']]}
+          headers={['total_books', 'total_copies']}
+          rows={[['6', '11']]}
         />
         <p>
           <strong>GROUP BY</strong> is where aggregation gets interesting — it
-          buckets rows first, then aggregates within each bucket:
+          buckets rows first, then aggregates within each bucket. Counting
+          borrowing needs the <code>loans</code> table, so here it is, grouped
+          by member:
         </p>
         <Sql
-          code={`SELECT status, COUNT(*) AS order_count
-FROM orders
-GROUP BY status;`}
+          code={`SELECT member_id,
+       COUNT(*) AS loan_count,
+       SUM(fine_cents) AS fines_cents
+FROM loans
+GROUP BY member_id;`}
         />
         <RefTable
-          headers={['status', 'order_count']}
+          headers={['member_id', 'loan_count', 'fines_cents']}
           rows={[
-            ['delivered', '142'],
-            ['in_transit', '9'],
-            ['cancelled', '6'],
+            ['1', '5', '0'],
+            ['2', '4', '125'],
+            ['3', '4', '325'],
           ]}
         />
         <p>
@@ -503,10 +670,10 @@ GROUP BY status;`}
           specifically to fill that gap:
         </p>
         <Sql
-          code={`SELECT customer_id, COUNT(*) AS order_count
-FROM orders
-GROUP BY customer_id
-HAVING COUNT(*) > 10;`}
+          code={`SELECT member_id, SUM(fine_cents) AS fines_cents
+FROM loans
+GROUP BY member_id
+HAVING SUM(fine_cents) > 200;   -- only Alan Turing (member 3)`}
         />
         <Callout>
           <strong>Order of operations</strong> — a query is written SELECT →
@@ -516,13 +683,13 @@ HAVING COUNT(*) > 10;`}
         </Callout>
         <Exercise
           id="ans-agg"
-          prompt="Find every planet with more than 50 customers, showing planet_id and the count."
+          prompt="Find every book that has been borrowed at least 3 times, showing book_id and the count."
         >
           <Sql
-            code={`SELECT planet_id, COUNT(*) AS customer_count
-FROM customers
-GROUP BY planet_id
-HAVING COUNT(*) > 50;`}
+            code={`SELECT book_id, COUNT(*) AS loan_count
+FROM loans
+GROUP BY book_id
+HAVING COUNT(*) >= 3;   -- books 1 and 6, with 3 loans each`}
           />
         </Exercise>
       </Topic>
@@ -551,29 +718,39 @@ HAVING COUNT(*) > 50;`}
         </p>
         <Sql
           code={`SELECT
-  UPPER(name) AS shouty_name,
-  LOWER(name) AS quiet_name,
-  TRIM(name) AS no_stray_spaces,
-  name || ' (Planet ' || planet_id || ')' AS label   -- Postgres/SQLite; use CONCAT(name, ...) on MySQL/SQL Server
-FROM customers;`}
+  UPPER(title) AS shouty_title,
+  LOWER(title) AS quiet_title,
+  TRIM(title) AS no_stray_spaces,
+  title || ' (' || published_year || ')' AS label   -- Postgres/SQLite; use CONCAT(title, ...) on MySQL/SQL Server
+FROM books;`}
         />
         <p>
           <strong>Date functions</strong> let you compute ages, deadlines, and
-          windows without pulling every row into application code:
+          windows without pulling every row into application code. Here, how
+          late each open loan is:
         </p>
         <Sql
-          code={`SELECT name, joined_date,
-  CURRENT_DATE - joined_date AS days_as_member   -- Postgres; DATEDIFF(day, joined_date, GETDATE()) on SQL Server
-FROM customers
-WHERE joined_date > CURRENT_DATE - INTERVAL '90 days';`}
+          code={`SELECT id, due_on,
+  CURRENT_DATE - due_on AS days_overdue   -- Postgres; DATEDIFF(day, due_on, GETDATE()) on SQL Server
+FROM loans
+WHERE returned_on IS NULL
+  AND due_on < CURRENT_DATE;`}
+        />
+        <RefTable
+          caption="result — as of 2026-09-25"
+          headers={['id', 'due_on', 'days_overdue']}
+          rows={[
+            ['9', '2026-09-15', '10'],
+            ['11', '2026-09-24', '1'],
+          ]}
         />
         <p>
           <strong>Math functions</strong> — ROUND, CEIL/FLOOR, ABS — clean up
           computed numbers for display:
         </p>
         <Sql
-          code={`SELECT name, ROUND(base_price * 1.08, 2) AS price_with_tax
-FROM pizzas;`}
+          code={`SELECT title, ROUND(replacement_cost_cents / 100.0, 2) AS replacement_cost_dollars
+FROM books;`}
         />
         <p>
           For NULLs, two small functions save a lot of CASE statements.{' '}
@@ -581,32 +758,34 @@ FROM pizzas;`}
           perfect for defaults:
         </p>
         <Sql
-          code={`SELECT name, COALESCE(loyalty_points, 0) AS points
-FROM customers;`}
+          code={`SELECT title, COALESCE(isbn, 'unknown') AS isbn
+FROM books;`}
         />
         <p>
           <strong>NULLIF</strong> does the opposite job: it returns NULL if two
-          values are equal, which is the standard guard against divide-by-zero:
+          values are equal, which is the standard guard against divide-by-zero.
+          A member whose only loans are still out has returned nothing yet:
         </p>
         <Sql
-          code={`SELECT order_id,
-  total_amount / NULLIF(item_count, 0) AS avg_item_price
-FROM order_summary;`}
+          code={`SELECT member_id,
+  SUM(fine_cents) / NULLIF(COUNT(returned_on), 0) AS avg_fine_per_return
+FROM loans
+GROUP BY member_id;`}
         />
         <Callout>
           <strong>CAST</strong> converts between types explicitly —{' '}
-          <code>CAST(base_price AS INTEGER)</code> or the shorthand{' '}
-          <code>base_price::INTEGER</code> on Postgres. Reach for it whenever an
-          implicit conversion feels risky, like comparing a text column to a
-          number.
+          <code>CAST(replacement_cost_cents AS DECIMAL)</code> or the shorthand{' '}
+          <code>replacement_cost_cents::DECIMAL</code> on Postgres. Reach for it
+          whenever an implicit conversion feels risky, like comparing a text
+          column to a number.
         </Callout>
         <Exercise
           id="ans-funcs"
-          prompt="Return each customer's name in uppercase, and their loyalty_points defaulted to 0 if it's currently NULL."
+          prompt="Return each book's title in uppercase, and its isbn defaulted to 'unknown' if it's currently NULL."
         >
           <Sql
-            code={`SELECT UPPER(name) AS name, COALESCE(loyalty_points, 0) AS loyalty_points
-FROM customers;`}
+            code={`SELECT UPPER(title) AS title, COALESCE(isbn, 'unknown') AS isbn
+FROM books;`}
           />
         </Exercise>
       </Topic>
@@ -635,49 +814,52 @@ FROM customers;`}
           Postgres/MySQL/SQL Server (exact names vary a little):
         </p>
         <Sql
-          code={`CREATE TABLE pizzas (
-  pizza_id      INTEGER,          -- whole numbers
-  name          VARCHAR(100),     -- text with a length cap
-  description   TEXT,             -- unbounded text
-  base_price    DECIMAL(5,2),     -- exact decimal — always for money
-  is_vegetarian BOOLEAN,          -- true/false
-  created_at    TIMESTAMP,        -- date + time
-  launch_date   DATE              -- date only, no time
+          code={`CREATE TABLE books (
+  id                     INTEGER,          -- whole numbers
+  title                  VARCHAR(200),     -- text with a length cap
+  summary                TEXT,             -- unbounded text
+  replacement_cost_cents INTEGER,          -- money as whole cents: exact
+  list_price             DECIMAL(5,2),     -- or exact decimal dollars
+  is_reference_only      BOOLEAN,          -- true/false
+  added_at               TIMESTAMP,        -- date + time
+  first_shelved_on       DATE              -- date only, no time
 );`}
         />
         <Callout variant="warn">
           <strong>Never use FLOAT for money</strong> — floating-point types
           (FLOAT, REAL, DOUBLE) store approximations, so <code>0.1 + 0.2</code>{' '}
-          can come back as <code>0.30000000000000004</code>.{' '}
-          <strong>DECIMAL(precision, scale)</strong> stores exact values instead
-          — that&apos;s why <code>base_price</code> above is DECIMAL(5,2): up to
-          5 total digits, 2 after the decimal point.
+          can come back as <code>0.30000000000000004</code>. Store money either
+          as whole cents in an INTEGER (like <code>replacement_cost_cents</code>
+          ) or as <strong>DECIMAL(precision, scale)</strong>, which stores exact
+          values — <code>list_price</code> above is DECIMAL(5,2): up to 5 total
+          digits, 2 after the decimal point.
         </Callout>
         <p>
           Beyond the basics, most databases also offer: <strong>SERIAL</strong>{' '}
           / <strong>AUTO_INCREMENT</strong> / <strong>IDENTITY</strong> for
           self-incrementing primary keys, <strong>ENUM</strong> for a fixed set
-          of allowed text values (like order status), <strong>UUID</strong> for
-          globally unique identifiers, and array or JSON types for structured
-          values inside a single column (more on JSON in its own section later).
+          of allowed text values (like a reservation&apos;s status),{' '}
+          <strong>UUID</strong> for globally unique identifiers, and array or
+          JSON types for structured values inside a single column (more on JSON
+          in its own section later).
         </p>
         <Sql
-          code={`CREATE TABLE orders (
-  order_id    SERIAL PRIMARY KEY,               -- Postgres auto-increment
-  -- order_id INT AUTO_INCREMENT PRIMARY KEY,   -- MySQL equivalent
-  -- order_id INT IDENTITY(1,1) PRIMARY KEY,    -- SQL Server equivalent
-  status      TEXT NOT NULL DEFAULT 'placed'
+          code={`CREATE TABLE reservations (
+  id          SERIAL PRIMARY KEY,               -- Postgres auto-increment
+  -- id INT AUTO_INCREMENT PRIMARY KEY,         -- MySQL equivalent
+  -- id INT IDENTITY(1,1) PRIMARY KEY,          -- SQL Server equivalent
+  status      TEXT NOT NULL DEFAULT 'waiting'
 );`}
         />
         <Exercise
           id="ans-datatypes"
-          prompt="What type would you pick for a loyalty_points column that must always be a non-negative whole number, and why not DECIMAL for it?"
+          prompt="What type would you pick for a copies_total column that must always be a non-negative whole number, and why not DECIMAL for it?"
         >
           <p className="mt-2 mb-0 text-muted-foreground">
             INTEGER (with a CHECK constraint for non-negative, if you want to
-            enforce it at the schema level). Points are always whole numbers, so
-            DECIMAL would just add unnecessary storage and comparison overhead
-            for a fractional precision you&apos;ll never use.
+            enforce it at the schema level). You can&apos;t own half a copy of a
+            book, so DECIMAL would just add unnecessary storage and comparison
+            overhead for a fractional precision you&apos;ll never use.
           </p>
         </Exercise>
       </Topic>
@@ -705,30 +887,39 @@ FROM customers;`}
         </Deepdive>
         <p>
           <strong>INNER JOIN</strong> keeps only rows that match on both sides.
-          Order + customer, matched by customer_id:
+          Open loans + the member who has them, matched by member_id:
         </p>
         <Sql
-          code={`SELECT o.order_id, c.name, o.order_date
-FROM orders o
-INNER JOIN customers c ON o.customer_id = c.customer_id;`}
+          code={`SELECT l.id, m.name, l.borrowed_on
+FROM loans l
+INNER JOIN members m ON l.member_id = m.id
+WHERE l.returned_on IS NULL
+ORDER BY l.id;`}
         />
         <RefTable
-          headers={['order_id', 'name', 'order_date']}
+          headers={['id', 'name', 'borrowed_on']}
           rows={[
-            ['4021', 'Rin Vasquez', '2026-08-14'],
-            ['4022', 'Zeta Okonkwo', '2026-08-14'],
+            ['9', 'Grace Hopper', '2026-09-01'],
+            ['11', 'Alan Turing', '2026-09-10'],
+            ['12', 'Ada Lovelace', '2026-09-14'],
+            ['13', 'Grace Hopper', '2026-09-18'],
           ]}
         />
         <p>
           <strong>LEFT JOIN</strong> keeps every row from the left table even
           when there&apos;s no match on the right — missing matches come back as
-          NULL. This is how you find &quot;customers with zero orders&quot;:
+          NULL. This is how you find &quot;members who have never borrowed
+          anything&quot;:
         </p>
         <Sql
-          code={`SELECT c.name, o.order_id
-FROM customers c
-LEFT JOIN orders o ON c.customer_id = o.customer_id
-WHERE o.order_id IS NULL;`}
+          code={`SELECT m.name, l.id
+FROM members m
+LEFT JOIN loans l ON m.id = l.member_id
+WHERE l.id IS NULL;`}
+        />
+        <RefTable
+          headers={['name', 'id']}
+          rows={[['Katherine Johnson', 'NULL']]}
         />
         <Callout>
           <strong>Mental model</strong> — INNER JOIN answers &quot;what
@@ -738,46 +929,60 @@ WHERE o.order_id IS NULL;`}
           JOIN keeps unmatched rows from both sides at once.
         </Callout>
         <p>
-          Joining three tables to answer a real question — &quot;which pizzas
-          has each customer ordered?&quot; — chains the same pattern:
+          Joining three tables to answer a real question — &quot;which books has
+          each member borrowed?&quot; — chains the same pattern:
         </p>
         <Sql
-          code={`SELECT c.name, p.name AS pizza, oi.quantity
-FROM customers c
-JOIN orders o ON o.customer_id = c.customer_id
-JOIN order_items oi ON oi.order_id = o.order_id
-JOIN pizzas p ON p.pizza_id = oi.pizza_id
-WHERE c.name = 'Rin Vasquez';`}
+          code={`SELECT m.name, b.title, l.borrowed_on
+FROM members m
+JOIN loans l ON l.member_id = m.id
+JOIN books b ON b.id = l.book_id
+WHERE m.name = 'Alan Turing'
+ORDER BY l.borrowed_on;`}
+        />
+        <RefTable
+          headers={['name', 'title', 'borrowed_on']}
+          rows={[
+            ['Alan Turing', 'Moby-Dick', '2026-07-10'],
+            ['Alan Turing', 'Pride and Prejudice', '2026-08-03'],
+            ['Alan Turing', 'Dracula', '2026-08-20'],
+            ['Alan Turing', 'The Time Machine', '2026-09-10'],
+          ]}
         />
         <p>
           A <strong>SELF JOIN</strong> is the same trick applied to one table
-          twice — say, finding customers on the same planet:
+          twice — say, finding members who use the same branch:
         </p>
         <Sql
-          code={`SELECT a.name, b.name, a.planet_id
-FROM customers a
-JOIN customers b
-  ON a.planet_id = b.planet_id
-  AND a.customer_id < b.customer_id;`}
+          code={`SELECT a.name, b.name, a.branch_id
+FROM members a
+JOIN members b
+  ON a.branch_id = b.branch_id
+  AND a.id < b.id;`}
+        />
+        <RefTable
+          headers={['name', 'name', 'branch_id']}
+          rows={[
+            ['Ada Lovelace', 'Grace Hopper', '1'],
+            ['Alan Turing', 'Katherine Johnson', '2'],
+          ]}
         />
         <Callout>
-          <strong>Fun fact</strong> — that{' '}
-          <code>a.customer_id &lt; b.customer_id</code> isn&apos;t arbitrary.
-          Without it you&apos;d get every pair twice (A-B and B-A) plus every
-          customer paired with themself. It&apos;s the standard trick for
-          &quot;unique pairs&quot; self-joins.
+          <strong>Fun fact</strong> — that <code>a.id &lt; b.id</code>{' '}
+          isn&apos;t arbitrary. Without it you&apos;d get every pair twice (A-B
+          and B-A) plus every member paired with themself. It&apos;s the
+          standard trick for &quot;unique pairs&quot; self-joins.
         </Callout>
         <Exercise
           id="ans-joins"
-          prompt="List every pizza name alongside the planet name of whoever ordered it (planet through customer through order through order_items)."
+          prompt="List every borrowed book title alongside the name of the branch of whoever borrowed it (branch through member through loan)."
         >
           <Sql
-            code={`SELECT p.name AS pizza, pl.name AS planet
-FROM order_items oi
-JOIN pizzas p ON p.pizza_id = oi.pizza_id
-JOIN orders o ON o.order_id = oi.order_id
-JOIN customers c ON c.customer_id = o.customer_id
-JOIN planets pl ON pl.planet_id = c.planet_id;`}
+            code={`SELECT b.title, br.name AS branch
+FROM loans l
+JOIN books b ON b.id = l.book_id
+JOIN members m ON m.id = l.member_id
+JOIN branches br ON br.id = m.branch_id;`}
           />
         </Exercise>
       </Topic>
@@ -801,34 +1006,43 @@ JOIN planets pl ON pl.planet_id = c.planet_id;`}
         </Deepdive>
         <p>
           A <strong>scalar subquery</strong> returns one value and can be used
-          almost anywhere a literal would go:
+          almost anywhere a literal would go. The average replacement cost is
+          about 1083 cents, so:
         </p>
         <Sql
-          code={`SELECT name, base_price
-FROM pizzas
-WHERE base_price > (SELECT AVG(base_price) FROM pizzas);`}
+          code={`SELECT title, replacement_cost_cents
+FROM books
+WHERE replacement_cost_cents > (SELECT AVG(replacement_cost_cents) FROM books);`}
+        />
+        <RefTable
+          headers={['title', 'replacement_cost_cents']}
+          rows={[
+            ['Pride and Prejudice', '1200'],
+            ['Moby-Dick', '1500'],
+            ['Dracula', '1100'],
+          ]}
         />
         <p>
           An <strong>IN subquery</strong> checks membership against a list the
-          database computes for you:
+          database computes for you — here, everyone who has ever been fined:
         </p>
         <Sql
-          code={`SELECT name FROM customers
-WHERE customer_id IN (
-  SELECT customer_id FROM orders WHERE status = 'cancelled'
-);`}
+          code={`SELECT name FROM members
+WHERE id IN (
+  SELECT member_id FROM loans WHERE fine_cents > 0
+);   -- Grace Hopper, Alan Turing`}
         />
         <p>
           A <strong>correlated subquery</strong> re-runs once per outer row,
           referencing a column from outside — powerful, but potentially slow on
-          large tables:
+          large tables. Members with at least one book still out:
         </p>
         <Sql
-          code={`SELECT c.name
-FROM customers c
+          code={`SELECT m.name
+FROM members m
 WHERE EXISTS (
-  SELECT 1 FROM orders o
-  WHERE o.customer_id = c.customer_id AND o.status = 'delivered'
+  SELECT 1 FROM loans l
+  WHERE l.member_id = m.id AND l.returned_on IS NULL
 );`}
         />
         <Callout>
@@ -843,29 +1057,33 @@ WHERE EXISTS (
           — this is called a <strong>derived table</strong>:
         </p>
         <Sql
-          code={`SELECT planet_id, avg_points
+          code={`SELECT member_id, total_fines
 FROM (
-  SELECT planet_id, AVG(loyalty_points) AS avg_points
-  FROM customers
-  GROUP BY planet_id
-) planet_averages
-WHERE avg_points > 400;`}
+  SELECT member_id, SUM(fine_cents) AS total_fines
+  FROM loans
+  GROUP BY member_id
+) member_fines
+WHERE total_fines > 100;   -- member 2 (125) and member 3 (325)`}
         />
         <Exercise
           id="ans-subq"
-          prompt="Find every pizza that has never appeared in an order_items row (a total dud on the menu)."
+          prompt="Find every book that has never appeared in a loans row (a title nobody has ever borrowed)."
         >
           <Sql
-            code={`SELECT name FROM pizzas
-WHERE pizza_id NOT IN (
-  SELECT pizza_id FROM order_items
+            code={`SELECT title FROM books
+WHERE id NOT IN (
+  SELECT book_id FROM loans
 );
--- or, more safely if pizza_id can be NULL anywhere:
-SELECT name FROM pizzas p
+-- or, more safely if book_id can be NULL anywhere:
+SELECT title FROM books b
 WHERE NOT EXISTS (
-  SELECT 1 FROM order_items oi WHERE oi.pizza_id = p.pizza_id
+  SELECT 1 FROM loans l WHERE l.book_id = b.id
 );`}
           />
+          <p className="mt-2 mb-0 text-muted-foreground">
+            With the fixture data every book has been borrowed at least once, so
+            both queries correctly return zero rows.
+          </p>
         </Exercise>
       </Topic>
 
@@ -893,9 +1111,12 @@ WHERE NOT EXISTS (
           compatible types on each side:
         </p>
         <Sql
-          code={`SELECT name FROM customers WHERE planet_id = 1
+          code={`SELECT name FROM members WHERE branch_id = 1
 UNION
-SELECT name FROM customers WHERE loyalty_points > 900;`}
+SELECT m.name FROM members m
+JOIN loans l ON l.member_id = m.id
+WHERE l.fine_cents > 0;
+-- Ada Lovelace, Grace Hopper, Alan Turing (Grace only once)`}
         />
         <p>
           <strong>INTERSECT</strong> keeps only rows appearing in both queries;{' '}
@@ -903,15 +1124,15 @@ SELECT name FROM customers WHERE loyalty_points > 900;`}
           from the first query that don&apos;t appear in the second:
         </p>
         <Sql
-          code={`-- customers who ordered AND have high loyalty points
-SELECT customer_id FROM orders
+          code={`-- members who have borrowed AND are premium
+SELECT member_id FROM loans
 INTERSECT
-SELECT customer_id FROM customers WHERE loyalty_points > 500;
+SELECT id FROM members WHERE tier = 'premium';   -- 1
 
--- pizzas nobody has ordered this month
-SELECT pizza_id FROM pizzas
+-- books with no copy out right now
+SELECT id FROM books
 EXCEPT
-SELECT pizza_id FROM order_items;`}
+SELECT book_id FROM loans WHERE returned_on IS NULL;   -- 2, 3`}
         />
         <Callout>
           <strong>Note</strong> — MySQL didn&apos;t support INTERSECT/EXCEPT
@@ -922,14 +1143,14 @@ SELECT pizza_id FROM order_items;`}
         </Callout>
         <Exercise
           id="ans-setops"
-          prompt="Get a single deduplicated list of names of anyone who is either a customer on planet 1 or has placed a cancelled order."
+          prompt="Get a single deduplicated list of names of anyone who is either a member of the Riverside branch (branch_id 2) or currently has a book out."
         >
           <Sql
-            code={`SELECT name FROM customers WHERE planet_id = 1
+            code={`SELECT name FROM members WHERE branch_id = 2
 UNION
-SELECT c.name FROM customers c
-JOIN orders o ON o.customer_id = c.customer_id
-WHERE o.status = 'cancelled';`}
+SELECT m.name FROM members m
+JOIN loans l ON l.member_id = m.id
+WHERE l.returned_on IS NULL;`}
           />
         </Exercise>
       </Topic>
@@ -952,20 +1173,22 @@ WHERE o.status = 'cancelled';`}
           is a deliberate design choice, not an error.
         </Deepdive>
         <Sql
-          code={`SELECT name,
+          code={`SELECT title,
   CASE
-    WHEN loyalty_points >= 800 THEN 'Platinum'
-    WHEN loyalty_points >= 400 THEN 'Gold'
-    ELSE 'Standard'
-  END AS tier
-FROM customers;`}
+    WHEN copies_available = 0 THEN 'On loan'
+    WHEN copies_available = 1 THEN 'Last copy'
+    ELSE 'Available'
+  END AS shelf_status
+FROM books;`}
         />
         <RefTable
-          headers={['name', 'tier']}
+          caption="result (first rows)"
+          headers={['title', 'shelf_status']}
           rows={[
-            ['Zeta Okonkwo', 'Platinum'],
-            ['Marlowe Duque', 'Gold'],
-            ['Theo Park', 'Standard'],
+            ['Pride and Prejudice', 'Available'],
+            ['Frankenstein', 'Available'],
+            ['Moby-Dick', 'Last copy'],
+            ['The Time Machine', 'On loan'],
           ]}
         />
         <p>
@@ -975,10 +1198,11 @@ FROM customers;`}
         </p>
         <Sql
           code={`SELECT
-  COUNT(CASE WHEN status = 'delivered' THEN 1 END) AS delivered,
-  COUNT(CASE WHEN status = 'cancelled' THEN 1 END) AS cancelled
-FROM orders;`}
+  COUNT(CASE WHEN returned_on IS NULL THEN 1 END) AS still_out,
+  COUNT(CASE WHEN returned_on IS NOT NULL THEN 1 END) AS returned
+FROM loans;`}
         />
+        <RefTable headers={['still_out', 'returned']} rows={[['4', '9']]} />
         <Callout>
           <strong>Why this works</strong> — <code>COUNT</code> ignores NULLs,
           and a CASE with no matching branch (no ELSE) returns NULL. So{' '}
@@ -987,16 +1211,16 @@ FROM orders;`}
         </Callout>
         <Exercise
           id="ans-case"
-          prompt="Label every pizza as 'Budget' (under $9), 'Standard' ($9–$13), or 'Premium' (over $13)."
+          prompt="Label every book as 'Budget' (replacement cost under $10), 'Standard' ($10–$13), or 'Premium' (over $13). Remember the column is in cents."
         >
           <Sql
-            code={`SELECT name,
+            code={`SELECT title,
   CASE
-    WHEN base_price < 9 THEN 'Budget'
-    WHEN base_price <= 13 THEN 'Standard'
+    WHEN replacement_cost_cents < 1000 THEN 'Budget'
+    WHEN replacement_cost_cents <= 1300 THEN 'Standard'
     ELSE 'Premium'
-  END AS price_tier
-FROM pizzas;`}
+  END AS cost_tier
+FROM books;`}
           />
         </Exercise>
       </Topic>
@@ -1019,34 +1243,33 @@ FROM pizzas;`}
           until you explicitly refresh it.
         </Deepdive>
         <Sql
-          code={`CREATE VIEW vegetarian_menu AS
-SELECT pizza_id, name, base_price
-FROM pizzas
-WHERE is_vegetarian = true;
+          code={`CREATE VIEW available_books AS
+SELECT id, title, copies_available
+FROM books
+WHERE copies_available > 0;
 
-SELECT * FROM vegetarian_menu
-ORDER BY base_price;`}
+SELECT * FROM available_books
+ORDER BY title;`}
         />
         <p>
           Nothing is duplicated on disk — a plain view just re-runs its
           underlying query every time you select from it. That makes it a way to
           hide complexity (a five-table join becomes one friendly name), and a
           way to restrict access (grant a report-writer access to a view that
-          excludes sensitive columns, instead of the whole table).
+          excludes sensitive columns like members&apos; email addresses, instead
+          of the whole table).
         </p>
         <Sql
-          code={`CREATE VIEW customer_order_summary AS
-SELECT c.customer_id, c.name,
-       COUNT(o.order_id) AS total_orders,
-       SUM(oi.quantity * p.base_price) AS lifetime_spend
-FROM customers c
-LEFT JOIN orders o ON o.customer_id = c.customer_id
-LEFT JOIN order_items oi ON oi.order_id = o.order_id
-LEFT JOIN pizzas p ON p.pizza_id = oi.pizza_id
-GROUP BY c.customer_id, c.name;`}
+          code={`CREATE VIEW member_loan_summary AS
+SELECT m.id, m.name,
+       COUNT(l.id) AS total_loans,
+       COALESCE(SUM(l.fine_cents), 0) AS lifetime_fines_cents
+FROM members m
+LEFT JOIN loans l ON l.member_id = m.id
+GROUP BY m.id, m.name;`}
         />
         <p>
-          Once created, <code>customer_order_summary</code> reads exactly like a
+          Once created, <code>member_loan_summary</code> reads exactly like a
           table — join it, filter it, sort it.{' '}
           <strong>CREATE OR REPLACE VIEW</strong> updates its definition in
           place without needing to drop it first.
@@ -1064,19 +1287,19 @@ GROUP BY c.customer_id, c.name;`}
           id="ans-views"
           prompt={
             <>
-              Create a view called <code>popular_pizzas</code> showing each
-              pizza&apos;s name and total quantity ordered across all
-              order_items, for pizzas ordered more than 20 times total.
+              Create a view called <code>popular_books</code> showing each
+              book&apos;s title and total number of loans, for books borrowed
+              more than twice.
             </>
           }
         >
           <Sql
-            code={`CREATE VIEW popular_pizzas AS
-SELECT p.name, SUM(oi.quantity) AS total_ordered
-FROM order_items oi
-JOIN pizzas p ON p.pizza_id = oi.pizza_id
-GROUP BY p.name
-HAVING SUM(oi.quantity) > 20;`}
+            code={`CREATE VIEW popular_books AS
+SELECT b.title, COUNT(*) AS total_loans
+FROM loans l
+JOIN books b ON b.id = l.book_id
+GROUP BY b.title
+HAVING COUNT(*) > 2;`}
           />
         </Exercise>
       </Topic>
@@ -1104,20 +1327,20 @@ HAVING SUM(oi.quantity) > 20;`}
           constraints on an existing table:
         </p>
         <Sql
-          code={`ALTER TABLE pizzas ADD COLUMN calories INTEGER;
-ALTER TABLE pizzas ALTER COLUMN base_price SET NOT NULL;   -- Postgres
-ALTER TABLE pizzas DROP COLUMN calories;
-ALTER TABLE pizzas RENAME COLUMN name TO pizza_name;
-ALTER TABLE pizzas ADD CONSTRAINT chk_price CHECK (base_price > 0);`}
+          code={`ALTER TABLE books ADD COLUMN pages INTEGER;
+ALTER TABLE books ALTER COLUMN title SET NOT NULL;   -- Postgres
+ALTER TABLE books DROP COLUMN pages;
+ALTER TABLE books RENAME COLUMN title TO book_title;
+ALTER TABLE books ADD CONSTRAINT chk_cost CHECK (replacement_cost_cents > 0);`}
         />
         <p>
           Three ways to get rid of data, each with a very different blast
           radius:
         </p>
         <Sql
-          code={`DELETE FROM orders WHERE status = 'cancelled';  -- removes matching rows, logged, can be rolled back
-TRUNCATE TABLE orders;                           -- removes ALL rows instantly, minimal logging
-DROP TABLE orders;                               -- removes the rows AND the table structure itself`}
+          code={`DELETE FROM reservations WHERE status = 'cancelled';  -- removes matching rows, logged, can be rolled back
+TRUNCATE TABLE reservations;                           -- removes ALL rows instantly, minimal logging
+DROP TABLE reservations;                               -- removes the rows AND the table structure itself`}
         />
         <Callout variant="warn">
           <strong>Know the difference</strong> — DELETE is a DML statement: it
@@ -1138,14 +1361,14 @@ DROP TABLE orders;                               -- removes the rows AND the tab
           id="ans-ddl"
           prompt={
             <>
-              Add a NOT NULL column called <code>delivery_notes</code> (type
-              TEXT) to the orders table, with an empty string as its default.
+              Add a NOT NULL column called <code>condition_notes</code> (type
+              TEXT) to the loans table, with an empty string as its default.
             </>
           }
         >
           <Sql
-            code={`ALTER TABLE orders
-ADD COLUMN delivery_notes TEXT NOT NULL DEFAULT '';`}
+            code={`ALTER TABLE loans
+ADD COLUMN condition_notes TEXT NOT NULL DEFAULT '';`}
           />
         </Exercise>
       </Topic>
@@ -1173,36 +1396,36 @@ ADD COLUMN delivery_notes TEXT NOT NULL DEFAULT '';`}
           at a time:
         </p>
         <Sql
-          code={`CREATE TABLE archived_orders (LIKE orders INCLUDING ALL);
+          code={`CREATE TABLE archived_loans (LIKE loans INCLUDING ALL);
 
-INSERT INTO archived_orders
-SELECT * FROM orders
-WHERE status = 'delivered' AND order_date < '2025-01-01';`}
+INSERT INTO archived_loans
+SELECT * FROM loans
+WHERE returned_on IS NOT NULL AND returned_on < '2026-01-01';`}
         />
         <p>
           An <strong>upsert</strong> means &quot;insert this row, or if it
           already exists, update it instead&quot; — the classic use case is a
-          loyalty points table keyed by customer, where you don&apos;t know
-          ahead of time if a row already exists:
+          per-member statistics table, where you don&apos;t know ahead of time
+          if a row already exists:
         </p>
         <Sql
           code={`-- Postgres / SQLite
-INSERT INTO customer_totals (customer_id, orders_count)
-VALUES (101, 1)
-ON CONFLICT (customer_id)
-DO UPDATE SET orders_count = customer_totals.orders_count + 1;
+INSERT INTO member_stats (member_id, loans_count)
+VALUES (1, 1)
+ON CONFLICT (member_id)
+DO UPDATE SET loans_count = member_stats.loans_count + 1;
 
 -- MySQL
-INSERT INTO customer_totals (customer_id, orders_count)
-VALUES (101, 1)
-ON DUPLICATE KEY UPDATE orders_count = orders_count + 1;
+INSERT INTO member_stats (member_id, loans_count)
+VALUES (1, 1)
+ON DUPLICATE KEY UPDATE loans_count = loans_count + 1;
 
 -- SQL Server / standard SQL
-MERGE INTO customer_totals AS target
-USING (SELECT 101 AS customer_id) AS src
-ON target.customer_id = src.customer_id
-WHEN MATCHED THEN UPDATE SET orders_count = orders_count + 1
-WHEN NOT MATCHED THEN INSERT (customer_id, orders_count) VALUES (101, 1);`}
+MERGE INTO member_stats AS target
+USING (SELECT 1 AS member_id) AS src
+ON target.member_id = src.member_id
+WHEN MATCHED THEN UPDATE SET loans_count = loans_count + 1
+WHEN NOT MATCHED THEN INSERT (member_id, loans_count) VALUES (1, 1);`}
         />
         <Callout>
           <strong>Why not just SELECT-then-INSERT-or-UPDATE?</strong> — checking
@@ -1216,18 +1439,18 @@ WHEN NOT MATCHED THEN INSERT (customer_id, orders_count) VALUES (101, 1);`}
           prompt={
             <>
               Using Postgres-style syntax, upsert a row into a{' '}
-              <code>pizza_of_the_month</code> table keyed by{' '}
-              <code>year_month</code>, setting <code>pizza_id</code> to 3 for
-              &apos;2026-09&apos; — insert it if the month has no row yet,
-              otherwise update the existing one.
+              <code>book_of_the_month</code> table keyed by{' '}
+              <code>year_month</code>, setting <code>book_id</code> to 3
+              (Moby-Dick) for &apos;2026-09&apos; — insert it if the month has
+              no row yet, otherwise update the existing one.
             </>
           }
         >
           <Sql
-            code={`INSERT INTO pizza_of_the_month (year_month, pizza_id)
+            code={`INSERT INTO book_of_the_month (year_month, book_id)
 VALUES ('2026-09', 3)
 ON CONFLICT (year_month)
-DO UPDATE SET pizza_id = EXCLUDED.pizza_id;`}
+DO UPDATE SET book_id = EXCLUDED.book_id;`}
           />
         </Exercise>
       </Topic>
@@ -1253,66 +1476,112 @@ DO UPDATE SET pizza_id = EXCLUDED.pizza_id;`}
         </Deepdive>
         <p>
           The giveaway syntax is <strong>OVER (...)</strong>.{' '}
-          <strong>ROW_NUMBER</strong> assigns a unique rank per partition:
+          <strong>ROW_NUMBER</strong> assigns a unique rank per partition —
+          here, each book&apos;s age rank within its genre:
         </p>
         <Sql
-          code={`SELECT name, planet_id, loyalty_points,
+          code={`SELECT title, genre_id, published_year,
   ROW_NUMBER() OVER (
-    PARTITION BY planet_id
-    ORDER BY loyalty_points DESC
-  ) AS rank_on_planet
-FROM customers;`}
+    PARTITION BY genre_id
+    ORDER BY published_year
+  ) AS age_rank_in_genre
+FROM books;`}
         />
         <RefTable
-          headers={['name', 'planet_id', 'loyalty_points', 'rank_on_planet']}
+          caption="result (first rows)"
+          headers={['title', 'genre_id', 'published_year', 'age_rank_in_genre']}
           rows={[
-            ['Zeta Okonkwo', '1', '980', '1'],
-            ['Ines Halloway', '1', '710', '2'],
-            ['Rin Vasquez', '2', '875', '1'],
+            ['Pride and Prejudice', '3', '1813', '1'],
+            ['Frankenstein', '4', '1818', '1'],
+            ['Dracula', '4', '1897', '2'],
           ]}
         />
         <p>
           That&apos;s the classic &quot;top N per group&quot; pattern — wrap it
-          in a subquery and filter on rank_on_planet to get, say, the top 3
-          customers per planet, something a plain GROUP BY simply cannot
-          express.
+          in a subquery and filter on age_rank_in_genre to get, say, the oldest
+          book in every genre, something a plain GROUP BY simply cannot express.
         </p>
         <p>
           <strong>RANK</strong> and <strong>DENSE_RANK</strong> behave like
           ROW_NUMBER but give tied rows the same rank — RANK leaves a gap
-          afterward, DENSE_RANK doesn&apos;t:
+          afterward, DENSE_RANK doesn&apos;t. Ranking books by how often
+          they&apos;ve been borrowed:
         </p>
         <Sql
-          code={`SELECT name, base_price,
-  RANK() OVER (ORDER BY base_price DESC) AS price_rank
-FROM pizzas;`}
+          code={`SELECT b.title, COUNT(*) AS loan_count,
+  RANK() OVER (ORDER BY COUNT(*) DESC) AS popularity
+FROM loans l
+JOIN books b ON b.id = l.book_id
+GROUP BY b.title;`}
+        />
+        <RefTable
+          headers={['title', 'loan_count', 'popularity']}
+          rows={[
+            ['Pride and Prejudice', '3', '1'],
+            ['Dracula', '3', '1'],
+            ['Frankenstein', '2', '3'],
+            ['Moby-Dick', '2', '3'],
+            ['The Time Machine', '2', '3'],
+            ['Alice’s Adventures in Wonderland', '1', '6'],
+          ]}
         />
         <p>
-          Window functions also do running totals and moving calculations,
-          without any self-join:
+          With DENSE_RANK the last two ranks would be 2 and 3 instead of 3 and
+          6. Window functions also do running totals and moving calculations,
+          without any self-join — here, Alan Turing&apos;s fines adding up over
+          time:
         </p>
         <Sql
-          code={`SELECT order_date, order_id,
-  SUM(1) OVER (ORDER BY order_date) AS running_order_count
-FROM orders;`}
+          code={`SELECT borrowed_on, fine_cents,
+  SUM(fine_cents) OVER (
+    PARTITION BY member_id
+    ORDER BY borrowed_on
+  ) AS running_fines_cents
+FROM loans
+WHERE member_id = 3;`}
+        />
+        <RefTable
+          headers={['borrowed_on', 'fine_cents', 'running_fines_cents']}
+          rows={[
+            ['2026-07-10', '0', '0'],
+            ['2026-08-03', '250', '250'],
+            ['2026-08-20', '75', '325'],
+            ['2026-09-10', '0', '325'],
+          ]}
         />
         <Callout>
           <strong>Fun fact</strong> — window functions run <em>after</em> WHERE,
           GROUP BY and HAVING, but <em>before</em> the final ORDER BY.
-          That&apos;s why you can&apos;t filter on a window function&apos;s
-          result directly in WHERE — you wrap the whole query in a subquery (or
-          CTE) and filter the outer layer instead.
+          That&apos;s why the RANK above can rank by <code>COUNT(*)</code>, and
+          why you can&apos;t filter on a window function&apos;s result directly
+          in WHERE — you wrap the whole query in a subquery (or CTE) and filter
+          the outer layer instead.
         </Callout>
         <Exercise
           id="ans-window"
-          prompt="For each order, show the pizza with the running total of quantity ordered so far, ordered by order_date, using SUM() OVER."
+          prompt="Find the most-borrowed book (or books, if tied) in each month, using RANK() with PARTITION BY the month."
         >
           <Sql
-            code={`SELECT o.order_date, oi.pizza_id, oi.quantity,
-  SUM(oi.quantity) OVER (ORDER BY o.order_date) AS running_qty
-FROM orders o
-JOIN order_items oi ON oi.order_id = o.order_id;`}
+            code={`SELECT month, title, loan_count
+FROM (
+  SELECT date_trunc('month', l.borrowed_on) AS month,
+         b.title,
+         COUNT(*) AS loan_count,
+         RANK() OVER (
+           PARTITION BY date_trunc('month', l.borrowed_on)
+           ORDER BY COUNT(*) DESC
+         ) AS rnk
+  FROM loans l
+  JOIN books b ON b.id = l.book_id
+  GROUP BY date_trunc('month', l.borrowed_on), b.title
+) ranked
+WHERE rnk = 1;`}
           />
+          <p className="mt-2 mb-0 text-muted-foreground">
+            RANK (not ROW_NUMBER) keeps ties, which matters here: in the fixture
+            data no book was borrowed twice in the same month, so every book
+            borrowed that month shares rank 1.
+          </p>
         </Exercise>
       </Topic>
 
@@ -1337,80 +1606,113 @@ JOIN order_items oi ON oi.order_id = o.order_id;`}
           automatically the moment an iteration produces zero new rows.
         </Deepdive>
         <Sql
-          code={`WITH planet_totals AS (
-  SELECT planet_id, COUNT(*) AS customer_count
-  FROM customers
-  GROUP BY planet_id
+          code={`WITH genre_loans AS (
+  SELECT b.genre_id, COUNT(*) AS loan_count
+  FROM loans l
+  JOIN books b ON b.id = l.book_id
+  GROUP BY b.genre_id
 )
-SELECT pl.name, pt.customer_count
-FROM planet_totals pt
-JOIN planets pl ON pl.planet_id = pt.planet_id
-WHERE pt.customer_count > 20;`}
+SELECT g.name, gl.loan_count
+FROM genre_loans gl
+JOIN genres g ON g.id = gl.genre_id
+WHERE gl.loan_count > 1;`}
+        />
+        <RefTable
+          headers={['name', 'loan_count']}
+          rows={[
+            ['Classics', '3'],
+            ['Horror', '5'],
+            ['Adventure', '2'],
+            ['Science Fiction', '2'],
+          ]}
         />
         <p>
           Nothing here that a subquery couldn&apos;t do — but CTEs read
           top-to-bottom like a recipe, and you can chain several, each building
-          on the last, which keeps complex reporting queries readable.
+          on the last, which keeps complex reporting queries readable. This one
+          applies the fine rule (25 cents a day, capped at the replacement cost)
+          to every overdue loan, then totals it per member:
         </p>
         <Sql
-          code={`WITH order_totals AS (
-  SELECT o.order_id, o.customer_id, SUM(oi.quantity * p.base_price) AS total
-  FROM orders o
-  JOIN order_items oi ON oi.order_id = o.order_id
-  JOIN pizzas p ON p.pizza_id = oi.pizza_id
-  GROUP BY o.order_id, o.customer_id
+          code={`WITH overdue AS (
+  SELECT l.member_id,
+         LEAST((CURRENT_DATE - l.due_on) * 25, b.replacement_cost_cents) AS accrued_cents
+  FROM loans l
+  JOIN books b ON b.id = l.book_id
+  WHERE l.returned_on IS NULL AND l.due_on < CURRENT_DATE
 ),
-customer_spend AS (
-  SELECT customer_id, SUM(total) AS lifetime_spend
-  FROM order_totals
-  GROUP BY customer_id
+member_accrued AS (
+  SELECT member_id, SUM(accrued_cents) AS accrued_cents
+  FROM overdue
+  GROUP BY member_id
 )
-SELECT c.name, cs.lifetime_spend
-FROM customer_spend cs
-JOIN customers c ON c.customer_id = cs.customer_id
-ORDER BY cs.lifetime_spend DESC;`}
+SELECT m.name, ma.accrued_cents
+FROM member_accrued ma
+JOIN members m ON m.id = ma.member_id
+ORDER BY ma.accrued_cents DESC;`}
+        />
+        <RefTable
+          caption="result — as of 2026-09-25"
+          headers={['name', 'accrued_cents']}
+          rows={[
+            ['Grace Hopper', '250'],
+            ['Alan Turing', '25'],
+          ]}
         />
         <p>
           A <strong>recursive CTE</strong> refers to itself, which is how SQL
-          walks hierarchies — org charts, category trees, or here, a referral
-          chain between customers:
+          walks hierarchies — org charts, category trees, or here, the genre
+          tree:
         </p>
         <Sql
-          code={`WITH RECURSIVE referral_chain AS (
-  SELECT customer_id, referred_by, 1 AS depth
-  FROM customers
-  WHERE customer_id = 42        -- anchor: starting point
+          code={`WITH RECURSIVE genre_tree AS (
+  SELECT id, name, parent_id, 1 AS depth, CAST(name AS TEXT) AS path
+  FROM genres
+  WHERE name = 'Fiction'          -- anchor: starting point
 
   UNION ALL
 
-  SELECT c.customer_id, c.referred_by, rc.depth + 1
-  FROM customers c
-  JOIN referral_chain rc ON c.referred_by = rc.customer_id
+  SELECT g.id, g.name, g.parent_id, gt.depth + 1, gt.path || ' / ' || g.name
+  FROM genres g
+  JOIN genre_tree gt ON g.parent_id = gt.id
 )
-SELECT * FROM referral_chain;`}
+SELECT path, depth FROM genre_tree;`}
+        />
+        <RefTable
+          headers={['path', 'depth']}
+          rows={[
+            ['Fiction', '1'],
+            ['Fiction / Classics', '2'],
+            ['Fiction / Horror', '2'],
+            ['Fiction / Adventure', '2'],
+            ['Fiction / Fantasy', '2'],
+            ['Fiction / Science Fiction', '2'],
+          ]}
         />
         <Callout>
           <strong>How to read a recursive CTE</strong> — the part above UNION
           ALL is the &quot;anchor&quot; (where recursion starts); the part below
           is the &quot;recursive member,&quot; which keeps joining back to its
           own output until no new rows are produced. It always terminates
-          because eventually the join finds nothing new to add.
+          because eventually the join finds nothing new to add. Add a sub-genre
+          under Horror (say, Gothic) and it shows up at depth 3 with no change
+          to the query.
         </Callout>
         <Exercise
           id="ans-cte"
-          prompt="Using a CTE, find the single pizza that generates the most total revenue (quantity × base_price, summed across all orders)."
+          prompt="Using a CTE, find the single member who has paid the most in fines in total (fine_cents summed across all their loans)."
         >
           <Sql
-            code={`WITH pizza_revenue AS (
-  SELECT p.pizza_id, p.name, SUM(oi.quantity * p.base_price) AS revenue
-  FROM order_items oi
-  JOIN pizzas p ON p.pizza_id = oi.pizza_id
-  GROUP BY p.pizza_id, p.name
+            code={`WITH member_fines AS (
+  SELECT m.id, m.name, SUM(l.fine_cents) AS total_fines
+  FROM loans l
+  JOIN members m ON m.id = l.member_id
+  GROUP BY m.id, m.name
 )
-SELECT name, revenue
-FROM pizza_revenue
-ORDER BY revenue DESC
-LIMIT 1;`}
+SELECT name, total_fines
+FROM member_fines
+ORDER BY total_fines DESC
+LIMIT 1;   -- Alan Turing, 325`}
           />
         </Exercise>
       </Topic>
@@ -1436,61 +1738,78 @@ LIMIT 1;`}
         <p>
           Plain GROUP BY gives you one row per combination.{' '}
           <strong>ROLLUP</strong> adds subtotal rows going from the most
-          detailed grouping up to a grand total — think of a sales report with
-          per-planet subtotals and one grand total at the bottom:
+          detailed grouping up to a grand total — think of a lending report with
+          per-branch subtotals and one grand total at the bottom. A loan belongs
+          to the branch of the member who took it out:
         </p>
         <Sql
-          code={`SELECT planet_id, status, COUNT(*) AS order_count
-FROM orders o
-JOIN customers c ON c.customer_id = o.customer_id
-GROUP BY ROLLUP(planet_id, status);`}
+          code={`SELECT br.name AS branch, g.name AS genre, COUNT(*) AS loan_count
+FROM loans l
+JOIN members m ON m.id = l.member_id
+JOIN branches br ON br.id = m.branch_id
+JOIN books b ON b.id = l.book_id
+JOIN genres g ON g.id = b.genre_id
+GROUP BY ROLLUP(br.name, g.name)
+ORDER BY br.name, g.name;`}
         />
         <RefTable
           caption="result — subtotal rows have NULL in the rolled-up column"
-          headers={['planet_id', 'status', 'order_count']}
+          headers={['branch', 'genre', 'loan_count']}
           rows={[
-            ['1', 'delivered', '40'],
-            ['1', 'cancelled', '2'],
-            ['1', 'NULL', '42'],
-            ['NULL', 'NULL', '157'],
+            ['Downtown', 'Adventure', '1'],
+            ['Downtown', 'Classics', '2'],
+            ['Downtown', 'Fantasy', '1'],
+            ['Downtown', 'Horror', '4'],
+            ['Downtown', 'Science Fiction', '1'],
+            ['Downtown', 'NULL', '9'],
+            ['Riverside', 'Adventure', '1'],
+            ['Riverside', 'Classics', '1'],
+            ['Riverside', 'Horror', '1'],
+            ['Riverside', 'Science Fiction', '1'],
+            ['Riverside', 'NULL', '4'],
+            ['NULL', 'NULL', '13'],
           ]}
         />
         <p>
           <strong>CUBE</strong> goes further and computes subtotals for every
           combination of the grouped columns, not just the hierarchical rollup
-          order — useful when you want &quot;totals by planet&quot; AND
-          &quot;totals by status&quot; AND the grand total, all at once.
+          order — useful when you want &quot;totals by branch&quot; AND
+          &quot;totals by genre&quot; AND the grand total, all at once.
         </p>
         <p>
           <strong>GROUPING SETS</strong> is the most flexible of the three: you
           specify exactly which groupings you want, with no assumed hierarchy:
         </p>
         <Sql
-          code={`SELECT planet_id, status, COUNT(*) AS order_count
-FROM orders o
-JOIN customers c ON c.customer_id = o.customer_id
-GROUP BY GROUPING SETS ((planet_id), (status), ());`}
+          code={`SELECT br.name AS branch, g.name AS genre, COUNT(*) AS loan_count
+FROM loans l
+JOIN members m ON m.id = l.member_id
+JOIN branches br ON br.id = m.branch_id
+JOIN books b ON b.id = l.book_id
+JOIN genres g ON g.id = b.genre_id
+GROUP BY GROUPING SETS ((br.name), (g.name), ());`}
         />
         <Callout>
           <strong>Telling a subtotal from a real NULL</strong> — the{' '}
           <code>GROUPING()</code> function returns 1 for a column that&apos;s
           been rolled up into a subtotal, and 0 otherwise, which disambiguates a
           rolled-up NULL from a genuine NULL value in the data:{' '}
-          <code>GROUPING(status)</code> in the SELECT list. Dialect support
+          <code>GROUPING(g.name)</code> in the SELECT list. Dialect support
           varies — Postgres, SQL Server, and MySQL 8+ support all three; SQLite
           doesn&apos;t, and there you&apos;d fall back to UNION ALL of separate
           GROUP BY queries.
         </Callout>
         <Exercise
           id="ans-grouping"
-          prompt="Using ROLLUP, get pizza order counts per planet, with a grand total row at the end."
+          prompt="Using ROLLUP, get loan counts per branch, with a grand total row at the end."
         >
           <Sql
-            code={`SELECT pl.name AS planet, COUNT(*) AS orders_placed
-FROM orders o
-JOIN customers c ON c.customer_id = o.customer_id
-JOIN planets pl ON pl.planet_id = c.planet_id
-GROUP BY ROLLUP(pl.name);`}
+            code={`SELECT br.name AS branch, COUNT(*) AS loans_made
+FROM loans l
+JOIN members m ON m.id = l.member_id
+JOIN branches br ON br.id = m.branch_id
+GROUP BY ROLLUP(br.name);
+-- Downtown 9, Riverside 4, NULL (grand total) 13`}
           />
         </Exercise>
       </Topic>
@@ -1503,10 +1822,8 @@ GROUP BY ROLLUP(pl.name);`}
         <Deepdive>
           <strong>Under the hood</strong> — Pivoting is really just conditional
           aggregation wearing a different hat:{' '}
-          <code>
-            SUM(CASE WHEN status = &apos;delivered&apos; THEN 1 ELSE 0 END)
-          </code>{' '}
-          is doing exactly what a dedicated PIVOT clause does, just spelled out
+          <code>SUM(CASE WHEN month = 7 THEN 1 ELSE 0 END)</code> is doing
+          exactly what a dedicated PIVOT clause does, just spelled out
           explicitly. The underlying trade-off is <strong>long vs wide</strong>{' '}
           data: a long, normalized table (one row per fact) is flexible, easy to
           extend with a new category without touching the schema, and simple to
@@ -1519,24 +1836,29 @@ GROUP BY ROLLUP(pl.name);`}
           SQL is naturally &quot;long&quot;: one row per fact. Reports often
           want &quot;wide&quot;: one row per entity, one column per category.
           The universal, portable way to pivot is conditional aggregation — a
-          CASE inside an aggregate, one branch per column you want:
+          CASE inside an aggregate, one branch per column you want. Loans per
+          genre per month:
         </p>
         <Sql
           code={`SELECT
-  pl.name AS planet,
-  SUM(CASE WHEN o.status = 'delivered' THEN 1 ELSE 0 END) AS delivered,
-  SUM(CASE WHEN o.status = 'cancelled' THEN 1 ELSE 0 END) AS cancelled,
-  SUM(CASE WHEN o.status = 'in_transit' THEN 1 ELSE 0 END) AS in_transit
-FROM orders o
-JOIN customers c ON c.customer_id = o.customer_id
-JOIN planets pl ON pl.planet_id = c.planet_id
-GROUP BY pl.name;`}
+  g.name AS genre,
+  SUM(CASE WHEN EXTRACT(MONTH FROM l.borrowed_on) = 7 THEN 1 ELSE 0 END) AS jul,
+  SUM(CASE WHEN EXTRACT(MONTH FROM l.borrowed_on) = 8 THEN 1 ELSE 0 END) AS aug,
+  SUM(CASE WHEN EXTRACT(MONTH FROM l.borrowed_on) = 9 THEN 1 ELSE 0 END) AS sep
+FROM loans l
+JOIN books b ON b.id = l.book_id
+JOIN genres g ON g.id = b.genre_id
+GROUP BY g.name
+ORDER BY g.name;`}
         />
         <RefTable
-          headers={['planet', 'delivered', 'cancelled', 'in_transit']}
+          headers={['genre', 'jul', 'aug', 'sep']}
           rows={[
-            ['Kepler Junction', '40', '2', '1'],
-            ['Rigel Outpost', '28', '0', '3'],
+            ['Adventure', '1', '0', '1'],
+            ['Classics', '1', '1', '1'],
+            ['Fantasy', '0', '0', '1'],
+            ['Horror', '2', '2', '1'],
+            ['Science Fiction', '0', '1', '1'],
           ]}
         />
         <p>
@@ -1556,13 +1878,13 @@ GROUP BY pl.name;`}
         </Callout>
         <Exercise
           id="ans-pivot"
-          prompt="Pivot the pizzas table into one row showing counts of vegetarian vs non-vegetarian pizzas as two columns."
+          prompt="Pivot the members table into one row showing counts of premium vs standard members as two columns."
         >
           <Sql
             code={`SELECT
-  SUM(CASE WHEN is_vegetarian THEN 1 ELSE 0 END) AS vegetarian_count,
-  SUM(CASE WHEN NOT is_vegetarian THEN 1 ELSE 0 END) AS non_vegetarian_count
-FROM pizzas;`}
+  SUM(CASE WHEN tier = 'premium' THEN 1 ELSE 0 END) AS premium_count,
+  SUM(CASE WHEN tier = 'standard' THEN 1 ELSE 0 END) AS standard_count
+FROM members;   -- 1 and 3`}
           />
         </Exercise>
       </Topic>
@@ -1584,22 +1906,24 @@ FROM pizzas;`}
           them), so the data files never reflect the abandoned change at all.
         </Deepdive>
         <Sql
-          code={`INSERT INTO customers (name, planet_id, joined_date, loyalty_points)
-VALUES ('Nova Ibrahim', 4, '2026-09-12', 0);
+          code={`INSERT INTO books (title, author_id, genre_id, published_year,
+                   copies_total, copies_available, replacement_cost_cents)
+VALUES ('The War of the Worlds', 5, 7, 1898, 1, 1, 850);
 
-UPDATE customers
-SET loyalty_points = loyalty_points + 50
-WHERE customer_id = 101;
+UPDATE books
+SET copies_total = copies_total + 1,
+    copies_available = copies_available + 1
+WHERE id = 3;   -- a second copy of Moby-Dick arrives
 
-DELETE FROM orders
-WHERE status = 'cancelled' AND order_date < '2025-01-01';`}
+DELETE FROM reservations
+WHERE status = 'cancelled' AND created_at < '2026-01-01';`}
         />
         <Callout variant="warn">
           <strong>The single most important habit</strong> — always write and
           test the WHERE clause of an UPDATE or DELETE as a SELECT first. Run{' '}
           <code>
-            SELECT * FROM orders WHERE status = &apos;cancelled&apos; AND
-            order_date &lt; &apos;2025-01-01&apos;
+            SELECT * FROM reservations WHERE status = &apos;cancelled&apos; AND
+            created_at &lt; &apos;2026-01-01&apos;
           </code>
           , confirm those are exactly the rows you mean, then swap SELECT * for
           the DELETE. An UPDATE or DELETE with no WHERE clause touches every
@@ -1609,29 +1933,27 @@ WHERE status = 'cancelled' AND order_date < '2025-01-01';`}
           A <strong>transaction</strong> groups multiple statements into one
           all-or-nothing unit — either every statement succeeds and is saved (
           <strong>COMMIT</strong>), or something goes wrong and none of it is (
-          <strong>ROLLBACK</strong>). This matters the moment an order touches
-          more than one table:
+          <strong>ROLLBACK</strong>). This matters the moment an action touches
+          more than one table, like Grace borrowing Moby-Dick:
         </p>
         <Sql
           code={`BEGIN TRANSACTION;
 
-INSERT INTO orders (customer_id, order_date, status)
-VALUES (101, '2026-09-12', 'placed');
+UPDATE books
+SET copies_available = copies_available - 1
+WHERE id = 3 AND copies_available > 0;
+-- 0 rows updated? No copies left: ROLLBACK instead of continuing
 
-INSERT INTO order_items (order_id, pizza_id, quantity)
-VALUES (LAST_INSERT_ID(), 3, 2);
-
-UPDATE customers
-SET loyalty_points = loyalty_points + 10
-WHERE customer_id = 101;
+INSERT INTO loans (book_id, member_id, borrowed_on, due_on)
+VALUES (3, 2, CURRENT_DATE, CURRENT_DATE + 14);
 
 COMMIT;`}
         />
         <p>
-          If the server crashed between the two INSERTs with no transaction,
-          you&apos;d have an order with no items — a corrupt, half-written
-          order. The transaction guarantees that either all three statements
-          land, or none do.
+          If the server crashed between the UPDATE and the INSERT with no
+          transaction, a copy would vanish from the shelf with no loan to
+          account for it. The transaction guarantees that either both statements
+          land, or neither does.
         </p>
         <Callout>
           <strong>ACID, briefly</strong> — <strong>A</strong>tomic
@@ -1643,16 +1965,16 @@ COMMIT;`}
         </Callout>
         <Exercise
           id="ans-dml"
-          prompt="As a single transaction: mark order 4021 as 'delivered', and add 25 loyalty points to whichever customer placed it."
+          prompt="As a single transaction: mark loan 12 as returned today, and put the copy back on the shelf by incrementing copies_available for whichever book it was."
         >
           <Sql
             code={`BEGIN TRANSACTION;
 
-UPDATE orders SET status = 'delivered' WHERE order_id = 4021;
+UPDATE loans SET returned_on = CURRENT_DATE WHERE id = 12;
 
-UPDATE customers
-SET loyalty_points = loyalty_points + 25
-WHERE customer_id = (SELECT customer_id FROM orders WHERE order_id = 4021);
+UPDATE books
+SET copies_available = copies_available + 1
+WHERE id = (SELECT book_id FROM loans WHERE id = 12);
 
 COMMIT;`}
           />
@@ -1713,13 +2035,14 @@ BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;
           <strong>FOR UPDATE</strong> takes an explicit row lock, so other
           transactions have to wait before they can modify (or sometimes even
           read) the same rows — the standard way to safely do &quot;read a
-          value, then update it based on what you read&quot; without a race:
+          value, then update it based on what you read&quot; without a race.
+          Renewing Ada&apos;s loan 12 for another 28 days:
         </p>
         <Sql
           code={`BEGIN;
-SELECT loyalty_points FROM customers WHERE customer_id = 101 FOR UPDATE;
--- application computes new_points based on the value above
-UPDATE customers SET loyalty_points = 990 WHERE customer_id = 101;
+SELECT due_on FROM loans WHERE id = 12 FOR UPDATE;
+-- application computes the new due date from the value above (2026-10-12 + 28 days)
+UPDATE loans SET due_on = '2026-11-09' WHERE id = 12;
 COMMIT;`}
         />
         <Callout>
@@ -1732,15 +2055,17 @@ COMMIT;`}
         </Callout>
         <Exercise
           id="ans-isolation"
-          prompt="You're decrementing pizza stock when an order is placed, and two customers could order the last pizza at the same instant. What should you add to the SELECT that checks current stock, to prevent both orders from succeeding?"
+          prompt="There is exactly one copy of Moby-Dick (book 3) on the shelf, and Grace and Alan click Borrow at the same instant. Each transaction first checks copies_available, then decrements it. What should you add to the SELECT that checks copies_available, to prevent both loans from succeeding?"
         >
           <Sql
-            code={`SELECT stock FROM pizzas WHERE pizza_id = 3 FOR UPDATE;`}
+            code={`SELECT copies_available FROM books WHERE id = 3 FOR UPDATE;`}
           />
           <p className="mt-2 mb-0 text-muted-foreground">
             FOR UPDATE locks that row so the second transaction has to wait
-            until the first one commits (and sees the now-updated stock), rather
-            than both reading the same stale stock value and both proceeding.
+            until the first one commits (and then sees copies_available = 0),
+            rather than both reading the same stale 1 and both creating a loan.
+            The CHECK constraint from Constraints &amp; design is a useful
+            backstop too: it stops the count ever going negative.
           </p>
         </Exercise>
       </Topic>
@@ -1763,15 +2088,15 @@ COMMIT;`}
           than a JSON string you&apos;re just passing through unchanged.
         </Deepdive>
         <p>
-          Say each pizza has flexible, changing nutritional metadata that
-          doesn&apos;t deserve its own rigid columns:
+          Say each book has flexible edition details (page count, language,
+          available formats) that don&apos;t deserve their own rigid columns:
         </p>
         <Sql
-          code={`ALTER TABLE pizzas ADD COLUMN metadata JSONB;   -- JSONB on Postgres, JSON on MySQL/SQL Server
+          code={`ALTER TABLE books ADD COLUMN details JSONB;   -- JSONB on Postgres, JSON on MySQL/SQL Server
 
-UPDATE pizzas
-SET metadata = '{"calories": 820, "allergens": ["gluten", "dairy"], "spice_level": 2}'
-WHERE pizza_id = 3;`}
+UPDATE books
+SET details = '{"pages": 635, "language": "en", "formats": ["hardcover", "audiobook"]}'
+WHERE id = 3;`}
         />
         <p>
           Querying inside the JSON uses operators or functions rather than plain
@@ -1779,14 +2104,14 @@ WHERE pizza_id = 3;`}
         </p>
         <Sql
           code={`-- Postgres: ->> extracts as text, -> extracts as JSON
-SELECT name, metadata ->> 'calories' AS calories
-FROM pizzas
-WHERE (metadata ->> 'spice_level')::INT >= 2;
+SELECT title, details ->> 'pages' AS pages
+FROM books
+WHERE (details ->> 'pages')::INT >= 500;
 
 -- MySQL
-SELECT name, JSON_EXTRACT(metadata, '$.calories') AS calories
-FROM pizzas
-WHERE JSON_EXTRACT(metadata, '$.spice_level') >= 2;`}
+SELECT title, JSON_EXTRACT(details, '$.pages') AS pages
+FROM books
+WHERE JSON_EXTRACT(details, '$.pages') >= 500;`}
         />
         <Callout>
           <strong>When to reach for JSON vs a real column</strong> — JSON is
@@ -1805,12 +2130,12 @@ WHERE JSON_EXTRACT(metadata, '$.spice_level') >= 2;`}
         </p>
         <Exercise
           id="ans-json"
-          prompt='Write a query returning the name and allergens list (as JSON) for every pizza whose metadata lists "dairy" among its allergens (Postgres syntax is fine).'
+          prompt='Write a query returning the title and formats list (as JSON) for every book whose details list "audiobook" among its formats (Postgres syntax is fine).'
         >
           <Sql
-            code={`SELECT name, metadata -> 'allergens' AS allergens
-FROM pizzas
-WHERE metadata -> 'allergens' ? 'dairy';`}
+            code={`SELECT title, details -> 'formats' AS formats
+FROM books
+WHERE details -> 'formats' ? 'audiobook';`}
           />
         </Exercise>
       </Topic>
@@ -1823,48 +2148,57 @@ WHERE metadata -> 'allergens' ? 'dairy';`}
         <Deepdive>
           <strong>Under the hood</strong> — The relational model underneath all
           of this represents the real world as <strong>entities</strong> (things
-          — customers, pizzas), their <strong>attributes</strong> (columns), and
+          — members, books), their <strong>attributes</strong> (columns), and
           the <strong>relationships</strong> between them (foreign keys). A
           foreign key isn&apos;t just documentation either — it&apos;s an
           enforced constraint: the database physically checks, on every insert
           or update, that the referenced row actually exists, and by default
-          refuses to let you delete a parent row (like a customer) while child
-          rows (their orders) still point at it, unless you&apos;ve explicitly
+          refuses to let you delete a parent row (like a book) while child rows
+          (its loans) still point at it, unless you&apos;ve explicitly
           configured a cascade or set-null behavior for that foreign key.
         </Deepdive>
         <Sql
-          code={`CREATE TABLE pizzas (
-  pizza_id     INTEGER PRIMARY KEY,
-  name         TEXT NOT NULL UNIQUE,
-  base_price   DECIMAL(5,2) NOT NULL CHECK (base_price > 0),
-  is_vegetarian BOOLEAN NOT NULL DEFAULT false
+          code={`CREATE TABLE books (
+  id                     INTEGER PRIMARY KEY,
+  title                  TEXT NOT NULL,
+  isbn                   TEXT UNIQUE,
+  copies_total           INTEGER NOT NULL CHECK (copies_total >= 0),
+  copies_available       INTEGER NOT NULL,
+  replacement_cost_cents INTEGER NOT NULL CHECK (replacement_cost_cents > 0),
+  CHECK (copies_available BETWEEN 0 AND copies_total)
 );
 
-CREATE TABLE orders (
-  order_id    INTEGER PRIMARY KEY,
-  customer_id INTEGER NOT NULL REFERENCES customers(customer_id),
-  order_date  DATE NOT NULL,
-  status      TEXT NOT NULL DEFAULT 'placed'
+CREATE TABLE loans (
+  id          INTEGER PRIMARY KEY,
+  book_id     INTEGER NOT NULL REFERENCES books(id),
+  member_id   INTEGER NOT NULL REFERENCES members(id),
+  borrowed_on DATE NOT NULL DEFAULT CURRENT_DATE,
+  due_on      DATE NOT NULL,
+  returned_on DATE,
+  fine_cents  INTEGER NOT NULL DEFAULT 0 CHECK (fine_cents >= 0),
+  CHECK (due_on > borrowed_on)
 );`}
         />
         <p>
           Reading that schema: <strong>PRIMARY KEY</strong> uniquely identifies
           each row and can&apos;t be NULL. <strong>FOREIGN KEY</strong> (the{' '}
-          <code>REFERENCES</code> part) guarantees an order&apos;s customer_id
-          actually exists in the customers table — the database rejects the
-          insert otherwise. <strong>UNIQUE</strong> forbids duplicates;{' '}
-          <strong>CHECK</strong> enforces a custom rule;{' '}
+          <code>REFERENCES</code> part) guarantees a loan&apos;s book_id
+          actually exists in the books table — the database rejects the insert
+          otherwise. <strong>UNIQUE</strong> forbids duplicates;{' '}
+          <strong>CHECK</strong> enforces a custom rule — the table-level{' '}
+          <code>copies_available BETWEEN 0 AND copies_total</code> check means
+          no bug can ever lend out a copy the library doesn&apos;t have;{' '}
           <strong>NOT NULL</strong> makes a column mandatory;{' '}
           <strong>DEFAULT</strong> fills a value in when none is given.
         </p>
         <Callout>
-          <strong>Why split orders and order_items at all?</strong> — this is{' '}
-          <strong>normalization</strong>: structuring tables so each fact is
-          stored exactly once. If you crammed pizza names directly into the
-          orders table, ordering three pizzas would mean three near-duplicate
-          rows, and renaming a pizza would mean updating every order that ever
-          included it. Splitting them out means the pizza&apos;s name lives in
-          exactly one place.
+          <strong>Why does a loan store book_id instead of the title?</strong> —
+          this is <strong>normalization</strong>: structuring tables so each
+          fact is stored exactly once. If you copied the title and author onto
+          every loan row, fixing a typo in a title would mean updating every
+          loan that ever included it, and missing one leaves the data
+          contradicting itself. Pointing at <code>books.id</code> means the
+          title lives in exactly one place.
         </Callout>
         <p>
           The classic normalization ladder, briefly: <strong>1NF</strong> —
@@ -1876,46 +2210,44 @@ CREATE TABLE orders (
           there without memorizing the formal rules.
         </p>
         <p>
-          orders-to-order_items is a <strong>one-to-many</strong> relationship
-          (one order, many items). Some relationships are{' '}
-          <strong>many-to-many</strong> — say, letting each pizza carry several
-          tags (&quot;spicy&quot;, &quot;vegan&quot;, &quot;bestseller&quot;)
-          while each tag applies to many pizzas. Neither table can hold the
-          other&apos;s key directly, so the fix is a third table in between, a{' '}
-          <strong>junction table</strong>:
+          books-to-loans is a <strong>one-to-many</strong> relationship (one
+          book, many loans). Some relationships are{' '}
+          <strong>many-to-many</strong> — every fixture book has a single
+          author, so <code>books.author_id</code> is enough, but a co-written
+          book like <em>Good Omens</em> has two authors, and each author writes
+          many books. Neither table can hold the other&apos;s key directly, so
+          the fix is a third table in between, a <strong>junction table</strong>
+          :
         </p>
         <Sql
-          code={`CREATE TABLE tags (
-  tag_id INTEGER PRIMARY KEY,
-  label  TEXT NOT NULL UNIQUE
-);
-
-CREATE TABLE pizza_tags (
-  pizza_id INTEGER NOT NULL REFERENCES pizzas(pizza_id),
-  tag_id   INTEGER NOT NULL REFERENCES tags(tag_id),
-  PRIMARY KEY (pizza_id, tag_id)
+          code={`CREATE TABLE book_authors (
+  book_id   INTEGER NOT NULL REFERENCES books(id),
+  author_id INTEGER NOT NULL REFERENCES authors(id),
+  PRIMARY KEY (book_id, author_id)
 );`}
         />
         <p>
           Querying it just chains two joins through the middle table — the same
-          pattern you already used for orders and order_items:
+          pattern you already used for members, loans and books:
         </p>
         <Sql
-          code={`SELECT p.name, t.label
-FROM pizzas p
-JOIN pizza_tags pt ON pt.pizza_id = p.pizza_id
-JOIN tags t ON t.tag_id = pt.tag_id;`}
+          code={`SELECT b.title, a.name AS author
+FROM books b
+JOIN book_authors ba ON ba.book_id = b.id
+JOIN authors a ON a.id = ba.author_id;`}
         />
         <Exercise
           id="ans-design"
-          prompt="Write a CREATE TABLE for order_items with a composite-feeling design: it needs order_id (FK to orders), pizza_id (FK to pizzas), and quantity, which must be at least 1."
+          prompt="Write a CREATE TABLE for reservations: it needs book_id (FK to books), member_id (FK to members), created_at (defaulting to now), and a status that must be one of 'waiting', 'ready', 'fulfilled' or 'cancelled', defaulting to 'waiting'."
         >
           <Sql
-            code={`CREATE TABLE order_items (
-  order_item_id INTEGER PRIMARY KEY,
-  order_id      INTEGER NOT NULL REFERENCES orders(order_id),
-  pizza_id      INTEGER NOT NULL REFERENCES pizzas(pizza_id),
-  quantity      INTEGER NOT NULL CHECK (quantity >= 1)
+            code={`CREATE TABLE reservations (
+  id         INTEGER PRIMARY KEY,
+  book_id    INTEGER NOT NULL REFERENCES books(id),
+  member_id  INTEGER NOT NULL REFERENCES members(id),
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+  status     TEXT NOT NULL DEFAULT 'waiting'
+             CHECK (status IN ('waiting', 'ready', 'fulfilled', 'cancelled'))
 );`}
           />
         </Exercise>
@@ -1944,17 +2276,17 @@ JOIN tags t ON t.tag_id = pt.tag_id;`}
           straight to matching rows instead:
         </p>
         <Sql
-          code={`CREATE INDEX idx_orders_customer ON orders(customer_id);
-CREATE INDEX idx_customers_planet ON customers(planet_id);`}
+          code={`CREATE INDEX idx_loans_member ON loans(member_id);
+CREATE INDEX idx_members_branch ON members(branch_id);`}
         />
         <p>
           Good candidates for an index: columns used constantly in{' '}
           <strong>WHERE</strong>, <strong>JOIN ON</strong>, and{' '}
           <strong>ORDER BY</strong>. Primary keys and (usually) foreign keys are
           indexed automatically or should be indexed by convention — that{' '}
-          <code>orders.customer_id</code> column above is exactly the kind of
-          foreign key that gets hit by every join to customers, so it earns its
-          index.
+          <code>loans.member_id</code> column above is exactly the kind of
+          foreign key that gets hit by every join to members (and every &quot;my
+          loans&quot; page), so it earns its index.
         </p>
         <Callout variant="warn">
           <strong>Indexes aren&apos;t free</strong> — every INSERT/UPDATE/DELETE
@@ -1969,33 +2301,31 @@ CREATE INDEX idx_customers_planet ON customers(planet_id);`}
           using an index or scanning the whole table:
         </p>
         <Sql
-          code={`EXPLAIN SELECT * FROM orders WHERE customer_id = 101;
+          code={`EXPLAIN SELECT * FROM loans WHERE member_id = 1;
 -- look for "Index Scan" (good) vs "Seq Scan" / "Table Scan" (full scan)`}
         />
         <Callout>
-          <strong>Fun fact</strong> — a composite index on (planet_id,
-          joined_date) can speed up a query filtering on planet_id alone, or on
-          planet_id AND joined_date together, but generally can&apos;t help a
-          query that filters on joined_date alone. Column order in a composite
-          index matters — it&apos;s usually described as &quot;leftmost
-          prefix&quot; matching.
+          <strong>Fun fact</strong> — a composite index on (member_id,
+          returned_on) can speed up a query filtering on member_id alone, or on
+          member_id AND returned_on together (&quot;this member&apos;s open
+          loans&quot;), but generally can&apos;t help a query that filters on
+          returned_on alone. Column order in a composite index matters —
+          it&apos;s usually described as &quot;leftmost prefix&quot; matching.
         </Callout>
         <Exercise
           id="ans-index"
           prompt={
             <>
               You keep running{' '}
-              <code>SELECT * FROM order_items WHERE pizza_id = ?</code> to build
-              a &quot;who ordered this pizza&quot; report, and it&apos;s slow.
+              <code>SELECT * FROM loans WHERE book_id = ?</code> to build a
+              &quot;who has borrowed this book&quot; report, and it&apos;s slow.
               What index would you add?
             </>
           }
         >
-          <Sql
-            code={`CREATE INDEX idx_order_items_pizza ON order_items(pizza_id);`}
-          />
+          <Sql code={`CREATE INDEX idx_loans_book ON loans(book_id);`} />
           <p className="mt-2 mb-0 text-muted-foreground">
-            This is exactly the pattern from earlier — pizza_id is a foreign key
+            This is exactly the pattern from earlier — book_id is a foreign key
             that&apos;s constantly filtered on, so it&apos;s a natural index
             candidate.
           </p>
@@ -2025,52 +2355,62 @@ CREATE INDEX idx_customers_planet ON customers(planet_id);`}
         <p>
           A <strong>stored procedure</strong> is a named, reusable routine that
           runs on the database server — handy for a multi-step operation you
-          call often, like placing an order:
+          call often, like borrowing a book (take a copy, work out the loan
+          period, record the loan):
         </p>
         <Sql
           code={`-- Postgres/plpgsql style
-CREATE PROCEDURE place_order(p_customer_id INT, p_pizza_id INT, p_qty INT)
+CREATE PROCEDURE borrow_book(p_member_id INT, p_book_id INT)
 LANGUAGE plpgsql AS $$
+DECLARE v_days INT;
 BEGIN
-  INSERT INTO orders (customer_id, order_date, status)
-  VALUES (p_customer_id, CURRENT_DATE, 'placed');
+  UPDATE books SET copies_available = copies_available - 1
+  WHERE id = p_book_id AND copies_available > 0;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'No copies of book % left', p_book_id;
+  END IF;
 
-  INSERT INTO order_items (order_id, pizza_id, quantity)
-  VALUES (currval('orders_order_id_seq'), p_pizza_id, p_qty);
+  SELECT CASE WHEN tier = 'premium' THEN 28 ELSE 14 END INTO v_days
+  FROM members WHERE id = p_member_id;
+
+  INSERT INTO loans (book_id, member_id, borrowed_on, due_on)
+  VALUES (p_book_id, p_member_id, CURRENT_DATE, CURRENT_DATE + v_days);
 END;
 $$;
 
-CALL place_order(101, 3, 2);`}
+CALL borrow_book(2, 3);   -- Grace borrows Moby-Dick`}
         />
         <p>
           A <strong>function</strong> is similar but returns a value, so it can
           be used directly inside a SELECT — like a mini calculation you want to
-          reuse across many queries:
+          reuse across many queries. Here, the overdue-fine rule:
         </p>
         <Sql
-          code={`CREATE FUNCTION order_total(p_order_id INT) RETURNS DECIMAL
+          code={`CREATE FUNCTION overdue_fine(p_loan_id INT) RETURNS INTEGER
 LANGUAGE plpgsql AS $$
-DECLARE total DECIMAL;
+DECLARE fine INTEGER;
 BEGIN
-  SELECT SUM(oi.quantity * p.base_price) INTO total
-  FROM order_items oi JOIN pizzas p ON p.pizza_id = oi.pizza_id
-  WHERE oi.order_id = p_order_id;
-  RETURN total;
+  SELECT LEAST(GREATEST(COALESCE(l.returned_on, CURRENT_DATE) - l.due_on, 0) * 25,
+               b.replacement_cost_cents)
+  INTO fine
+  FROM loans l JOIN books b ON b.id = l.book_id
+  WHERE l.id = p_loan_id;
+  RETURN fine;
 END;
 $$;
 
-SELECT order_id, order_total(order_id) FROM orders;`}
+SELECT id, overdue_fine(id) FROM loans WHERE returned_on IS NULL;`}
         />
         <p>
           A <strong>trigger</strong> fires automatically whenever a table
-          changes — no one has to remember to call it. A common use: keeping a
-          denormalized count in sync whenever an order is placed:
+          changes — no one has to remember to call it. A common use: writing an
+          audit row every time a loan is created:
         </p>
         <Sql
-          code={`CREATE TRIGGER after_order_insert
-AFTER INSERT ON orders
+          code={`CREATE TRIGGER after_loan_insert
+AFTER INSERT ON loans
 FOR EACH ROW
-EXECUTE FUNCTION bump_customer_order_count();`}
+EXECUTE FUNCTION log_loan_audit();`}
         />
         <Callout variant="warn">
           <strong>Use sparingly</strong> — logic buried in triggers and
@@ -2083,14 +2423,15 @@ EXECUTE FUNCTION bump_customer_order_count();`}
         </Callout>
         <Exercise
           id="ans-procs"
-          prompt="In plain English (no need for exact syntax): describe a trigger that would keep a pizza marked unavailable automatically whenever its last remaining stock is used up in order_items."
+          prompt="In plain English (no need for exact syntax): describe a trigger that tells the first member in the reservation queue their hold is ready whenever a copy of that book is returned."
         >
           <p className="mt-2 mb-0 text-muted-foreground">
-            An AFTER INSERT trigger on order_items that checks the pizza&apos;s
-            remaining stock and, if it has just reached zero, runs an UPDATE on
-            pizzas setting an <code>is_available</code> flag to false for that
-            pizza_id — so the storefront stops showing it without any
-            application code having to remember to check.
+            An AFTER UPDATE trigger on loans that fires when{' '}
+            <code>returned_on</code> changes from NULL to a date. It finds the
+            oldest reservation for that book_id with status &apos;waiting&apos;
+            (ORDER BY created_at, LIMIT 1) and updates it to &apos;ready&apos;,
+            so the notification can go out without any application code having
+            to remember to check the queue.
           </p>
         </Exercise>
       </Topic>
@@ -2118,28 +2459,32 @@ EXECUTE FUNCTION bump_customer_order_count();`}
         <p>
           <strong>GRANT</strong> and <strong>REVOKE</strong> control access at
           the database level — which users or roles can read, write, or
-          administer which tables:
+          administer which tables. The library has two kinds of people, so two
+          roles:
         </p>
         <Sql
-          code={`CREATE ROLE report_viewer;
-GRANT SELECT ON customer_order_summary TO report_viewer;
-GRANT SELECT, INSERT, UPDATE ON orders TO app_service;
-REVOKE DELETE ON orders FROM app_service;`}
+          code={`CREATE ROLE librarian;
+CREATE ROLE library_member;
+
+GRANT SELECT, INSERT, UPDATE ON books, loans, reservations TO librarian;
+REVOKE DELETE ON loans FROM librarian;   -- loan history is never deleted
+
+GRANT SELECT ON available_books TO library_member;`}
         />
         <p>
-          A common pattern: grant broad application accounts only the CRUD
-          access they actually need, and grant read-only analysts SELECT on
-          views (like the <code>customer_order_summary</code> view from earlier)
-          rather than direct table access — so sensitive columns can simply be
-          left out of the view.
+          A common pattern: grant staff and application accounts only the CRUD
+          access they actually need, and grant everyone else SELECT on views
+          (like the <code>available_books</code> view from earlier) rather than
+          direct table access — so sensitive columns, such as other
+          members&apos; email addresses, can simply be left out of the view.
         </p>
         <Callout variant="warn">
           <strong>SQL injection</strong> — the most well-known SQL security
           issue isn&apos;t a permissions problem at all: it&apos;s building a
           query by directly concatenating user input into a string.{' '}
           <code>
-            &quot;SELECT * FROM customers WHERE name = &apos;&quot; + userInput
-            + &quot;&apos;&quot;
+            &quot;SELECT * FROM books WHERE title = &apos;&quot; + userInput +
+            &quot;&apos;&quot;
           </code>{' '}
           lets someone type <code>&apos; OR &apos;1&apos;=&apos;1</code> and
           return every row, or worse. The fix is always{' '}
@@ -2150,29 +2495,29 @@ REVOKE DELETE ON orders FROM app_service;`}
         </Callout>
         <Sql
           code={`-- Vulnerable
-query = "SELECT * FROM customers WHERE name = '" + userInput + "'"
+query = "SELECT * FROM books WHERE title = '" + userInput + "'"
 
 -- Safe — parameter is bound, never interpreted as SQL
-query = "SELECT * FROM customers WHERE name = ?"
+query = "SELECT * FROM books WHERE title = ?"
 execute(query, [userInput])`}
         />
         <p>
           <strong>Row-level security</strong> (Postgres, SQL Server) goes a
           level deeper than table grants — it lets you restrict which individual{' '}
           <em>rows</em> a user can see or modify, based on a policy, so two
-          customers querying the same orders table each only ever see their own
-          rows without the application needing to remember a WHERE clause
+          members querying the same loans table each only ever see their own
+          loans without the application needing to remember a WHERE clause
           everywhere.
         </p>
         <Exercise
           id="ans-security"
-          prompt="A junior developer wants to build a 'find customer by name' feature and writes the query by concatenating the search box's text directly into the SQL string. What's wrong, and what should they do instead?"
+          prompt="A junior developer wants to build the catalog's 'search by title' box and writes the query by concatenating the search box's text directly into the SQL string. What's wrong, and what should they do instead?"
         >
           <p className="mt-2 mb-0 text-muted-foreground">
             It&apos;s a SQL injection vulnerability — anything typed into that
             search box becomes part of the executable query. They should use a
             parameterized query instead, e.g.{' '}
-            <code>SELECT * FROM customers WHERE name = ?</code> with the search
+            <code>SELECT * FROM books WHERE title = ?</code> with the search
             text passed as a bound parameter, never inserted into the string
             directly.
           </p>

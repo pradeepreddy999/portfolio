@@ -6,11 +6,11 @@ import { TutorialOverview } from '#/lib/tutorials/shared'
 export const Route = createFileRoute('/tutorials/sql-nova-pizza/')({
   head: () => ({
     meta: [
-      { title: 'SQL — Basics to Advanced (Nova Pizza Academy) | Tutorials' },
+      { title: 'SQL — Basics to Advanced (Maple Street Library) | Tutorials' },
       {
         name: 'description',
         content:
-          'Learn SQL from SELECT to window functions, CTEs, and indexing — every example queries the same five-table pizza delivery schema so it all clicks together.',
+          'Learn SQL from SELECT to window functions, CTEs, and indexing — every example queries the same small library schema — books, members, and loans — so it all clicks together.',
       },
     ],
   }),
@@ -24,7 +24,7 @@ function SqlNovaPizzaOverviewPage() {
     <TutorialOverview
       basePath="/tutorials/sql-nova-pizza"
       nav={sqlNovaPizzaNav}
-      eyebrow="Nova Pizza SQL Academy"
+      eyebrow="SQL · Maple Street Library"
       title={tutorial.title}
       description={tutorial.excerpt}
       date={tutorial.date}

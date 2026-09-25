@@ -1,7 +1,12 @@
 import { Button } from '#/components/ui/button'
+import {
+  markVisited,
+  resetProgress,
+  useTutorialProgress,
+} from '#/lib/tutorials/progress'
 import { cn } from '#/lib/utils'
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, ArrowRight, Calendar, Clock } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Calendar, Check, Clock } from 'lucide-react'
 import * as React from 'react'
 
 export interface NavItem {
@@ -20,6 +25,7 @@ export type TutorialBasePath =
   | '/tutorials/web-development'
   | '/tutorials/dotnet-web-api'
   | '/tutorials/react-tanstack-start'
+  | '/tutorials/react-storybook'
 
 function topicRoute(basePath: TutorialBasePath) {
   return `${basePath}/$topicId`
@@ -52,6 +58,8 @@ export function TutorialSidebar({
   eyebrow: string
   title: string
 }) {
+  const { visited } = useTutorialProgress(basePath)
+  const visitedSet = new Set(visited)
   const [openGroups, setOpenGroups] = React.useState<Set<number>>(() => {
     const idx = findGroupIndex(nav, activeId)
     return new Set(idx >= 0 ? [idx] : [0])
@@ -90,30 +98,68 @@ export function TutorialSidebar({
           }}
           className="mb-1"
         >
-          <summary className="cursor-pointer list-none px-2 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground">
-            {group.title}
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-2 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground">
+            <span>{group.title}</span>
+            <GroupCount
+              done={
+                group.items.filter((item) => visitedSet.has(item.id)).length
+              }
+              total={group.items.length}
+            />
           </summary>
           <ul className="pb-2 pl-3">
-            {group.items.map((item) => (
-              <li key={item.id}>
-                <Link
-                  to={topicRoute(basePath)}
-                  params={{ topicId: item.id }}
-                  className={cn(
-                    'block border-l-2 py-1.5 pl-3 text-sm transition-colors',
-                    activeId === item.id
-                      ? 'border-primary text-foreground'
-                      : 'border-transparent text-muted-foreground hover:text-foreground',
-                  )}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {group.items.map((item) => {
+              const isVisited = visitedSet.has(item.id)
+              return (
+                <li key={item.id}>
+                  <Link
+                    to={topicRoute(basePath)}
+                    params={{ topicId: item.id }}
+                    className={cn(
+                      'flex items-center gap-2 border-l-2 py-1.5 pr-2 pl-3 text-sm transition-colors',
+                      activeId === item.id
+                        ? 'border-primary text-foreground'
+                        : 'border-transparent text-muted-foreground hover:text-foreground',
+                    )}
+                  >
+                    <span className="min-w-0 flex-1">{item.label}</span>
+                    {isVisited && <VisitedMark />}
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
         </details>
       ))}
     </nav>
+  )
+}
+
+function VisitedMark() {
+  return (
+    <>
+      <Check
+        aria-hidden
+        className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400"
+      />
+      <span className="sr-only">(visited)</span>
+    </>
+  )
+}
+
+function GroupCount({ done, total }: { done: number; total: number }) {
+  if (done === 0) return null
+  return (
+    <span
+      className={cn(
+        'font-mono text-[11px] font-normal tabular-nums',
+        done === total
+          ? 'text-emerald-600 dark:text-emerald-400'
+          : 'text-muted-foreground',
+      )}
+    >
+      {done}/{total}
+    </span>
   )
 }
 
@@ -189,6 +235,11 @@ export function TutorialTopicPage({
   const prev = idx > 0 ? flat[idx - 1] : undefined
   const next = idx >= 0 && idx < flat.length - 1 ? flat[idx + 1] : undefined
   const groupTitle = flat[idx]?.groupTitle
+  const total = flat.length
+
+  React.useEffect(() => {
+    if (idx >= 0) markVisited(basePath, activeId, total)
+  }, [basePath, activeId, idx, total])
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8 md:flex-row md:px-6 md:py-12">
@@ -254,8 +305,18 @@ export function TutorialOverview({
   stack: Array<string>
 }) {
   const flat = flattenTopics(nav)
-  const first = flat[0]
   const topicNumbers = new Map(flat.map((item, i) => [item.id, i + 1]))
+  const { visited } = useTutorialProgress(basePath)
+  const visitedSet = new Set(visited)
+  const doneCount = flat.filter((item) => visitedSet.has(item.id)).length
+  const hasProgress = doneCount > 0
+  const nextUnvisited = flat.find((item) => !visitedSet.has(item.id))
+  const target = nextUnvisited ?? flat[0]
+  const ctaLabel = !hasProgress
+    ? 'Start tutorial'
+    : nextUnvisited
+      ? `Continue: ${nextUnvisited.label}`
+      : 'Review from the start'
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-12 md:px-6">
@@ -297,14 +358,45 @@ export function TutorialOverview({
         </div>
       </div>
 
+      {hasProgress && (
+        <div className="mt-6 max-w-md">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">
+              <span className="font-medium text-foreground">{doneCount}</span>{' '}
+              of {flat.length} topics visited
+            </span>
+            <button
+              type="button"
+              onClick={() => resetProgress(basePath)}
+              className="text-xs text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+            >
+              Reset progress
+            </button>
+          </div>
+          <div
+            role="progressbar"
+            aria-label="Tutorial progress"
+            aria-valuemin={0}
+            aria-valuemax={flat.length}
+            aria-valuenow={doneCount}
+            className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"
+          >
+            <div
+              className="h-full rounded-full bg-emerald-500 transition-[width]"
+              style={{ width: `${(doneCount / flat.length) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       <Link
         to={topicRoute(basePath)}
-        params={{ topicId: first.id }}
-        className="mt-8 inline-block"
+        params={{ topicId: target.id }}
+        className="mt-8 inline-block max-w-full"
       >
-        <Button size="lg">
-          Start tutorial
-          <ArrowRight className="ml-2 size-4" />
+        <Button size="lg" className="max-w-full">
+          <span className="truncate">{ctaLabel}</span>
+          <ArrowRight className="ml-2 size-4 shrink-0" />
         </Button>
       </Link>
 
@@ -328,9 +420,15 @@ export function TutorialOverview({
                     params={{ topicId: item.id }}
                     className="group flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors hover:bg-muted"
                   >
-                    <span className="font-mono text-xs tabular-nums text-muted-foreground">
-                      {String(topicNumbers.get(item.id)).padStart(2, '0')}
-                    </span>
+                    {visitedSet.has(item.id) ? (
+                      <span className="flex w-[2ch] justify-center">
+                        <VisitedMark />
+                      </span>
+                    ) : (
+                      <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                        {String(topicNumbers.get(item.id)).padStart(2, '0')}
+                      </span>
+                    )}
                     <span className="text-foreground transition-colors group-hover:text-primary">
                       {item.label}
                     </span>

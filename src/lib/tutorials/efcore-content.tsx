@@ -187,19 +187,27 @@ const CS_TYPES = [
   'IDbContextFactory',
   'IDesignTimeDbContextFactory',
   'MsSqlBuilder',
-  'Hero',
-  'Mission',
-  'Superpower',
-  'Villain',
-  'SecretIdentity',
-  'HeroPower',
+  'IAsyncEnumerable',
+  'Book',
+  'Author',
+  'BookAuthor',
+  'Genre',
+  'Member',
+  'MemberTier',
+  'LibraryCard',
+  'Loan',
+  'Reservation',
+  'Branch',
   'Address',
-  'Gadget',
-  'PoweredHero',
-  'VigilanteHero',
-  'HeroLeaderboardRow',
-  'AcademyDbContext',
-  'AcademyDbContextFactory',
+  'Money',
+  'Edition',
+  'LibraryItem',
+  'Dvd',
+  'Magazine',
+  'MostBorrowedRow',
+  'BookConfiguration',
+  'LibraryDbContext',
+  'LibraryDbContextFactory',
   'LogLevel',
   'HttpPut',
   'IActionResult',
@@ -257,12 +265,15 @@ export function EfCoreContent() {
 
       <Topic id="setup" no="01" title="Setup & DbContext">
         <p>
-          Every example in this walkthrough queries the same running schema — a
-          superhero academy&apos;s database: <code>Hero</code>,{' '}
-          <code>Superpower</code>, <code>Mission</code>,{' '}
-          <code>SecretIdentity</code>, <code>Villain</code>, and{' '}
-          <code>HeroPower</code>. One schema, every relationship shape, so
-          nothing has to be re-explained from scratch each chapter.
+          Every example in this walkthrough queries the same running schema —
+          the Maple Street Library catalog. It starts tiny, with just{' '}
+          <code>Book</code>, and grows only when a chapter needs it:{' '}
+          <code>Member</code> and <code>Loan</code> arrive when we need
+          borrowing, <code>Author</code> and <code>Genre</code> when we need
+          richer relationships, and <code>Reservation</code> and{' '}
+          <code>Branch</code> for the later chapters. One schema, every
+          relationship shape, so nothing has to be re-explained from scratch
+          each chapter.
         </p>
         <Bash
           code={`dotnet add package Microsoft.EntityFrameworkCore.SqlServer
@@ -270,23 +281,21 @@ dotnet add package Microsoft.EntityFrameworkCore.Design
 dotnet add package Microsoft.EntityFrameworkCore.Tools`}
         />
         <Cs
-          code={`public class AcademyDbContext : DbContext
+          code={`public class LibraryDbContext : DbContext
 {
-    public DbSet<Hero> Heroes => Set<Hero>();
-    public DbSet<Superpower> Superpowers => Set<Superpower>();
-    public DbSet<Mission> Missions => Set<Mission>();
-    public DbSet<Villain> Villains => Set<Villain>();
+    public DbSet<Book> Books => Set<Book>();
+    // Members, Loans, Authors, Genres… join as later chapters need them
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AcademyDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(LibraryDbContext).Assembly);
     }
 }`}
         />
         <p>DI registration in Program.cs:</p>
         <Cs
-          code={`builder.Services.AddDbContext<AcademyDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Academy"))
+          code={`builder.Services.AddDbContext<LibraryDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Library"))
            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution)
 );`}
         />
@@ -364,25 +373,25 @@ dotnet add package Microsoft.EntityFrameworkCore.Tools`}
           explicitly.
         </p>
         <Cs
-          code={`public class Hero
+          code={`public class Book
 {
     public int Id { get; set; }
-    public string CodeName { get; set; } = string.Empty;
-    public int PowerLevel { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public int CopiesAvailable { get; set; }
 }`}
         />
 
         <h3>Data annotations</h3>
         <Cs
-          code={`public class Hero
+          code={`public class Book
 {
     public int Id { get; set; }
 
-    [Required, MaxLength(50)]
-    public string CodeName { get; set; } = string.Empty;
+    [Required, MaxLength(200)]
+    public string Title { get; set; } = string.Empty;
 
-    [Column(TypeName = "decimal(5,2)")]
-    public decimal PowerLevel { get; set; }
+    [Column(TypeName = "char(13)")]
+    public string Isbn { get; set; } = string.Empty;
 }`}
         />
 
@@ -394,13 +403,13 @@ dotnet add package Microsoft.EntityFrameworkCore.Tools`}
           domain classes entirely.
         </p>
         <Cs
-          code={`public class HeroConfiguration : IEntityTypeConfiguration<Hero>
+          code={`public class BookConfiguration : IEntityTypeConfiguration<Book>
 {
-    public void Configure(EntityTypeBuilder<Hero> builder)
+    public void Configure(EntityTypeBuilder<Book> builder)
     {
-        builder.HasKey(h => h.Id);
-        builder.Property(h => h.CodeName).IsRequired().HasMaxLength(50);
-        builder.HasIndex(h => h.CodeName).IsUnique();
+        builder.HasKey(b => b.Id);
+        builder.Property(b => b.Title).IsRequired().HasMaxLength(200);
+        builder.HasIndex(b => b.Isbn).IsUnique();
     }
 }`}
         />
@@ -421,57 +430,58 @@ dotnet add package Microsoft.EntityFrameworkCore.Tools`}
           isn&apos;t the storage mechanism so much as where the FK lives and
           whether a join table sits in between. Understanding that makes all
           four shapes below variations on one idea rather than four things to
-          memorize separately.
+          memorize separately. Loans need someone to borrow the book, so this is
+          where <code>Member</code> joins the schema.
         </p>
 
-        <h3>One-to-one — a hero and their secret identity</h3>
+        <h3>One-to-one — a member and their library card</h3>
         <p>
           A 1:1 relationship is really a 1:N relationship where you&apos;ve
           additionally promised EF that the &quot;many&quot; side will never
           have more than one row per parent — enforced by putting a{' '}
           <em>unique</em> constraint on the foreign key column.{' '}
-          <code>SecretIdentity.HeroId</code> is both the FK and (implicitly, via{' '}
+          <code>LibraryCard.MemberId</code> is both the FK and (implicitly, via{' '}
           <code>HasOne().WithOne()</code>) a unique index. Whichever side holds
           the FK is the <strong>dependent</strong> — it can&apos;t exist without
           a parent — and the other is the <strong>principal</strong>. Here, a
-          SecretIdentity is meaningless without its Hero, so it&apos;s the
-          dependent; deleting the Hero should cascade to it.
+          LibraryCard is meaningless without its Member, so it&apos;s the
+          dependent; deleting the Member should cascade to it.
         </p>
         <Cs
-          code={`public class Hero
+          code={`public class Member
 {
     public int Id { get; set; }
-    public string CodeName { get; set; } = "";
-    public SecretIdentity? Identity { get; set; }
+    public string Name { get; set; } = "";
+    public LibraryCard? Card { get; set; }
 }
 
-public class SecretIdentity
+public class LibraryCard
 {
     public int Id { get; set; }
-    public string RealName { get; set; } = "";
-    public int HeroId { get; set; }
-    public Hero Hero { get; set; } = null!;
+    public string CardNumber { get; set; } = "";
+    public int MemberId { get; set; }
+    public Member Member { get; set; } = null!;
 }`}
         />
         <Cs
-          code={`builder.Entity<Hero>()
-    .HasOne(h => h.Identity)
-    .WithOne(i => i.Hero)
-    .HasForeignKey<SecretIdentity>(i => i.HeroId);`}
+          code={`builder.Entity<Member>()
+    .HasOne(m => m.Card)
+    .WithOne(c => c.Member)
+    .HasForeignKey<LibraryCard>(c => c.MemberId);`}
         />
 
-        <h3>One-to-many — a hero and their missions</h3>
+        <h3>One-to-many — a member and their loans</h3>
         <Cs
-          code={`public class Hero
+          code={`public class Member
 {
-    public List<Mission> Missions { get; } = [];
+    public List<Loan> Loans { get; } = [];
 }
-public class Mission
+public class Loan
 {
     public int Id { get; set; }
-    public string Objective { get; set; } = "";
-    public int HeroId { get; set; }
-    public Hero Hero { get; set; } = null!;
+    public DateTime DueOn { get; set; }
+    public int MemberId { get; set; }
+    public Member Member { get; set; } = null!;
 }`}
         />
         <p>
@@ -479,69 +489,75 @@ public class Mission
           Fluent API is only needed for delete behavior:
         </p>
         <Cs
-          code={`builder.Entity<Mission>()
-    .HasOne(m => m.Hero)
-    .WithMany(h => h.Missions)
+          code={`builder.Entity<Loan>()
+    .HasOne(l => l.Member)
+    .WithMany(m => m.Loans)
     .OnDelete(DeleteBehavior.Cascade);`}
         />
 
-        <h3>Many-to-many — heroes and superpowers</h3>
+        <h3>Many-to-many — books and authors</h3>
         <p>
-          Relational databases have no native way to store &quot;many rows
-          relate to many other rows&quot; — a single FK column can only point at
-          one row. So a many-to-many relationship is always, underneath, two
-          one-to-many relationships meeting at a third table in the middle (
-          <code>HeroPowers</code>, with FK columns pointing at both{' '}
-          <code>Heroes</code> and <code>Superpowers</code>). EF Core has
-          supported implicit join tables (no join entity class) since EF5 — it
-          generates and manages that middle table for you invisibly:
+          Most books have one author, but a co-authored book has several, and an
+          author writes many books. Relational databases have no native way to
+          store &quot;many rows relate to many other rows&quot; — a single FK
+          column can only point at one row. So a many-to-many relationship is
+          always, underneath, two one-to-many relationships meeting at a third
+          table in the middle (<code>BookAuthors</code>, with FK columns
+          pointing at both <code>Books</code> and <code>Authors</code>). EF Core
+          has supported implicit join tables (no join entity class) since EF5 —
+          it generates and manages that middle table for you invisibly:
         </p>
         <Cs
-          code={`public class Hero
+          code={`public class Book
 {
-    public List<Superpower> Powers { get; } = [];
+    public List<Author> Authors { get; } = [];
 }
-public class Superpower
+public class Author
 {
     public int Id { get; set; }
     public string Name { get; set; } = "";
-    public List<Hero> Heroes { get; } = [];
+    public List<Book> Books { get; } = [];
 }
 
-builder.Entity<Hero>()
-    .HasMany(h => h.Powers)
-    .WithMany(p => p.Heroes)
-    .UsingEntity(j => j.ToTable("HeroPowers"));`}
+builder.Entity<Book>()
+    .HasMany(b => b.Authors)
+    .WithMany(a => a.Books)
+    .UsingEntity(j => j.ToTable("BookAuthors"));`}
         />
         <p>
-          If the join needs its own data — say, <code>DateGranted</code> — use
-          an explicit join entity: two one-to-many relationships stitched
-          together instead.
+          If the join needs its own data — say, <code>Position</code> (the
+          author&apos;s place in the byline) — use an explicit join entity: two
+          one-to-many relationships stitched together instead.
         </p>
         <Cs
-          code={`public class HeroPower
+          code={`public class BookAuthor
 {
-    public int HeroId { get; set; }
-    public Hero Hero { get; set; } = null!;
-    public int SuperpowerId { get; set; }
-    public Superpower Superpower { get; set; } = null!;
-    public DateTime DateGranted { get; set; }
+    public int BookId { get; set; }
+    public Book Book { get; set; } = null!;
+    public int AuthorId { get; set; }
+    public Author Author { get; set; } = null!;
+    public int Position { get; set; }
 }`}
         />
 
-        <h3>Self-referencing — mentors and mentees</h3>
+        <h3>Self-referencing — the genre tree</h3>
+        <p>
+          Genres nest: Fiction is the parent of Classics, Horror, Adventure,
+          Fantasy, and Science Fiction, so each <code>Genre</code> points at
+          another row in the same table.
+        </p>
         <Cs
-          code={`public class Hero
+          code={`public class Genre
 {
-    public int? MentorId { get; set; }
-    public Hero? Mentor { get; set; }
-    public List<Hero> Mentees { get; } = [];
+    public int? ParentId { get; set; }
+    public Genre? Parent { get; set; }
+    public List<Genre> Children { get; } = [];
 }
 
-builder.Entity<Hero>()
-    .HasOne(h => h.Mentor)
-    .WithMany(h => h.Mentees)
-    .HasForeignKey(h => h.MentorId)
+builder.Entity<Genre>()
+    .HasOne(g => g.Parent)
+    .WithMany(g => g.Children)
+    .HasForeignKey(g => g.ParentId)
     .OnDelete(DeleteBehavior.Restrict);`}
         />
       </Topic>
@@ -551,7 +567,7 @@ builder.Entity<Hero>()
           code={`dotnet ef migrations add InitialCreate
 dotnet ef database update
 dotnet ef migrations remove          # undo the last unapplied migration
-dotnet ef migrations add AddVillains
+dotnet ef migrations add AddReservations
 dotnet ef database update PreviousMigrationName   # roll back to a point`}
         />
         <p>
@@ -590,13 +606,12 @@ dotnet ef database update PreviousMigrationName   # roll back to a point`}
           </li>
           <li>
             Multiple <code>DbContext</code>s in one project? Pass{' '}
-            <code>--context AcademyDbContext</code>.
+            <code>--context LibraryDbContext</code>.
           </li>
           <li>
             Seeding:{' '}
             <code>
-              HasData(new Superpower {'{'} Id = 1, Name = &quot;Flight&quot;{' '}
-              {'}'})
+              HasData(new Genre {'{'} Id = 1, Name = &quot;Fiction&quot; {'}'})
             </code>{' '}
             — static data baked into migrations, not for anything that changes
             at runtime.
@@ -611,23 +626,22 @@ dotnet ef database update PreviousMigrationName   # roll back to a point`}
           Fluent API can express this, there&apos;s no annotation for it:
         </p>
         <Cs
-          code={`public class HeroPower
+          code={`public class BookAuthor
 {
-    public int HeroId { get; set; }
-    public int SuperpowerId { get; set; }
-    public DateTime DateGranted { get; set; }
+    public int BookId { get; set; }
+    public int AuthorId { get; set; }
+    public int Position { get; set; }
 }
 
-builder.Entity<HeroPower>().HasKey(hp => new { hp.HeroId, hp.SuperpowerId });`}
+builder.Entity<BookAuthor>().HasKey(ba => new { ba.BookId, ba.AuthorId });`}
         />
 
         <h3>Alternate keys</h3>
         <p>
           A uniqueness constraint EF can use as an FK target that{' '}
-          <em>isn&apos;t</em> the primary key — a hero&apos;s public call-sign,
-          say:
+          <em>isn&apos;t</em> the primary key — a book&apos;s ISBN, say:
         </p>
-        <Cs code={`builder.Entity<Hero>().HasAlternateKey(h => h.CallSign);`} />
+        <Cs code={`builder.Entity<Book>().HasAlternateKey(b => b.Isbn);`} />
 
         <h3>Indexes</h3>
         <p>
@@ -638,22 +652,21 @@ builder.Entity<HeroPower>().HasKey(hp => new { hp.HeroId, hp.SuperpowerId });`}
           to update the index) to buy read performance, so indexes go on columns
           actually filtered or joined on in real queries, not on every column
           defensively. A composite index like the one on{' '}
-          <code>(HeroId, CompletedDate)</code> only helps queries that filter on{' '}
-          <code>HeroId</code> alone or on both columns together, in that order —
-          it doesn&apos;t help a query that filters on{' '}
-          <code>CompletedDate</code> alone, because the structure is sorted by
-          the first column first.
+          <code>(MemberId, DueOn)</code> only helps queries that filter on{' '}
+          <code>MemberId</code> alone or on both columns together, in that order
+          — it doesn&apos;t help a query that filters on <code>DueOn</code>{' '}
+          alone, because the structure is sorted by the first column first.
         </p>
         <Cs
-          code={`builder.Entity<Hero>().HasIndex(h => h.CodeName).IsUnique();
+          code={`builder.Entity<Book>().HasIndex(b => b.Isbn).IsUnique();
 
-builder.Entity<Mission>()
-    .HasIndex(m => new { m.HeroId, m.CompletedDate });
+builder.Entity<Loan>()
+    .HasIndex(l => new { l.MemberId, l.DueOn });
 
-// Filtered — only index active heroes, smaller and faster
-builder.Entity<Hero>()
-    .HasIndex(h => h.CodeName)
-    .HasFilter("[IsRetired] = 0");`}
+// Filtered — only index books still on the shelves, smaller and faster
+builder.Entity<Book>()
+    .HasIndex(b => b.Title)
+    .HasFilter("[IsWithdrawn] = 0");`}
         />
 
         <h3>Keyless entity types</h3>
@@ -663,13 +676,13 @@ builder.Entity<Hero>()
           not to track it:
         </p>
         <Cs
-          code={`public class HeroLeaderboardRow
+          code={`public class MostBorrowedRow
 {
-    public string CodeName { get; set; } = "";
-    public int MissionsCompleted { get; set; }
+    public string Title { get; set; } = "";
+    public int TimesBorrowed { get; set; }
 }
 
-builder.Entity<HeroLeaderboardRow>().HasNoKey().ToView("HeroLeaderboard");`}
+builder.Entity<MostBorrowedRow>().HasNoKey().ToView("MostBorrowedBooks");`}
         />
       </Topic>
 
@@ -680,79 +693,86 @@ builder.Entity<HeroLeaderboardRow>().HasNoKey().ToView("HeroLeaderboard");`}
           tree of increasingly specific shapes. EF Core has to pick a strategy
           for flattening that tree into tables, and it offers all three of the
           standard ones, each trading off differently between query speed,
-          storage efficiency, and schema normalization.
+          storage efficiency, and schema normalization. Suppose the library
+          starts lending DVDs and magazines too: everything on the shelf becomes
+          a <code>LibraryItem</code>.
         </p>
         <Cs
-          code={`public abstract class Hero
+          code={`public abstract class LibraryItem
 {
     public int Id { get; set; }
-    public string CodeName { get; set; } = "";
+    public string Title { get; set; } = "";
 }
-public class PoweredHero : Hero { public string PrimaryPower { get; set; } = ""; }
-public class VigilanteHero : Hero { public string GadgetLoadout { get; set; } = ""; }`}
+public class Book : LibraryItem { public string Isbn { get; set; } = ""; public int Pages { get; set; } }
+public class Dvd : LibraryItem { public int RuntimeMinutes { get; set; } }
+public class Magazine : LibraryItem { public int IssueNumber { get; set; } }`}
         />
 
         <h3>Table-per-hierarchy (TPH) — the default</h3>
         <p>
           One table for the whole hierarchy, plus a discriminator column. Every
           column any subtype needs exists on that single table — a{' '}
-          <code>PoweredHero</code> row has a real value in{' '}
-          <code>PrimaryPower</code> and a <code>NULL</code> in{' '}
-          <code>GadgetLoadout</code>, and vice versa for a{' '}
-          <code>VigilanteHero</code> row. The hidden <code>HeroType</code>{' '}
-          discriminator column is how EF knows, when materializing a row, which
-          C# subclass to construct. Reading any hero — regardless of subtype —
-          is one table, no JOIN, which is fast; the cost is paid in schema
-          cleanliness, since the table accumulates every subtype&apos;s columns
-          as nullable, whether or not a given row uses them.
+          <code>Book</code> row has real values in <code>Isbn</code> and{' '}
+          <code>Pages</code> and a <code>NULL</code> in{' '}
+          <code>RuntimeMinutes</code> and <code>IssueNumber</code>, and vice
+          versa for a <code>Dvd</code> or <code>Magazine</code> row. The hidden{' '}
+          <code>ItemType</code> discriminator column is how EF knows, when
+          materializing a row, which C# subclass to construct. Reading any item
+          — regardless of subtype — is one table, no JOIN, which is fast; the
+          cost is paid in schema cleanliness, since the table accumulates every
+          subtype&apos;s columns as nullable, whether or not a given row uses
+          them.
         </p>
         <Cs
-          code={`builder.Entity<Hero>()
-    .HasDiscriminator<string>("HeroType")
-    .HasValue<PoweredHero>("Powered")
-    .HasValue<VigilanteHero>("Vigilante");`}
+          code={`builder.Entity<LibraryItem>()
+    .HasDiscriminator<string>("ItemType")
+    .HasValue<Book>("Book")
+    .HasValue<Dvd>("Dvd")
+    .HasValue<Magazine>("Magazine");`}
         />
 
         <h3>Table-per-type (TPT)</h3>
         <p>
-          One table per class, joined by shared key — a <code>Heroes</code>{' '}
-          table with the shared <code>Id</code>/<code>CodeName</code> columns,
-          plus a <code>PoweredHeroes</code> table holding only{' '}
-          <code>PrimaryPower</code> for rows that are that subtype, linked by
-          matching primary key. This is straightforward relational normalization
-          — no column ever holds a NULL because it belongs to a different
-          subtype — but reconstructing a <code>PoweredHero</code> means joining{' '}
-          <code>Heroes</code> to <code>PoweredHeroes</code>, and querying across
-          the whole hierarchy for all heroes regardless of type means joining
-          across every subtype table via <code>UNION</code>-like logic. The
-          normalization is real, and so is the JOIN cost on every read.
+          One table per class, joined by shared key — a{' '}
+          <code>LibraryItems</code> table with the shared <code>Id</code>/
+          <code>Title</code> columns, plus a <code>Books</code> table holding
+          only <code>Isbn</code>/<code>Pages</code> for rows that are that
+          subtype, linked by matching primary key. This is straightforward
+          relational normalization — no column ever holds a NULL because it
+          belongs to a different subtype — but reconstructing a{' '}
+          <code>Book</code> means joining <code>LibraryItems</code> to{' '}
+          <code>Books</code>, and querying across the whole hierarchy for all
+          items regardless of type means joining across every subtype table via{' '}
+          <code>UNION</code>-like logic. The normalization is real, and so is
+          the JOIN cost on every read.
         </p>
         <Cs
-          code={`builder.Entity<Hero>().ToTable("Heroes");
-builder.Entity<PoweredHero>().ToTable("PoweredHeroes");
-builder.Entity<VigilanteHero>().ToTable("VigilanteHeroes");`}
+          code={`builder.Entity<LibraryItem>().ToTable("LibraryItems");
+builder.Entity<Book>().ToTable("Books");
+builder.Entity<Dvd>().ToTable("Dvds");
+builder.Entity<Magazine>().ToTable("Magazines");`}
         />
 
         <h3>Table-per-concrete-type (TPC)</h3>
         <p>
           One fully independent table per concrete class, each with its own copy
-          of the base columns — <code>PoweredHeroes</code> has its own{' '}
-          <code>Id</code>/<code>CodeName</code> plus <code>PrimaryPower</code>,{' '}
-          <code>VigilanteHeroes</code> has its own copy plus{' '}
-          <code>GadgetLoadout</code>. No JOINs to reconstruct any single
-          subtype, and no wasted nullable columns — but because each
-          table&apos;s <code>Id</code> is independently generated, two different
-          tables can produce the same ID value, so there&apos;s no single-table
-          uniqueness guarantee across the hierarchy unless you deliberately
-          partition the ID ranges or use GUIDs. Querying across the whole
-          hierarchy also costs a <code>UNION ALL</code> across every concrete
-          table, since there&apos;s no longer one shared table to query
-          directly.
+          of the base columns — <code>Books</code> has its own <code>Id</code>/
+          <code>Title</code> plus <code>Isbn</code>/<code>Pages</code>,{' '}
+          <code>Dvds</code> has its own copy plus <code>RuntimeMinutes</code>.
+          No JOINs to reconstruct any single subtype, and no wasted nullable
+          columns — but because each table&apos;s <code>Id</code> is
+          independently generated, two different tables can produce the same ID
+          value, so there&apos;s no single-table uniqueness guarantee across the
+          hierarchy unless you deliberately partition the ID ranges or use
+          GUIDs. Querying across the whole hierarchy also costs a{' '}
+          <code>UNION ALL</code> across every concrete table, since there&apos;s
+          no longer one shared table to query directly.
         </p>
         <Cs
-          code={`builder.Entity<Hero>().UseTpcMappingStrategy();
-builder.Entity<PoweredHero>().ToTable("PoweredHeroes");
-builder.Entity<VigilanteHero>().ToTable("VigilanteHeroes");`}
+          code={`builder.Entity<LibraryItem>().UseTpcMappingStrategy();
+builder.Entity<Book>().ToTable("Books");
+builder.Entity<Dvd>().ToTable("Dvds");
+builder.Entity<Magazine>().ToTable("Magazines");`}
         />
         <Callout>
           Default to TPH unless you have a concrete reason not to — it&apos;s
@@ -780,29 +800,31 @@ builder.Entity<VigilanteHero>().ToTable("VigilanteHeroes");`}
           shouldn&apos;t know about:
         </p>
         <Cs
-          code={`builder.Entity<Mission>()
+          code={`builder.Entity<Loan>()
     .Property<DateTime>("CreatedAt")
     .HasDefaultValueSql("GETUTCDATE()");
 
 // read/write it via the change tracker, not a property
-context.Entry(mission).Property("CreatedAt").CurrentValue = DateTime.UtcNow;`}
+context.Entry(loan).Property("CreatedAt").CurrentValue = DateTime.UtcNow;`}
         />
 
         <h3>Backing fields</h3>
         <p>
           Point EF at a private field instead of a public property setter — lets
           a domain entity expose a read-only collection publicly while EF still
-          mutates the underlying field directly:
+          mutates the underlying field directly. A <code>Member</code> should
+          only gain loans through a <code>Borrow</code> method that checks the
+          5-loan limit, never through a public <code>Loans.Add</code>:
         </p>
         <Cs
-          code={`public class Hero
+          code={`public class Member
 {
-    private readonly List<Mission> _missions = [];
-    public IReadOnlyCollection<Mission> Missions => _missions.AsReadOnly();
+    private readonly List<Loan> _loans = [];
+    public IReadOnlyCollection<Loan> Loans => _loans.AsReadOnly();
 }
 
-builder.Entity<Hero>()
-    .Metadata.FindNavigation(nameof(Hero.Missions))!
+builder.Entity<Member>()
+    .Metadata.FindNavigation(nameof(Member.Loans))!
     .SetPropertyAccessMode(PropertyAccessMode.Field);`}
         />
       </Topic>
@@ -815,10 +837,10 @@ builder.Entity<Hero>()
           memory.
         </p>
         <Cs
-          code={`var flyers = await context.Heroes
-    .Where(h => h.Powers.Any(p => p.Name == "Flight"))
-    .OrderByDescending(h => h.PowerLevel)
-    .Select(h => new { h.CodeName, h.PowerLevel })
+          code={`var horror = await context.Books
+    .Where(b => b.Genre.Name == "Horror")
+    .OrderByDescending(b => b.PublishedYear)
+    .Select(b => new { b.Title, b.PublishedYear })
     .ToListAsync();`}
         />
         <p>
@@ -834,7 +856,7 @@ builder.Entity<Hero>()
           and SQLite behind identical C# — the same expression tree, translated
           by three different providers into three different SQL syntaxes.
           It&apos;s also why query composition works:{' '}
-          <code>context.Heroes.Where(...).OrderBy(...)</code> keeps building the
+          <code>context.Books.Where(...).OrderBy(...)</code> keeps building the
           same tree across multiple lines without hitting the database until the
           final enumeration.
         </p>
@@ -856,10 +878,10 @@ builder.Entity<Hero>()
         <p>The single biggest performance lever in EF Core.</p>
         <Cs
           code={`// Tracked — snapshots every property, needed if you'll SaveChanges
-var hero = await context.Heroes.FirstAsync(h => h.Id == 1);
+var book = await context.Books.FirstAsync(b => b.Id == 3);
 
 // Untracked — skip snapshotting, use for read-only queries
-var heroes = await context.Heroes.AsNoTracking().ToListAsync();`}
+var books = await context.Books.AsNoTracking().ToListAsync();`}
         />
         <p>
           The change tracker is the mechanism that makes{' '}
@@ -884,10 +906,10 @@ var heroes = await context.Heroes.AsNoTracking().ToListAsync();`}
         <h3>Loading related data</h3>
         <Cs
           code={`// Eager — one query (or split queries, see below)
-var heroes = await context.Heroes.Include(h => h.Missions).ToListAsync();
+var members = await context.Members.Include(m => m.Loans).ToListAsync();
 
 // Explicit — load on demand after the fact
-await context.Entry(hero).Collection(h => h.Missions).LoadAsync();
+await context.Entry(member).Collection(m => m.Loans).LoadAsync();
 
 // Lazy — fires automatically on access (needs Proxies package + virtual props)`}
         />
@@ -906,7 +928,7 @@ await context.Entry(hero).Collection(h => h.Missions).LoadAsync();
           related data, because that access happened lazily or inside a loop
           instead of being requested up front. The database round-trip cost, not
           the byte count, is what makes this expensive: one query returning
-          related data for 500 heroes in a single round trip is dramatically
+          related data for 500 members in a single round trip is dramatically
           cheaper than 501 separate round trips fetching similar data, even if
           the total bytes are alike. <code>Include</code> collapses that back
           into one round trip (or one per collection, with{' '}
@@ -915,33 +937,33 @@ await context.Entry(hero).Collection(h => h.Missions).LoadAsync();
           result instead of triggered reactively.
         </p>
         <Cs
-          code={`// BAD — 1 query for heroes, then N queries for missions
-var heroes = await context.Heroes.ToListAsync();
-foreach (var h in heroes) { var count = h.Missions.Count; }
+          code={`// BAD — 1 query for members, then N queries for loans
+var members = await context.Members.ToListAsync();
+foreach (var m in members) { var count = m.Loans.Count; }
 
 // GOOD — 1 query total
-var heroes = await context.Heroes.Include(h => h.Missions).ToListAsync();`}
+var members = await context.Members.Include(m => m.Loans).ToListAsync();`}
         />
 
         <h3>Split queries</h3>
         <p>
           <code>Include</code>-ing multiple collections on one entity generates
           a single JOIN that can cartesian-explode. A relational JOIN produces
-          one output row per matching combination, so joining Heroes to both
-          Missions and Powers doesn&apos;t give you &quot;each hero&apos;s
-          missions plus each hero&apos;s powers&quot; — it gives you every{' '}
-          <em>combination</em> of a hero&apos;s missions and powers, with the
-          hero&apos;s own columns repeated once per combination. A hero with 10
-          missions and 5 powers doesn&apos;t come back as 15 rows, it comes back
-          as 50, each carrying a duplicate copy of the hero data EF then has to
-          deduplicate client-side. With more collections or bigger counts, that
-          multiplication turns a modest query into a genuinely enormous result
-          set.
+          one output row per matching combination, so joining Members to both
+          Loans and Reservations doesn&apos;t give you &quot;each member&apos;s
+          loans plus each member&apos;s reservations&quot; — it gives you every{' '}
+          <em>combination</em> of a member&apos;s loans and reservations, with
+          the member&apos;s own columns repeated once per combination. A member
+          with 10 loans in their history and 5 reservations doesn&apos;t come
+          back as 15 rows, it comes back as 50, each carrying a duplicate copy
+          of the member data EF then has to deduplicate client-side. With more
+          collections or bigger counts, that multiplication turns a modest query
+          into a genuinely enormous result set.
         </p>
         <Cs
-          code={`var heroes = await context.Heroes
-    .Include(h => h.Missions)
-    .Include(h => h.Powers)
+          code={`var members = await context.Members
+    .Include(m => m.Loans)
+    .Include(m => m.Reservations)
     .AsSplitQuery()   // separate SELECT per collection, not one giant JOIN
     .ToListAsync();`}
         />
@@ -950,10 +972,10 @@ var heroes = await context.Heroes.Include(h => h.Missions).ToListAsync();`}
       <Topic id="writing" no="07" title="Writing data">
         <p>Change tracker states, transactions, and optimistic concurrency.</p>
         <Cs
-          code={`context.Heroes.Add(new Hero { CodeName = "Nightowl" });   // → Added
-context.Entry(hero).State = EntityState.Modified;          // manual, rarely needed
-context.Heroes.Remove(hero);                                // → Deleted
-await context.SaveChangesAsync();                            // one transaction, all of it`}
+          code={`context.Books.Add(new Book { Title = "Dracula" });   // → Added
+context.Entry(book).State = EntityState.Modified;     // manual, rarely needed
+context.Books.Remove(book);                            // → Deleted
+await context.SaveChangesAsync();                       // one transaction, all of it`}
         />
         <p>
           Every tracked entity sits in exactly one of five states at any moment:{' '}
@@ -977,10 +999,10 @@ await context.SaveChangesAsync();                            // one transaction,
           code={`await using var tx = await context.Database.BeginTransactionAsync();
 try
 {
-    context.Heroes.Add(newHero);
+    context.Members.Add(newMember);
     await context.SaveChangesAsync();
 
-    context.Missions.Add(new Mission { HeroId = newHero.Id, Objective = "Stop the meteor" });
+    context.Loans.Add(new Loan { MemberId = newMember.Id, BookId = 3, DueOn = DateTime.UtcNow.AddDays(14) });
     await context.SaveChangesAsync();
 
     await tx.CommitAsync();
@@ -1006,9 +1028,18 @@ catch { await tx.RollbackAsync(); throw; }`}
           and EF surfaces that as a <code>DbUpdateConcurrencyException</code>{' '}
           instead of silently overwriting someone else&apos;s change.
         </p>
+        <p>
+          The library&apos;s version of that race: Moby-Dick has one copy. Two
+          members load it, both see <code>CopiesAvailable = 1</code>, and both
+          decrement it to 0. Without a concurrency token, both saves succeed and
+          the library has lent out a copy it doesn&apos;t have. With one, the
+          second save fails.
+        </p>
         <Cs
-          code={`public class Hero
+          code={`public class Book
 {
+    public int CopiesAvailable { get; set; }
+
     [Timestamp]
     public byte[] RowVersion { get; set; } = default!;
 }`}
@@ -1018,6 +1049,7 @@ catch { await tx.RollbackAsync(); throw; }`}
 catch (DbUpdateConcurrencyException ex)
 {
     // ex.Entries gives you the conflicting entry — reload, merge, or reject
+    // (reload Moby-Dick, see 0 copies left, tell the member it's on loan)
 }`}
         />
       </Topic>
@@ -1034,48 +1066,61 @@ catch (DbUpdateConcurrencyException ex)
           An owned type models a <strong>value object</strong> — data
           that&apos;s meaningful only as part of its parent and has no identity
           or lifecycle of its own. An <code>Address</code> isn&apos;t a thing
-          you look up by its own ID; it only exists as &quot;this hero&apos;s
-          location.&quot; EF reflects that by default: rather than a separate{' '}
-          <code>Addresses</code> table with its own PK and a FK back to Hero,
-          the owned type&apos;s properties (<code>City</code>,{' '}
-          <code>Country</code>) are flattened directly onto the{' '}
-          <code>Heroes</code> table as ordinary columns. There&apos;s no join
-          needed to read a hero&apos;s address because there&apos;s no separate
-          row to join to — it&apos;s a query performance win as much as a
-          modeling one, since the alternative (a real related table) would cost
-          a JOIN on every read for data that&apos;s always fetched together
-          anyway.
+          you look up by its own ID; it only exists as &quot;this member&apos;s
+          home address.&quot; EF reflects that by default: rather than a
+          separate <code>Addresses</code> table with its own PK and a FK back to
+          Member, the owned type&apos;s properties (<code>Street</code>,{' '}
+          <code>City</code>) are flattened directly onto the{' '}
+          <code>Members</code> table as ordinary columns. There&apos;s no join
+          needed to read a member&apos;s address because there&apos;s no
+          separate row to join to — it&apos;s a query performance win as much as
+          a modeling one, since the alternative (a real related table) would
+          cost a JOIN on every read for data that&apos;s always fetched together
+          anyway. A loan&apos;s fine works the same way as a <code>Money</code>{' '}
+          value object.
         </p>
         <Cs
-          code={`public class Hero
+          code={`public class Member
 {
-    public Address BaseLocation { get; set; } = default!;
+    public Address HomeAddress { get; set; } = default!;
 }
 [Owned]
 public class Address
 {
+    public string Street { get; set; } = "";
     public string City { get; set; } = "";
-    public string Country { get; set; } = "";
+}
+
+public class Loan
+{
+    public Money Fine { get; set; } = default!;
+}
+[Owned]
+public class Money
+{
+    public int AmountCents { get; set; }
+    public string Currency { get; set; } = "USD";
 }`}
         />
 
         <h3>JSON columns</h3>
         <p>
           Native since EF8, with better in-place querying in EF9/10 — for data
-          whose shape is genuinely document-like:
+          whose shape is genuinely document-like, such as the edition details
+          for each book:
         </p>
         <Cs
-          code={`public class Hero
+          code={`public class Book
 {
-    public List<Gadget> Gadgets { get; set; } = [];
+    public List<Edition> Editions { get; set; } = [];
 }
-public class Gadget { public string Name { get; set; } = ""; public int Charges { get; set; } }
+public class Edition { public string Publisher { get; set; } = ""; public int Pages { get; set; } }
 
-builder.Entity<Hero>().OwnsMany(h => h.Gadgets, g => g.ToJson());`}
+builder.Entity<Book>().OwnsMany(b => b.Editions, e => e.ToJson());`}
         />
         <p>
           You can query into the JSON directly —{' '}
-          <code>Where(h =&gt; h.Gadgets.Any(g =&gt; g.Charges &gt; 0))</code>{' '}
+          <code>Where(b =&gt; b.Editions.Any(e =&gt; e.Pages &gt; 500))</code>{' '}
           translates to <code>JSON_VALUE</code>/<code>OPENJSON</code> under the
           hood. The trade-off against a real related table is the mirror image
           of the owned-type case above: a JSON column skips the JOIN entirely by
@@ -1091,8 +1136,9 @@ builder.Entity<Hero>().OwnsMany(h => h.Gadgets, g => g.ToJson());`}
 
         <h3>Value converters</h3>
         <Cs
-          code={`builder.Entity<Hero>()
-    .Property(h => h.PowerLevel)
+          code={`// MemberTier is an enum (Standard, Premium) — store it as readable text
+builder.Entity<Member>()
+    .Property(m => m.Tier)
     .HasConversion<string>();`}
         />
       </Topic>
@@ -1110,16 +1156,18 @@ builder.Entity<Hero>().OwnsMany(h => h.Gadgets, g => g.ToJson());`}
           straight to generating a single set-based SQL statement (one{' '}
           <code>UPDATE ... WHERE ...</code> covering every matching row at once)
           and send it directly, bypassing the change tracker entirely — no
-          entities loaded, no snapshots taken, no per-row round trip.
+          entities loaded, no snapshots taken, no per-row round trip. The
+          nightly overdue-fines run is the textbook case:
         </p>
         <Cs
-          code={`await context.Heroes
-    .Where(h => h.PowerLevel > 90)
+          code={`// Nightly: add the 25-cent daily fine to every overdue loan
+await context.Loans
+    .Where(l => l.ReturnedOn == null && l.DueOn < today)
     .ExecuteUpdateAsync(setters => setters
-        .SetProperty(h => h.Status, "Retired"));
+        .SetProperty(l => l.FineCents, l => l.FineCents + 25));
 
-await context.Missions
-    .Where(m => m.CompletedDate < cutoff)
+await context.Reservations
+    .Where(r => r.Status == "Cancelled" && r.CreatedAt < cutoff)
     .ExecuteDeleteAsync();`}
         />
         <Callout>
@@ -1139,7 +1187,7 @@ await context.Missions
           vendor-specific hint, a recursive CTE, a query already hand-tuned by a
           DBA. <code>FromSqlInterpolated</code> is the escape hatch: it hands EF
           a literal SQL string to run as the base query, but the result still
-          comes back as tracked or untracked <code>Hero</code> entities, and —
+          comes back as tracked or untracked <code>Book</code> entities, and —
           critically — further LINQ operators chained after it still compose and
           get appended as real SQL, not evaluated client-side. Always prefer{' '}
           <code>FromSqlInterpolated</code> over <code>FromSqlRaw</code> with
@@ -1147,17 +1195,17 @@ await context.Missions
           automatically and is SQL-injection-safe by construction:
         </p>
         <Cs
-          code={`int minLevel = 80;
-var heroes = await context.Heroes
-    .FromSqlInterpolated($"SELECT * FROM Heroes WHERE PowerLevel >= {minLevel}")
-    .Where(h => !h.IsRetired)   // still composes with LINQ afterward
+          code={`int minCopies = 1;
+var books = await context.Books
+    .FromSqlInterpolated($"SELECT * FROM Books WHERE CopiesAvailable >= {minCopies}")
+    .Where(b => !b.IsWithdrawn)   // still composes with LINQ afterward
     .ToListAsync();`}
         />
 
         <h3>Raw SQL commands</h3>
         <Cs
           code={`await context.Database.ExecuteSqlInterpolatedAsync(
-    $"UPDATE Heroes SET Status = 'Retired' WHERE PowerLevel < {10}");`}
+    $"UPDATE Loans SET FineCents = 0 WHERE MemberId = {memberId}");`}
         />
 
         <h3>Stored procedures</h3>
@@ -1167,10 +1215,10 @@ var heroes = await context.Heroes
           insert/update/delete operation:
         </p>
         <Cs
-          code={`builder.Entity<Hero>()
-    .InsertUsingStoredProcedure("Hero_Insert", spb => spb
-        .HasParameter(h => h.CodeName)
-        .HasResultColumn(h => h.Id));`}
+          code={`builder.Entity<Book>()
+    .InsertUsingStoredProcedure("Book_Insert", spb => spb
+        .HasParameter(b => b.Title)
+        .HasResultColumn(b => b.Id));`}
         />
 
         <h3>Database functions</h3>
@@ -1180,11 +1228,11 @@ var heroes = await context.Heroes
           compute it:
         </p>
         <Cs
-          code={`public IQueryable<Mission> ActiveMissionsForHero(int heroId)
-    => FromExpression(() => ActiveMissionsForHero(heroId));
+          code={`public IQueryable<Loan> ActiveLoansForMember(int memberId)
+    => FromExpression(() => ActiveLoansForMember(memberId));
 
-builder.HasDbFunction(typeof(AcademyDbContext)
-    .GetMethod(nameof(ActiveMissionsForHero))!);`}
+builder.HasDbFunction(typeof(LibraryDbContext)
+    .GetMethod(nameof(ActiveLoansForMember))!);`}
         />
         <p>
           Built-in translations live under <code>EF.Functions</code> —{' '}
@@ -1211,10 +1259,10 @@ builder.HasDbFunction(typeof(AcademyDbContext)
         </p>
         <Cs
           code={`[HttpPut("{id}")]
-public async Task<IActionResult> UpdateHero(int id, Hero incoming)
+public async Task<IActionResult> UpdateBook(int id, Book incoming)
 {
     incoming.Id = id;
-    context.Heroes.Update(incoming);   // Attach + mark every property Modified
+    context.Books.Update(incoming);   // Attach + mark every property Modified
     await context.SaveChangesAsync();
     return NoContent();
 }`}
@@ -1225,8 +1273,7 @@ public async Task<IActionResult> UpdateHero(int id, Hero incoming)
           wrong for a partial one. For partial updates, either fetch-then-map
           onto a tracked entity, or set individual properties as Modified with{' '}
           <code>
-            context.Entry(incoming).Property(x =&gt; x.CodeName).IsModified =
-            true
+            context.Entry(incoming).Property(x =&gt; x.Title).IsModified = true
           </code>
           .
         </Callout>
@@ -1250,16 +1297,16 @@ public async Task<IActionResult> UpdateHero(int id, Hero incoming)
           the point where EF turns your expression tree into SQL, so it&apos;s
           invisible in the C# you write but present in every query that gets
           sent. That&apos;s exactly what makes it the standard soft-delete
-          mechanism: it&apos;s the one place to guarantee a retired hero never
+          mechanism: it&apos;s the one place to guarantee a withdrawn book never
           leaks into a result set, instead of trusting every query author to
-          remember to add <code>Where(h =&gt; !h.IsRetired)</code> by hand.
+          remember to add <code>Where(b =&gt; !b.IsWithdrawn)</code> by hand.
         </p>
         <p>
           Auto-applied to every query against a type — the classic soft-delete
           pattern:
         </p>
         <Cs
-          code={`builder.Entity<Hero>().HasQueryFilter(h => !h.IsRetired);`}
+          code={`builder.Entity<Book>().HasQueryFilter(b => !b.IsWithdrawn);`}
         />
         <p>
           Bypass with <code>.IgnoreQueryFilters()</code>. EF Core 9 added{' '}
@@ -1267,7 +1314,7 @@ public async Task<IActionResult> UpdateHero(int id, Hero incoming)
           independently instead of an all-or-nothing switch:
         </p>
         <Cs
-          code={`builder.Entity<Hero>().HasQueryFilter("SoftDelete", h => !h.IsRetired);
+          code={`builder.Entity<Book>().HasQueryFilter("SoftDelete", b => !b.IsWithdrawn);
 // query.IgnoreQueryFilters(["SoftDelete"])`}
         />
 
@@ -1289,7 +1336,7 @@ public async Task<IActionResult> UpdateHero(int id, Hero incoming)
     public override InterceptionResult<int> SavingChanges(
         DbContextEventData eventData, InterceptionResult<int> result)
     {
-        // stamp ModifiedBy / ModifiedDate on tracked entries here
+        // stamp CreatedAt / ModifiedAt on tracked loans and books here
         return base.SavingChanges(eventData, result);
     }
 }
@@ -1306,13 +1353,14 @@ public async Task<IActionResult> UpdateHero(int id, Hero incoming)
           translation once, explicitly, ahead of time, and reuses the compiled
           delegate directly rather than going through the cache lookup at all.
           The saving is real but small per call — this is for measured hot paths
-          only — EF&apos;s own query caching already avoids re-parsing identical
-          shapes, so this isn&apos;t a default reach:
+          only, like the catalog search box — EF&apos;s own query caching
+          already avoids re-parsing identical shapes, so this isn&apos;t a
+          default reach:
         </p>
         <Cs
-          code={`private static readonly Func<AcademyDbContext, int, Task<Hero?>> GetHeroById =
-    EF.CompileAsyncQuery((AcademyDbContext ctx, int id) =>
-        ctx.Heroes.FirstOrDefault(h => h.Id == id));`}
+          code={`private static readonly Func<LibraryDbContext, string, IAsyncEnumerable<Book>> SearchBooks =
+    EF.CompileAsyncQuery((LibraryDbContext ctx, string term) =>
+        ctx.Books.Where(b => b.Title.Contains(term)));`}
         />
       </Topic>
 
@@ -1335,7 +1383,7 @@ public async Task<IActionResult> UpdateHero(int id, Hero incoming)
           overhead, not avoided work — every query still runs the same way.
         </p>
         <Cs
-          code={`builder.Services.AddDbContextPool<AcademyDbContext>(options =>
+          code={`builder.Services.AddDbContextPool<LibraryDbContext>(options =>
     options.UseSqlServer(connectionString), poolSize: 128);`}
         />
         <Callout>
@@ -1410,45 +1458,46 @@ public async Task<IActionResult> UpdateHero(int id, Hero incoming)
           survives all the way to the database&apos;s own tooling:
         </p>
         <Cs
-          code={`var heroes = await context.Heroes
-    .TagWith("HeroLeaderboard: active heroes by power level")
-    .Where(h => !h.IsRetired)
-    .OrderByDescending(h => h.PowerLevel)
+          code={`var books = await context.Books
+    .TagWith("BooksList: available books by title")
+    .Where(b => b.CopiesAvailable > 0)
+    .OrderBy(b => b.Title)
     .ToListAsync();`}
         />
       </Topic>
 
       <Topic id="tenancy" no="22" title="Multi-tenancy patterns">
-        <p>One codebase, many academies.</p>
+        <p>One codebase, many branches.</p>
         <p>
           Multi-tenancy just means several logically separate customers sharing
           one deployed application — and the question is entirely where the
           isolation between them lives: inside application logic (rows tagged by
           tenant), or pushed down to infrastructure (separate databases
-          entirely). Two common shapes, in order of how much isolation they buy
-          you:
+          entirely). Treat each Maple Street branch — Downtown (id 1) and
+          Riverside (id 2) — as a tenant. Two common shapes, in order of how
+          much isolation they buy you:
         </p>
         <ul>
           <li>
             <strong>Shared database, discriminator column</strong> — every table
-            gets a <code>TenantId</code>, enforced by a global query filter so
-            tenant isolation can&apos;t be forgotten in a one-off query.
+            gets a <code>BranchId</code>, enforced by a global query filter so
+            branch isolation can&apos;t be forgotten in a one-off query.
           </li>
           <li>
             <strong>Database-per-tenant</strong> — a separate connection string
-            per tenant, resolved at <code>DbContext</code> construction time,
+            per branch, resolved at <code>DbContext</code> construction time,
             usually via <code>IDbContextFactory&lt;T&gt;</code> plus a
             per-request tenant resolver.
           </li>
         </ul>
         <Cs
-          code={`builder.Entity<Hero>()
-    .HasQueryFilter(h => h.TenantId == _currentTenant.Id);`}
+          code={`builder.Entity<Book>()
+    .HasQueryFilter(b => b.BranchId == _currentBranch.Id);`}
         />
         <Callout variant="warn">
           A global filter is the safety net, not the whole strategy —{' '}
           <code>ExecuteUpdateAsync</code>/<code>ExecuteDeleteAsync</code> and
-          raw SQL both bypass query filters, so bulk operations need the tenant
+          raw SQL both bypass query filters, so bulk operations need the branch
           condition written in by hand.
         </Callout>
       </Topic>
@@ -1513,13 +1562,18 @@ public async Task<IActionResult> UpdateHero(int id, Hero incoming)
           ]}
         />
         <Cs
-          code={`builder.Entity<Hero>().ToTable(b => b.IsTemporal());
-// context.Heroes.TemporalAsOf(someDate).ToListAsync()`}
+          code={`builder.Entity<Book>().ToTable(b => b.IsTemporal());
+// context.Books.TemporalAsOf(someDate).ToListAsync()`}
         />
       </Topic>
 
       <Topic id="testing" no="12" title="Testing">
-        <p>Three tiers, roughly in order of realism versus speed.</p>
+        <p>
+          Three tiers, roughly in order of realism versus speed. The things
+          worth testing here are the borrowing rules: the 5-loan limit, the
+          14-day (28 for premium) loan period, and that borrowing the last copy
+          of Moby-Dick leaves <code>CopiesAvailable</code> at 0.
+        </p>
         <ul>
           <li>
             <strong>InMemory provider</strong> — fastest, but not a relational
@@ -1553,9 +1607,10 @@ public async Task<IActionResult> UpdateHero(int id, Hero incoming)
         <Cs
           code={`await using var container = new MsSqlBuilder().Build();
 await container.StartAsync();
-var options = new DbContextOptionsBuilder<AcademyDbContext>()
+var options = new DbContextOptionsBuilder<LibraryDbContext>()
     .UseSqlServer(container.GetConnectionString())
-    .Options;`}
+    .Options;
+// now exercise the borrowing rules against the real engine`}
         />
       </Topic>
 
@@ -1589,7 +1644,8 @@ var options = new DbContextOptionsBuilder<AcademyDbContext>()
           <li>Don&apos;t hand-edit the migrations snapshot.</li>
           <li>
             <code>HasQueryFilter</code> is silent — document soft-delete filters
-            clearly, or a teammate loses an hour to a &quot;missing&quot; row.
+            clearly, or a teammate loses an hour to a &quot;missing&quot;
+            withdrawn book.
           </li>
           <li>
             InMemory tests passing ≠ your SQL actually works — verify
@@ -1616,8 +1672,8 @@ var options = new DbContextOptionsBuilder<AcademyDbContext>()
           code={`options.UseSqlServer(connectionString)
        .UseAsyncSeeding(async (context, _, ct) =>
        {
-           if (!await context.Set<Superpower>().AnyAsync(ct))
-               context.Set<Superpower>().Add(new Superpower { Name = "Flight" });
+           if (!await context.Set<Genre>().AnyAsync(ct))
+               context.Set<Genre>().Add(new Genre { Name = "Fiction" });
            await context.SaveChangesAsync(ct);
        });`}
         />
@@ -1638,14 +1694,14 @@ var options = new DbContextOptionsBuilder<AcademyDbContext>()
           create one on its own terms:
         </p>
         <Cs
-          code={`public class AcademyDbContextFactory : IDesignTimeDbContextFactory<AcademyDbContext>
+          code={`public class LibraryDbContextFactory : IDesignTimeDbContextFactory<LibraryDbContext>
 {
-    public AcademyDbContext CreateDbContext(string[] args)
+    public LibraryDbContext CreateDbContext(string[] args)
     {
-        var options = new DbContextOptionsBuilder<AcademyDbContext>()
-            .UseSqlServer("Server=.;Database=Academy;Trusted_Connection=True;")
+        var options = new DbContextOptionsBuilder<LibraryDbContext>()
+            .UseSqlServer("Server=.;Database=Library;Trusted_Connection=True;")
             .Options;
-        return new AcademyDbContext(options);
+        return new LibraryDbContext(options);
     }
 }`}
         />
@@ -1661,7 +1717,7 @@ var options = new DbContextOptionsBuilder<AcademyDbContext>()
           team:
         </p>
         <Bash
-          code={`dotnet ef dbcontext scaffold "Server=.;Database=Academy;Trusted_Connection=True;" \\
+          code={`dotnet ef dbcontext scaffold "Server=.;Database=Library;Trusted_Connection=True;" \\
   Microsoft.EntityFrameworkCore.SqlServer -o Models`}
         />
       </Topic>
@@ -1720,9 +1776,10 @@ var options = new DbContextOptionsBuilder<AcademyDbContext>()
           ]}
         />
         <p>
-          Twenty-three chapters, one roster, zero placeholder <code>Order</code>
-          /<code>Customer</code> tables. Every code block above targets EF Core
-          10 on .NET 10 — the current LTS, supported through November 2028.
+          Twenty-three chapters, one library, zero placeholder{' '}
+          <code>Order</code>/<code>Customer</code> tables. Every code block
+          above targets EF Core 10 on .NET 10 — the current LTS, supported
+          through November 2028.
         </p>
       </Topic>
     </>

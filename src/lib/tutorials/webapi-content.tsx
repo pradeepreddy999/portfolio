@@ -256,31 +256,34 @@ const CS_TYPES = [
   'NotFound',
   'Created',
   'ProblemDetails',
-  'Pizza',
-  'PizzaDto',
-  'Order',
-  'OrderDto',
-  'CreateOrderDto',
-  'Topping',
-  'PizzaDbContext',
-  'PizzasController',
-  'PizzasV2Controller',
+  'Book',
+  'BookDto',
+  'Loan',
+  'LoanDto',
+  'Member',
+  'BorrowRequest',
+  'MemberSignupRequest',
+  'LibraryDbContext',
+  'BooksController',
+  'BooksV2Controller',
+  'LoansController',
   'DbContext',
   'DbSet',
   'DbContextOptions',
   'ModelBuilder',
   'SqlConnection',
-  'IPizzaOven',
-  'PizzaOven',
-  'IOrderCounter',
-  'OrderCounter',
-  'INapkinDispenser',
-  'NapkinDispenser',
+  'ILoanService',
+  'LoanService',
+  'ILoanCounter',
+  'LoanCounter',
+  'IDueDateCalculator',
+  'DueDateCalculator',
   'IServiceScopeFactory',
-  'IPaymentGateway',
-  'StripeGateway',
-  'PayPalGateway',
-  'PizzaSettings',
+  'INotificationSender',
+  'EmailSender',
+  'SmsSender',
+  'HoldsController',
+  'LoanPolicyOptions',
   'IOptions',
   'IOptionsSnapshot',
   'IOptionsMonitor',
@@ -292,10 +295,12 @@ const CS_TYPES = [
   'ActionExecutedContext',
   'LogTimeFilter',
   'GlobalExceptionHandler',
-  'IPizzaRepository',
-  'PizzaRepository',
+  'NoCopiesLeftException',
+  'LoanLimitReachedException',
+  'IBookRepository',
+  'BookRepository',
   'AbstractValidator',
-  'CreateOrderValidator',
+  'MemberSignupValidator',
   'RuleFor',
   'MappingProfile',
   'Profile',
@@ -308,23 +313,23 @@ const CS_TYPES = [
   'HybridCache',
   'IMemoryCache',
   'IDistributedCache',
-  'PizzaService',
-  'OrderService',
+  'BookCatalogService',
   'HealthCheckResult',
   'HttpRetryStrategyOptions',
   'HttpCircuitBreakerStrategyOptions',
-  'PizzaSupplierClient',
+  'IsbnLookupClient',
   'BackgroundService',
-  'PizzaReminderService',
+  'OverdueFinesJob',
   'IHostedService',
   'IRequest',
   'IRequestHandler',
   'IMediator',
-  'GetPizzaQuery',
-  'GetPizzaHandler',
+  'GetBookQuery',
+  'GetBookHandler',
+  'BorrowBookCommand',
   'IMapper',
   'Hub',
-  'OrderHub',
+  'LibraryHub',
   'Groups',
   'Program',
   'TimeProvider',
@@ -337,9 +342,11 @@ const CS_TYPES = [
   'Fact',
   'Theory',
   'InlineData',
-  'PizzaApiTests',
+  'LibraryApiTests',
+  'LoanServiceTests',
+  'LoanRules',
   'IClassFixture',
-  'OrderQuantity',
+  'HttpStatusCode',
 ]
 
 function escapeHtml(s: string) {
@@ -427,33 +434,33 @@ export function WebApiContent() {
           members, indexers, and operators.
         </p>
         <Cs
-          code={`public static class PizzaExtensions
+          code={`public static class BookExtensions
 {
-    // extension block: "pizza" is the receiver, like an implicit \`this\`
-    extension(Pizza pizza)
+    // extension block: "book" is the receiver, like an implicit \`this\`
+    extension(Book book)
     {
         // an extension PROPERTY -- reads like a real property, not a verb
-        public bool IsLarge => pizza.SizeInInches >= 16;
-        public decimal PriceWithTax => pizza.Price * 1.08m;
+        public bool IsAvailable => book.CopiesAvailable > 0;
+        public decimal ReplacementCost => book.ReplacementCostCents / 100m;
     }
 
     // a second block with a type-only receiver = static extension members
-    extension(Pizza)
+    extension(Book)
     {
-        public static Pizza Margherita => new() { Name = "Margherita", Price = 9.99m };
+        public static Book PrideAndPrejudice => new() { Title = "Pride and Prejudice", PublishedYear = 1813 };
     }
 }
 
-// Usage -- both read as if they were real members of Pizza:
-if (myPizza.IsLarge) Console.WriteLine(myPizza.PriceWithTax);
-var starter = Pizza.Margherita;`}
+// Usage -- both read as if they were real members of Book:
+if (myBook.IsAvailable) Console.WriteLine(myBook.ReplacementCost);
+var classic = Book.PrideAndPrejudice;`}
         />
         <p>
           The older <code>this</code>-parameter syntax (
-          <code>public static bool IsLarge(this Pizza p)</code>) still compiles
-          and works identically — extension members are additive. Reach for the
-          block syntax whenever what you're adding conceptually <em>is</em> a
-          property or a static factory, not an action.
+          <code>public static bool IsAvailable(this Book b)</code>) still
+          compiles and works identically — extension members are additive. Reach
+          for the block syntax whenever what you're adding conceptually{' '}
+          <em>is</em> a property or a static factory, not an action.
         </p>
         <Callout>
           Where this shines in a Web API: adding read-only computed properties
@@ -470,19 +477,21 @@ var starter = Pizza.Margherita;`}
           yourself.
         </p>
         <Cs
-          code={`public class Pizza
+          code={`public class Book
 {
-    public string Name
+    public string Title
     {
         get;
         set => field = value?.Trim() ?? throw new ArgumentNullException(nameof(value));
     }
 
-    // clamp spice level into range without a manually-declared _spiceLevel field
-    public int SpiceLevel
+    public int CopiesTotal { get; set; }
+
+    // clamp copies available into range without a manually-declared _copiesAvailable field
+    public int CopiesAvailable
     {
         get;
-        set => field = Math.Clamp(value, 1, 5);
+        set => field = Math.Clamp(value, 0, CopiesTotal);
     }
 }`}
         />
@@ -503,14 +512,14 @@ var starter = Pizza.Margherita;`}
         </p>
         <Cs
           code={`// Needs an explicit null check to assign safely:
-if (order.Customer != null)
+if (loan.Member != null)
 {
-    order.Customer.LastOrderDate = DateTime.UtcNow;
+    loan.Member.LastBorrowedOn = DateTime.UtcNow;
 }
 
 // Equivalent, in one line:
-order.Customer?.LastOrderDate = DateTime.UtcNow;
-// If order.Customer is null, the assignment (and its right-hand side) is simply skipped.`}
+loan.Member?.LastBorrowedOn = DateTime.UtcNow;
+// If loan.Member is null, the assignment (and its right-hand side) is simply skipped.`}
         />
         <p>
           A small feature, but it removes a very common four-line
@@ -527,15 +536,15 @@ order.Customer?.LastOrderDate = DateTime.UtcNow;
         </p>
         <Cs
           code={`// params works with List<T>, Span<T>, or anything collection-like -- not just T[]
-void LogToppings(params IEnumerable<string> toppings) => Console.WriteLine(string.Join(", ", toppings));
+void LogTitles(params IEnumerable<string> titles) => Console.WriteLine(string.Join(", ", titles));
 
-LogToppings("Pepperoni", "Mushroom"); // still works exactly like before
+LogTitles("Dracula", "Frankenstein"); // still works exactly like before
 
 // Span<T> converts implicitly in more places, which matters for high-throughput
 // API code (serializers, parsers) that avoids heap allocations on hot paths.
-void ProcessOrderIds(ReadOnlySpan<int> ids) { /* ... */ }
-int[] ids = [101, 102, 103];
-ProcessOrderIds(ids); // array-to-span conversion, no extra copy`}
+void ProcessBookIds(ReadOnlySpan<int> ids) { /* ... */ }
+int[] ids = [1, 2, 3];
+ProcessBookIds(ids); // array-to-span conversion, no extra copy`}
         />
         <p>
           You won't reach for <code>{'Span<T>'}</code> in everyday
@@ -583,15 +592,15 @@ app.Run();`}
         <Cs
           code={`// Partial constructors -- a generator can emit the constructor body
 // while your hand-written half declares the signature (mirrors partial methods).
-public partial class PizzaOrder
+public partial class Loan
 {
-    public partial PizzaOrder(int id, string customer);
+    public partial Loan(int bookId, int memberId);
 }
 
 // Partial events -- same idea, for event declarations.
-public partial class OrderTracker
+public partial class LoanTracker
 {
-    public partial event EventHandler<OrderEventArgs> OrderPlaced;
+    public partial event EventHandler<LoanEventArgs> BookBorrowed;
 }
 
 // User-defined compound assignment operators -- define += directly,
@@ -620,15 +629,17 @@ public struct Money
         <p>
           Every ASP.NET Core API starts from one file: <code>Program.cs</code>,
           targeting <code>net10.0</code>. Every example in this guide builds the
-          same fictional <strong>Pizza Ordering API</strong> a little further.
+          same fictional <strong>Library API</strong> for Maple Street Library a
+          little further. It starts with just books; members, loans and
+          reservations join only when a topic needs them.
         </p>
         <Cs
           code={`var builder = WebApplication.CreateBuilder(args);
 
 // 1. Register services into the DI container
 builder.Services.AddControllers();
-builder.Services.AddDbContext<PizzaDbContext>(opt =>
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("PizzaDb")));
+builder.Services.AddDbContext<LibraryDbContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("LibraryDb")));
 builder.Services.AddOpenApi(); // native OpenAPI document generation
 
 var app = builder.Build();
@@ -647,7 +658,7 @@ app.MapControllers();
 app.Run();`}
         />
         <Xml
-          code={`<!-- PizzaApi.csproj -->
+          code={`<!-- LibraryApi.csproj -->
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -673,23 +684,24 @@ app.Run();`}
         <Cs
           code={`[ApiController]
 [Route("api/[controller]")]
-public class PizzasController : ControllerBase
+public class BooksController : ControllerBase
 {
     [HttpGet("{id:int}")]
     public IActionResult GetById(int id)
     {
-        if (id <= 0) return BadRequest("Pizza ID must be positive, even for pineapple ones.");
-        var pizza = new { Id = id, Topping = "Pepperoni" };
-        return Ok(pizza);
+        if (id <= 0) return BadRequest("Book ID must be positive. Even chapter one starts at 1.");
+        var book = new { Id = id, Title = "Moby-Dick", Author = "Herman Melville" };
+        return Ok(book);
     }
 
+    // GET /api/books?genre=Horror&available=true&page=1
     [HttpGet]
-    public IActionResult Search([FromQuery] string? topping, [FromQuery] int page = 1)
-        => Ok(new { topping, page });
+    public IActionResult Search([FromQuery] string? genre, [FromQuery] bool? available, [FromQuery] int page = 1)
+        => Ok(new { genre, available, page });
 
     [HttpPost]
-    public IActionResult Create([FromBody] object newPizza)
-        => CreatedAtAction(nameof(GetById), new { id = 42 }, newPizza);
+    public IActionResult Create([FromBody] object newBook)
+        => CreatedAtAction(nameof(GetById), new { id = 7 }, newBook);
 }`}
         />
         <ul>
@@ -700,8 +712,8 @@ public class PizzasController : ControllerBase
           </li>
           <li>
             <code>[Route("api/[controller]")]</code> uses the{' '}
-            <code>[controller]</code> token, so <code>PizzasController</code>{' '}
-            automatically maps to <code>/api/pizzas</code>.
+            <code>[controller]</code> token, so <code>BooksController</code>{' '}
+            automatically maps to <code>/api/books</code>.
           </li>
           <li>
             Route constraints like <code>{'{id:int}'}</code> reject non-numeric
@@ -709,11 +721,11 @@ public class PizzasController : ControllerBase
           </li>
         </ul>
         <Callout>
-          A <code>/api/dad-jokes/random</code> endpoint that returns{' '}
-          <code>200 OK</code> with a joke nine times out of ten, and{' '}
-          <code>204 No Content</code> the tenth time because it's "out of
-          material" is a good way to internalize that an endpoint can
-          legitimately return nothing.
+          A <code>/api/books/staff-pick</code> endpoint that returns{' '}
+          <code>200 OK</code> with this week’s pick most weeks, and{' '}
+          <code>204 No Content</code> when the librarians haven’t chosen one yet
+          is a good way to internalize that an endpoint can legitimately return
+          nothing.
         </Callout>
       </Topic>
 
@@ -723,13 +735,13 @@ public class PizzasController : ControllerBase
           into a C# object on your method signature.
         </p>
         <Cs
-          code={`public record CreateOrderDto(
-    string CustomerName,
-    [FromRoute] int StoreId,
-    int Quantity);
+          code={`public record BorrowRequest(
+    int BookId,
+    [FromRoute] int MemberId,
+    int LoanDays);
 
-[HttpPost("{storeId}/orders")]
-public IActionResult PlaceOrder([FromBody] CreateOrderDto order, [FromHeader(Name = "X-Client-Id")] string clientId)
+[HttpPost("{memberId}/loans")]
+public IActionResult Borrow([FromBody] BorrowRequest request, [FromHeader(Name = "X-Client-Id")] string clientId)
 {
     return Accepted();
 }`}
@@ -767,10 +779,11 @@ public IActionResult PlaceOrder([FromBody] CreateOrderDto order, [FromHeader(Nam
         <p>Reject bad input before it touches your business logic.</p>
         <h4>Built in: DataAnnotations</h4>
         <Cs
-          code={`public record CreateOrderDto(
-    [Required, MaxLength(80)] string CustomerName,
-    [Range(1, 20)] int Quantity,
-    [Range(1, 5)] int SpiceLevel);`}
+          code={`public record MemberSignupRequest(
+    [Required, MaxLength(80)] string Name,
+    [EmailAddress] string? Email,
+    [Range(1, 2)] int BranchId, // 1 = Downtown, 2 = Riverside
+    bool Premium);`}
         />
         <p>
           With <code>[ApiController]</code> applied, an invalid model never
@@ -783,20 +796,22 @@ public IActionResult PlaceOrder([FromBody] CreateOrderDto order, [FromHeader(Nam
           expressive than attributes.
         </Callout>
         <Cs
-          code={`public class CreateOrderValidator : AbstractValidator<CreateOrderDto>
+          code={`public class MemberSignupValidator : AbstractValidator<MemberSignupRequest>
 {
-    public CreateOrderValidator()
+    public MemberSignupValidator()
     {
-        RuleFor(x => x.Quantity)
-            .GreaterThan(0).WithMessage("You can't order zero pizzas. That's just sad.");
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Name is required");
 
-        RuleFor(x => x.SpiceLevel)
-            .InclusiveBetween(1, 5)
-            .When(x => x.CustomerName != "Gordon Ramsay");
+        // premium members get "your hold is ready" emails, so they must give one
+        RuleFor(x => x.Email)
+            .NotEmpty()
+            .EmailAddress().WithMessage("Enter a valid email")
+            .When(x => x.Premium);
     }
 }
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<MemberSignupValidator>();
 builder.Services.AddFluentValidationAutoValidation();`}
         />
       </Topic>
@@ -811,11 +826,11 @@ builder.Services.AddFluentValidationAutoValidation();`}
           handed to it instead of constructing them itself.
         </p>
         <Cs
-          code={`builder.Services.AddScoped<IPizzaOven, PizzaOven>();      // one instance per HTTP request
-builder.Services.AddSingleton<IOrderCounter, OrderCounter>(); // one instance for the app's whole lifetime
-builder.Services.AddTransient<INapkinDispenser, NapkinDispenser>(); // new instance every time it's injected
+          code={`builder.Services.AddScoped<ILoanService, LoanService>();      // one instance per HTTP request
+builder.Services.AddSingleton<ILoanCounter, LoanCounter>();   // one instance for the app's whole lifetime
+builder.Services.AddTransient<IDueDateCalculator, DueDateCalculator>(); // new instance every time it's injected
 
-public class PizzasController(IPizzaOven oven) : ControllerBase
+public class LoansController(ILoanService loans) : ControllerBase
 {
     // primary constructor -- no manual field assignment needed
 }`}
@@ -851,12 +866,12 @@ public class PizzasController(IPizzaOven oven) : ControllerBase
           dependency:
         </p>
         <Cs
-          code={`builder.Services.AddKeyedSingleton<IPaymentGateway, StripeGateway>("stripe");
-builder.Services.AddKeyedSingleton<IPaymentGateway, PayPalGateway>("paypal");
+          code={`builder.Services.AddKeyedSingleton<INotificationSender, EmailSender>("email");
+builder.Services.AddKeyedSingleton<INotificationSender, SmsSender>("sms");
 
-public class CheckoutController([FromKeyedServices("stripe")] IPaymentGateway gateway) : ControllerBase
+public class HoldsController([FromKeyedServices("email")] INotificationSender sender) : ControllerBase
 {
-    // resolves StripeGateway specifically
+    // resolves EmailSender specifically
 }`}
         />
       </Topic>
@@ -868,21 +883,28 @@ public class CheckoutController([FromKeyedServices("stripe")] IPaymentGateway ga
         </p>
         <Json
           code={`{
-  "PizzaSettings": { "MaxToppings": 10, "AllowPineapple": false }
+  "LoanPolicy": {
+    "LoanDays": 14,
+    "PremiumLoanDays": 28,
+    "MaxActiveLoans": 5,
+    "FinePerDayCents": 25
+  }
 }`}
         />
         <Cs
-          code={`public class PizzaSettings
+          code={`public class LoanPolicyOptions
 {
-    public int MaxToppings { get; set; }
-    public bool AllowPineapple { get; set; }
+    public int LoanDays { get; set; } = 14;
+    public int PremiumLoanDays { get; set; } = 28;
+    public int MaxActiveLoans { get; set; } = 5;
+    public int FinePerDayCents { get; set; } = 25;
 }
 
-builder.Services.Configure<PizzaSettings>(builder.Configuration.GetSection("PizzaSettings"));
+builder.Services.Configure<LoanPolicyOptions>(builder.Configuration.GetSection("LoanPolicy"));
 
-public class PizzaOven(IOptions<PizzaSettings> options)
+public class LoanService(IOptions<LoanPolicyOptions> options)
 {
-    private readonly PizzaSettings _settings = options.Value;
+    private readonly LoanPolicyOptions _policy = options.Value;
 }`}
         />
         <ul>
@@ -940,25 +962,26 @@ app.MapControllers();`}
           <code>.InMemory</code> (tests) depending on your database.
         </Callout>
         <Cs
-          code={`public class Pizza
+          code={`public class Book
 {
     public int Id { get; set; }
-    public string Name { get; set; } = "";
-    public decimal Price { get; set; }
+    public string Title { get; set; } = "";
+    public int PublishedYear { get; set; }
+    public int CopiesAvailable { get; set; }
 }
 
-public class PizzaDbContext(DbContextOptions<PizzaDbContext> options) : DbContext(options)
+public class LibraryDbContext(DbContextOptions<LibraryDbContext> options) : DbContext(options)
 {
-    public DbSet<Pizza> Pizzas => Set<Pizza>();
+    public DbSet<Book> Books => Set<Book>();
 }
 
-builder.Services.AddDbContext<PizzaDbContext>(opt =>
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("PizzaDb")));`}
+builder.Services.AddDbContext<LibraryDbContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("LibraryDb")));`}
         />
         <Cs
           code={`[HttpGet]
-public async Task<ActionResult<List<Pizza>>> GetAll()
-    => await _db.Pizzas.AsNoTracking().ToListAsync();`}
+public async Task<ActionResult<List<Book>>> GetAll()
+    => await _db.Books.AsNoTracking().ToListAsync();`}
         />
         <Deepdive>
           Call <code>.AsNoTracking()</code> on any query you're only reading. EF
@@ -978,14 +1001,14 @@ public async Task<ActionResult<List<Pizza>>> GetAll()
         </p>
         <h4>Complex properties mapped to a JSON column</h4>
         <Cs
-          code={`modelBuilder.Entity<Pizza>(entity =>
+          code={`modelBuilder.Entity<Book>(entity =>
 {
-    entity.ComplexProperty(p => p.NutritionInfo, c => c.ToJson());
+    entity.ComplexProperty(b => b.Details, c => c.ToJson());
 });
 
 // Queryable straight through the JSON column:
-var highProtein = await db.Pizzas
-    .Where(p => p.NutritionInfo.ProteinGrams > 20)
+var longReads = await db.Books
+    .Where(b => b.Details.Pages > 500)
     .ToListAsync();`}
         />
         <h4>
@@ -993,60 +1016,72 @@ var highProtein = await db.Pizzas
           independently
         </h4>
         <Cs
-          code={`modelBuilder.Entity<Pizza>()
-    .HasQueryFilter("ActiveOnly", p => !p.IsDiscontinued)
-    .HasQueryFilter("RegionFilter", p => p.Region == currentRegion);
+          code={`modelBuilder.Entity<Book>()
+    .HasQueryFilter("ActiveOnly", b => !b.IsWithdrawn)
+    .HasQueryFilter("BranchFilter", b => b.BranchId == currentBranchId);
 
-// keep the active-only filter, but ignore the region filter for this one query:
-var allRegions = db.Pizzas.IgnoreQueryFilters(["RegionFilter"]);`}
+// keep the active-only filter, but ignore the branch filter for this one query
+// (e.g. searching Downtown and Riverside together):
+var allBranches = db.Books.IgnoreQueryFilters(["BranchFilter"]);`}
         />
         <p>
           A single entity can carry a "soft delete" filter and a "multi-tenant
-          region" filter as two independent, named conditions, rather than
+          branch" filter as two independent, named conditions, rather than
           merging both into one expression and losing the ability to toggle just
           one of them off.
         </p>
         <h4>Explicit LEFT/RIGHT JOIN & simpler bulk updates</h4>
         <Cs
-          code={`var query = db.Orders
-    .LeftJoin(db.Pizzas, o => o.PizzaId, p => p.Id, (o, p) => new { o.Id, p!.Name });
+          code={`// every book, with its author's name when there is an author row
+var query = db.Books
+    .LeftJoin(db.Authors, b => b.AuthorId, a => a.Id, (b, a) => new { b.Title, a!.Name });
 
 // ExecuteUpdateAsync accepts a plain (non-expression) lambda body,
 // so ordinary C# logic can run inside the update:
-await db.Pizzas
-    .Where(p => p.Category == "Seasonal")
-    .ExecuteUpdateAsync(setters => setters.SetProperty(p => p.Price, p => ComputeDiscount(p.Price)));`}
+await db.Books
+    .Where(b => b.PublishedYear < 1850)
+    .ExecuteUpdateAsync(setters => setters.SetProperty(b => b.ReplacementCostCents, b => ComputeRareBookCost(b.ReplacementCostCents)));`}
         />
         <Callout>
           EF Core 10 also redacts inline SQL parameter values from logs by
           default, and adds SQL Server <strong>vector search</strong> support (
           <code>EF.Functions.VectorDistance</code>) for embeddings-based
-          similarity queries — handy if your API layers in AI-driven
-          recommendations.
+          similarity queries — handy if your API layers in AI-driven “readers
+          who liked Dracula also liked…” recommendations.
         </Callout>
       </Topic>
 
       <Topic id="efrelations" no="16" title="Relationships & Migrations">
         <p>
           Real schemas have foreign keys, and real schemas change over time —
-          migrations version both.
+          migrations version both. A loan needs a book and a member, so the
+          schema grows those two entities here.
         </p>
         <Cs
-          code={`public class Order
+          code={`public class Member
 {
     public int Id { get; set; }
-    public int PizzaId { get; set; }
-    public Pizza Pizza { get; set; } = null!;
-    public List<Topping> ExtraToppings { get; set; } = [];
+    public string Name { get; set; } = "";
+    public List<Loan> Loans { get; set; } = [];
+}
+
+public class Loan
+{
+    public int Id { get; set; }
+    public int BookId { get; set; }
+    public Book Book { get; set; } = null!;
+    public int MemberId { get; set; }
+    public Member Member { get; set; } = null!;
+    public DateTimeOffset DueOn { get; set; }
 }
 
 protected override void OnModelCreating(ModelBuilder builder)
 {
-    builder.Entity<Pizza>().HasIndex(p => p.Name).IsUnique();
-    builder.Entity<Order>()
-        .HasOne(o => o.Pizza)
+    builder.Entity<Book>().HasIndex(b => b.Isbn).IsUnique();
+    builder.Entity<Loan>()
+        .HasOne(l => l.Book)
         .WithMany()
-        .HasForeignKey(o => o.PizzaId);
+        .HasForeignKey(l => l.BookId);
 }`}
         />
         <Bash
@@ -1058,7 +1093,7 @@ dotnet ef database update`}
           avoid the classic "N+1 query" problem:
         </p>
         <Cs
-          code={`var orders = await db.Orders.Include(o => o.Pizza).ToListAsync();`}
+          code={`var loans = await db.Loans.Include(l => l.Book).ToListAsync();`}
         />
         <Callout variant="warn">
           Each migration runs inside its own transaction rather than one global
@@ -1080,9 +1115,9 @@ dotnet ef database update`}
         </Callout>
         <Cs
           code={`using var connection = new SqlConnection(connectionString);
-var pizzas = await connection.QueryAsync<Pizza>(
-    "SELECT Id, Name, Price FROM Pizzas WHERE Price < @MaxPrice",
-    new { MaxPrice = 15.00m });`}
+var available = await connection.QueryAsync<Book>(
+    "SELECT Id, Title, CopiesAvailable FROM Books WHERE CopiesAvailable >= @MinCopies",
+    new { MinCopies = 1 });`}
         />
         <p>
           Rule of thumb: reach for EF Core when you want migrations, change
@@ -1097,16 +1132,16 @@ var pizzas = await connection.QueryAsync<Pizza>(
           useful in some codebases, redundant in others.
         </p>
         <Cs
-          code={`public interface IPizzaRepository
+          code={`public interface IBookRepository
 {
-    Task<Pizza?> GetByIdAsync(int id);
-    Task AddAsync(Pizza pizza);
+    Task<Book?> GetByIdAsync(int id);
+    Task AddAsync(Book book);
 }
 
-public class PizzaRepository(PizzaDbContext db) : IPizzaRepository
+public class BookRepository(LibraryDbContext db) : IBookRepository
 {
-    public Task<Pizza?> GetByIdAsync(int id) => db.Pizzas.FindAsync(id).AsTask();
-    public Task AddAsync(Pizza pizza) { db.Pizzas.Add(pizza); return db.SaveChangesAsync(); }
+    public Task<Book?> GetByIdAsync(int id) => db.Books.FindAsync(id).AsTask();
+    public Task AddAsync(Book book) { db.Books.Add(book); return db.SaveChangesAsync(); }
 }`}
         />
         <Callout variant="warn">
@@ -1125,11 +1160,12 @@ public class PizzaRepository(PizzaDbContext db) : IPizzaRepository
           Object controls exactly what the outside world sees.
         </p>
         <Cs
-          code={`public record PizzaDto(int Id, string Name, decimal Price);`}
+          code={`// no replacement cost or internal flags leak out -- just what a catalog page needs
+public record BookDto(int Id, string Title, int PublishedYear, bool IsAvailable);`}
         />
         <Callout>
           <strong>Mapster</strong> is a fast, low-ceremony mapper many projects
-          prefer: <code>var dto = pizza.Adapt&lt;PizzaDto&gt;();</code> with no
+          prefer: <code>var dto = book.Adapt&lt;BookDto&gt;();</code> with no
           profile class needed for simple cases.
         </Callout>
         <Callout>
@@ -1139,10 +1175,10 @@ public class PizzaRepository(PizzaDbContext db) : IPizzaRepository
         <Cs
           code={`public class MappingProfile : Profile
 {
-    public MappingProfile() => CreateMap<Pizza, PizzaDto>();
+    public MappingProfile() => CreateMap<Book, BookDto>();
 }
 // builder.Services.AddAutoMapper(typeof(MappingProfile));
-var dto = _mapper.Map<PizzaDto>(pizzaEntity);`}
+var dto = _mapper.Map<BookDto>(bookEntity);`}
         />
       </Topic>
 
@@ -1207,7 +1243,7 @@ app.MapScalarApiReference(); // browse at /scalar/v1`}
 
 [ApiVersion("2.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class PizzasV2Controller : ControllerBase { }`}
+public class BooksV2Controller : ControllerBase { }`}
         />
         <p>
           If a frontend team consumes your API as a stable contract, this is
@@ -1227,16 +1263,16 @@ public class PizzasV2Controller : ControllerBase { }`}
           and testing.
         </p>
         <Cs
-          code={`app.MapGet("/api/pizzas/{id}", async Task<Results<Ok<Pizza>, NotFound>> (int id, PizzaDbContext db) =>
-    await db.Pizzas.FindAsync(id) is { } pizza
-        ? TypedResults.Ok(pizza)
+          code={`app.MapGet("/api/books/{id}", async Task<Results<Ok<Book>, NotFound>> (int id, LibraryDbContext db) =>
+    await db.Books.FindAsync(id) is { } book
+        ? TypedResults.Ok(book)
         : TypedResults.NotFound());
 
-app.MapPost("/api/pizzas", async Task<Created<Pizza>> (Pizza pizza, PizzaDbContext db) =>
+app.MapPost("/api/books", async Task<Created<Book>> (Book book, LibraryDbContext db) =>
 {
-    db.Pizzas.Add(pizza);
+    db.Books.Add(book);
     await db.SaveChangesAsync();
-    return TypedResults.Created($"/api/pizzas/{pizza.Id}", pizza);
+    return TypedResults.Created($"/api/books/{book.Id}", book);
 });`}
         />
         <p>
@@ -1278,7 +1314,7 @@ app.MapPost("/api/pizzas", async Task<Created<Pizza>> (Pizza pizza, PizzaDbConte
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
-            ValidIssuer = "pizza-api",
+            ValidIssuer = "library-api",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey))
         };
     });`}
@@ -1299,20 +1335,24 @@ app.MapPost("/api/pizzas", async Task<Created<Pizza>> (Pizza pizza, PizzaDbConte
         <Cs
           code={`builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("PizzaMaster", policy => policy.RequireRole("Chef"));
-    options.AddPolicy("CanRefund", policy =>
-        policy.RequireClaim("permission", "orders.refund"));
+    // Librarians manage the catalog; Admins can do everything, including this
+    options.AddPolicy("ManageBooks", policy => policy.RequireRole("Librarian", "Admin"));
+    options.AddPolicy("CanWaiveFines", policy =>
+        policy.RequireClaim("permission", "fines.waive"));
 });`}
         />
         <Cs
-          code={`[Authorize(Policy = "PizzaMaster")]
+          code={`[Authorize(Policy = "ManageBooks")]
 [HttpDelete("{id}")]
-public IActionResult DeletePizza(int id) => NoContent();`}
+public IActionResult DeleteBook(int id) => NoContent();`}
         />
         <p>
           Custom, reusable rules go in an <code>IAuthorizationHandler</code> for
           a requirement-based policy — more testable than scattering{' '}
-          <code>if</code> statements through controllers.
+          <code>if</code> statements through controllers. “A <code>Member</code>{' '}
+          can only see their own loans on{' '}
+          <code>{'GET /members/{id}/loans'}</code>, unless they’re a Librarian
+          or Admin” is exactly this kind of rule.
         </p>
       </Topic>
 
@@ -1344,7 +1384,7 @@ app.UseCors("AllowFrontend"); // must sit before UseAuthorization`}
         </p>
         <Bash
           code={`dotnet user-secrets init
-dotnet user-secrets set "PizzaDb:ConnectionString" "Server=.;Database=Pizza;..."`}
+dotnet user-secrets set "LibraryDb:ConnectionString" "Server=.;Database=Library;..."`}
         />
         <Callout>
           <strong>
@@ -1381,10 +1421,10 @@ dotnet user-secrets set "PizzaDb:ConnectionString" "Server=.;Database=Pizza;..."
         <Cs
           code={`builder.Host.UseSerilog((ctx, config) =>
     config.WriteTo.Console()
-          .WriteTo.File("logs/pizza-.log", rollingInterval: RollingInterval.Day)
+          .WriteTo.File("logs/library-.log", rollingInterval: RollingInterval.Day)
           .Enrich.FromLogContext());
 
-_logger.LogInformation("Order {OrderId} placed by {Customer} for {Amount:C}", order.Id, order.Customer, order.Total);`}
+_logger.LogInformation("Loan {LoanId} of {BookTitle} to {MemberName}, due {DueOn:d}", loan.Id, loan.Book.Title, loan.Member.Name, loan.DueOn);`}
         />
         <p>
           The named placeholders become structured, queryable fields instead of
@@ -1414,8 +1454,16 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext ctx, Exception ex, CancellationToken ct)
     {
-        logger.LogError(ex, "Unhandled exception");
-        await Results.Problem(title: "Something burned in the kitchen.", statusCode: 500)
+        // borrowing-rule violations become 409 Conflict; anything else is a 500
+        var (status, title) = ex switch
+        {
+            NoCopiesLeftException => (409, "No copies left to borrow."),
+            LoanLimitReachedException => (409, "You already have 5 active loans."),
+            _ => (500, "Something went wrong behind the circulation desk.")
+        };
+        if (status == 500) logger.LogError(ex, "Unhandled exception");
+
+        await Results.Problem(title: title, statusCode: status)
                      .ExecuteAsync(ctx);
         return true;
     }
@@ -1426,7 +1474,10 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
           A <code>ProblemDetails</code> response gives every consumer of your
           API a predictable JSON shape for errors — <code>title</code>,{' '}
           <code>status</code>, <code>detail</code>, <code>traceId</code> —
-          instead of a different ad-hoc error format per endpoint.
+          instead of a different ad-hoc error format per endpoint. A{' '}
+          <code>POST /loans</code> for the last copy of Moby-Dick that someone
+          else just borrowed gets the same shape as a server crash, just with{' '}
+          <code>409</code> and a different <code>title</code>.
         </p>
       </Topic>
 
@@ -1450,12 +1501,12 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
 builder.Services.AddStackExchangeRedisCache(opt =>
     opt.Configuration = builder.Configuration.GetConnectionString("Redis"));
 
-public class PizzaService(HybridCache cache, PizzaDbContext db)
+public class BookCatalogService(HybridCache cache, LibraryDbContext db)
 {
-    public async Task<List<Pizza>> GetAllAsync(CancellationToken ct) =>
+    public async Task<List<Book>> GetCatalogAsync(CancellationToken ct) =>
         await cache.GetOrCreateAsync(
-            "all-pizzas",
-            async token => await db.Pizzas.AsNoTracking().ToListAsync(token),
+            "book-catalog",
+            async token => await db.Books.AsNoTracking().ToListAsync(token),
             cancellationToken: ct);
 }`}
         />
@@ -1468,7 +1519,7 @@ public class PizzaService(HybridCache cache, PizzaDbContext db)
         <Cs
           code={`builder.Services.AddOutputCache();
 app.UseOutputCache();
-app.MapGet("/api/pizzas", GetPizzas).CacheOutput(p => p.Expire(TimeSpan.FromSeconds(30)));`}
+app.MapGet("/api/books", GetBooks).CacheOutput(p => p.Expire(TimeSpan.FromSeconds(30)));`}
         />
         <p>
           Use output caching for whole-response caching at the edge of the
@@ -1482,7 +1533,7 @@ app.MapGet("/api/pizzas", GetPizzas).CacheOutput(p => p.Expire(TimeSpan.FromSeco
         <Cs
           code={`builder.Services.AddRateLimiter(options =>
 {
-    options.AddFixedWindowLimiter("fixed", opt =>
+    options.AddFixedWindowLimiter("search", opt =>
     {
         opt.PermitLimit = 10;
         opt.Window = TimeSpan.FromSeconds(30);
@@ -1491,7 +1542,8 @@ app.MapGet("/api/pizzas", GetPizzas).CacheOutput(p => p.Expire(TimeSpan.FromSeco
 });
 
 app.UseRateLimiter();
-app.MapGet("/api/pizzas", GetPizzas).RequireRateLimiting("fixed");`}
+// the catalog search: GET /api/books?genre=&available=&page=
+app.MapGet("/api/books", SearchBooks).RequireRateLimiting("search");`}
         />
         <p>
           Other strategies available out of the box: <code>SlidingWindow</code>,{' '}
@@ -1507,7 +1559,7 @@ app.MapGet("/api/pizzas", GetPizzas).RequireRateLimiting("fixed");`}
         <Cs
           code={`builder.Services.AddHealthChecks()
     .AddSqlServer(connectionString)
-    .AddCheck("oven-check", () => HealthCheckResult.Healthy("Oven is hot"));
+    .AddCheck("catalog-check", () => HealthCheckResult.Healthy("Catalog is open"));
 
 app.MapHealthChecks("/health");`}
         />
@@ -1529,8 +1581,9 @@ app.MapHealthChecks("/health");`}
           circuit breakers declaratively.
         </Callout>
         <Cs
-          code={`builder.Services.AddHttpClient<PizzaSupplierClient>()
-    .AddResilienceHandler("supplier-pipeline", pipeline =>
+          code={`// looks up title/author metadata by ISBN from an external service
+builder.Services.AddHttpClient<IsbnLookupClient>()
+    .AddResilienceHandler("isbn-lookup-pipeline", pipeline =>
     {
         pipeline.AddRetry(new HttpRetryStrategyOptions { MaxRetryAttempts = 3 });
         pipeline.AddCircuitBreaker(new HttpCircuitBreakerStrategyOptions());
@@ -1539,8 +1592,8 @@ app.MapHealthChecks("/health");`}
         />
         <p>
           The retry handles a transient blip; the circuit breaker stops
-          hammering a supplier that's genuinely down; the timeout stops one slow
-          dependency from stalling your whole request.
+          hammering an ISBN lookup service that’s genuinely down; the timeout
+          stops one slow dependency from stalling your whole request.
         </p>
       </Topic>
 
@@ -1549,20 +1602,24 @@ app.MapHealthChecks("/health");`}
         no="33"
         title="Background Work & Hosted Services"
       >
-        <p>Not everything happens in response to an HTTP request.</p>
+        <p>
+          Not everything happens in response to an HTTP request. Overdue fines,
+          for example, are charged once a night.
+        </p>
         <Cs
-          code={`public class PizzaReminderService(ILogger<PizzaReminderService> logger) : BackgroundService
+          code={`public class OverdueFinesJob(TimeProvider time, ILogger<OverdueFinesJob> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            logger.LogInformation("Reminder: check the oven!");
-            await Task.Delay(TimeSpan.FromMinutes(10), stoppingToken);
+            // add FinePerDayCents to every overdue loan (via a scope from IServiceScopeFactory)
+            logger.LogInformation("Charging overdue fines for {Date:d}", time.GetUtcNow());
+            await Task.Delay(TimeSpan.FromHours(24), time, stoppingToken);
         }
     }
 }
-// builder.Services.AddHostedService<PizzaReminderService>();`}
+// builder.Services.AddHostedService<OverdueFinesJob>();`}
         />
         <Callout>
           <strong>Hangfire / Quartz.NET</strong> replace hand-rolled{' '}
@@ -1629,9 +1686,9 @@ app.MapHealthChecks("/health");`}
         .AddRuntimeInstrumentation());`}
         />
         <p>
-          Once wired up, a single request into your Pizza API is traced end to
-          end — the HTTP call in, the EF Core query, any outbound call to a
-          supplier's API — as one connected timeline, instead of stitching
+          Once wired up, a single request into your Library API is traced end to
+          end — the HTTP call in, the EF Core query, any outbound call to the
+          ISBN lookup service — as one connected timeline, instead of stitching
           together separate logs by hand.
         </p>
       </Topic>
@@ -1643,22 +1700,25 @@ app.MapHealthChecks("/health");`}
           abstraction that fixes this.
         </p>
         <Cs
-          code={`public class OrderService(TimeProvider timeProvider)
+          code={`public class LoanService(TimeProvider timeProvider)
 {
-    public Order PlaceOrder(string customer) => new()
+    public Loan Borrow(int bookId, int memberId)
     {
-        Customer = customer,
-        PlacedAt = timeProvider.GetUtcNow()
-    };
+        var now = timeProvider.GetUtcNow();
+        return new() { BookId = bookId, MemberId = memberId, BorrowedOn = now, DueOn = now.AddDays(14) };
+    }
 }
 
 // Production: builder.Services.AddSingleton(TimeProvider.System);
 
 // In a test:
 var fakeTime = new FakeTimeProvider(DateTimeOffset.Parse("2026-01-01"));
-var service = new OrderService(fakeTime);
-var order = service.PlaceOrder("Gordon Ramsay");
-Assert.Equal(DateTimeOffset.Parse("2026-01-01"), order.PlacedAt);`}
+var service = new LoanService(fakeTime);
+var loan = service.Borrow(bookId: 3, memberId: 2); // Grace Hopper borrows Moby-Dick
+Assert.Equal(DateTimeOffset.Parse("2026-01-15"), loan.DueOn);
+
+// and the nightly OverdueFinesJob can be driven forward without waiting a day:
+fakeTime.Advance(TimeSpan.FromDays(17)); // now 3 days overdue`}
         />
         <p>
           No wrapping <code>DateTime.UtcNow</code> in your own custom interface
@@ -1680,19 +1740,23 @@ Assert.Equal(DateTimeOffset.Parse("2026-01-01"), order.PlacedAt);`}
           done.
         </Callout>
         <Cs
-          code={`public record GetPizzaQuery(int Id) : IRequest<PizzaDto>;
+          code={`// the read side
+public record GetBookQuery(int Id) : IRequest<BookDto>;
 
-public class GetPizzaHandler(PizzaDbContext db) : IRequestHandler<GetPizzaQuery, PizzaDto>
+public class GetBookHandler(LibraryDbContext db) : IRequestHandler<GetBookQuery, BookDto>
 {
-    public async Task<PizzaDto> Handle(GetPizzaQuery request, CancellationToken ct)
-        => await db.Pizzas
-            .Where(p => p.Id == request.Id)
-            .Select(p => new PizzaDto(p.Id, p.Name, p.Price))
+    public async Task<BookDto> Handle(GetBookQuery request, CancellationToken ct)
+        => await db.Books
+            .Where(b => b.Id == request.Id)
+            .Select(b => new BookDto(b.Id, b.Title, b.PublishedYear, b.CopiesAvailable > 0))
             .FirstAsync(ct);
 }
 
+// the write side gets its own request + handler in exactly the same way
+public record BorrowBookCommand(int BookId, int MemberId) : IRequest<LoanDto>;
+
 [HttpGet("{id}")]
-public async Task<PizzaDto> Get(int id) => await _mediator.Send(new GetPizzaQuery(id));`}
+public async Task<BookDto> Get(int id) => await _mediator.Send(new GetBookQuery(id));`}
         />
         <p>
           Worth adopting once a controller's actions start accumulating business
@@ -1706,10 +1770,10 @@ public async Task<PizzaDto> Get(int id) => await _mediator.Send(new GetPizzaQuer
           frameworks, databases, or UI.
         </p>
         <Bash
-          code={`PizzaApi.Domain          <- entities, no dependencies on anything
-PizzaApi.Application      <- use cases (MediatR handlers), depends only on Domain
-PizzaApi.Infrastructure   <- EF Core, external APIs - implements Application's interfaces
-PizzaApi.Api              <- controllers, DI wiring - the "outermost" layer`}
+          code={`LibraryApi.Domain          <- Book, Loan, the borrowing rules - no dependencies on anything
+LibraryApi.Application     <- use cases (MediatR handlers), depends only on Domain
+LibraryApi.Infrastructure  <- EF Core, ISBN lookup client - implements Application's interfaces
+LibraryApi.Api             <- controllers, DI wiring - the "outermost" layer`}
         />
         <p>
           The dependency rule: outer layers can reference inner layers, never
@@ -1730,16 +1794,19 @@ PizzaApi.Api              <- controllers, DI wiring - the "outermost" layer`}
           clients the moment something happens, SignalR is the built-in answer.
         </p>
         <Cs
-          code={`public class OrderHub : Hub
+          code={`public class LibraryHub : Hub
 {
-    public async Task JoinKitchen() => await Groups.AddToGroupAsync(Context.ConnectionId, "kitchen");
+    public async Task JoinDesk() => await Groups.AddToGroupAsync(Context.ConnectionId, "circulation-desk");
 }
 
-await _hubContext.Clients.Group("kitchen").SendAsync("NewOrder", orderDto);`}
+// Moby-Dick was just returned and Ada Lovelace is first in the reservation queue:
+await _hubContext.Clients.User(hold.MemberId.ToString()).SendAsync("HoldReady", holdDto);
+await _hubContext.Clients.Group("circulation-desk").SendAsync("HoldReady", holdDto);`}
         />
         <p>
-          Perfect for a live "orders coming into the kitchen" screen updating in
-          real time, without the frontend polling every few seconds.
+          Perfect for a “your hold is ready” notice that appears the moment a
+          book comes back, and a live pick-up list at the circulation desk,
+          without the frontend polling every few seconds.
         </p>
       </Topic>
 
@@ -1758,8 +1825,10 @@ await _hubContext.Clients.Group("kitchen").SendAsync("NewOrder", orderDto);`}
           ]}
         />
         <p>
-          A common real pattern: expose REST to the outside world, use gRPC
-          between your own internal microservices.
+          A common real pattern: expose REST to the outside world (the library
+          website calls <code>GET /books</code>), use gRPC between your own
+          internal microservices (the loans service asking the catalog service
+          whether a copy is available).
         </p>
       </Topic>
 
@@ -1792,25 +1861,25 @@ await _hubContext.Clients.Group("kitchen").SendAsync("NewOrder", orderDto);`}
           ]}
         />
         <Cs
-          code={`public class PizzaServiceTests
+          code={`public class LoanServiceTests
 {
     [Fact]
-    public async Task GetPizza_ReturnsNotFound_WhenMissing()
+    public async Task Borrow_ReturnsNull_WhenBookMissing()
     {
-        var mockRepo = new Mock<IPizzaRepository>();
-        mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((Pizza?)null);
+        var mockRepo = new Mock<IBookRepository>();
+        mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((Book?)null);
 
-        var service = new PizzaService(mockRepo.Object);
-        var result = await service.GetByIdAsync(99);
+        var service = new LoanService(mockRepo.Object);
+        var result = await service.BorrowAsync(bookId: 99, memberId: 1);
 
         Assert.Null(result);
     }
 
     [Theory]
-    [InlineData(0)]
-    [InlineData(-1)]
-    public void Order_RejectsNonPositiveQuantity(int qty)
-        => Assert.Throws<ArgumentException>(() => new OrderQuantity(qty));
+    [InlineData(5)]
+    [InlineData(6)]
+    public void Borrow_Rejected_AtLoanLimit(int activeLoans)
+        => Assert.Throws<LoanLimitReachedException>(() => LoanRules.EnsureCanBorrow(activeLoans, maxActiveLoans: 5));
 }`}
         />
         <p>
@@ -1830,15 +1899,25 @@ await _hubContext.Clients.Group("kitchen").SendAsync("NewOrder", orderDto);`}
           Spin up your entire API in memory and hit it with real HTTP requests.
         </p>
         <Cs
-          code={`public class PizzaApiTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
+          code={`public class LibraryApiTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient _client = factory.CreateClient();
 
     [Fact]
-    public async Task GetPizza_ReturnsOk()
+    public async Task GetMemberLoans_ReturnsOk()
     {
-        var response = await _client.GetAsync("/api/pizzas/1");
+        var response = await _client.GetAsync("/api/members/1/loans");
         response.EnsureSuccessStatusCode();
+    }
+
+    [Fact]
+    public async Task BorrowingTheLastCopyTwice_Returns409()
+    {
+        // Moby-Dick (id 3) has exactly one copy
+        await _client.PostAsJsonAsync("/api/loans", new { bookId = 3, memberId = 1 });
+        var second = await _client.PostAsJsonAsync("/api/loans", new { bookId = 3, memberId = 2 });
+
+        Assert.Equal(HttpStatusCode.Conflict, second.StatusCode);
     }
 }`}
         />
@@ -1870,9 +1949,16 @@ await _hubContext.Clients.Group("kitchen").SendAsync("NewOrder", orderDto);`}
           </li>
         </ul>
         <Bash
-          code={`### Get a pizza
-GET https://localhost:5001/api/pizzas/1
-Authorization: Bearer {{token}}`}
+          code={`### Get a book
+GET https://localhost:5001/api/books/1
+Authorization: Bearer {{token}}
+
+### Borrow the last copy of The Time Machine
+POST https://localhost:5001/api/loans
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "bookId": 5, "memberId": 1 }`}
         />
       </Topic>
 
@@ -1891,7 +1977,7 @@ Authorization: Bearer {{token}}`}
         </p>
         <Xml
           code={`<!-- web.config, generated by \`dotnet publish\` -->
-<aspNetCore processPath="dotnet" arguments=".\\PizzaApi.dll"
+<aspNetCore processPath="dotnet" arguments=".\\LibraryApi.dll"
             stdoutLogEnabled="false" hostingModel="InProcess" />`}
         />
         <p>
@@ -1919,7 +2005,7 @@ RUN dotnet publish -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "PizzaApi.dll"]`}
+ENTRYPOINT ["dotnet", "LibraryApi.dll"]`}
         />
         <p>
           A multi-stage build like this keeps the final image small — the bulky

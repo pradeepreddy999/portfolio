@@ -275,18 +275,23 @@ const element = React.createElement("h1", null, "Hello, ", name, "!");`}
             <code>for</code> don&apos;t
           </li>
         </ul>
-        <h4>Try it — a magic 8-ball</h4>
+        <h4>Try it — a BookCard for Maple Street Library</h4>
         <Tsx
-          code={`function Magic8Ball() {
-  const answers = ["Yes", "No", "Ask again later", "Definitely!"];
-  const [answer, setAnswer] = useState("Shake me!");
+          code={`type Book = { id: number; title: string; author: string; year: number; copiesAvailable: number };
+
+function BookCard({ book }: { book: Book }) {
+  const available = book.copiesAvailable > 0;
 
   return (
-    <button onClick={() => setAnswer(answers[Math.floor(Math.random() * answers.length)])}>
-      {answer}
-    </button>
+    <article className="book-card">
+      <h3>{book.title}</h3>
+      <p>{book.author} · {book.year}</p>
+      {available ? <span>Available</span> : <span>On loan</span>}
+    </article>
   );
-}`}
+}
+
+<BookCard book={{ id: 3, title: "Moby-Dick", author: "Herman Melville", year: 1851, copiesAvailable: 1 }} />`}
         />
         <Callout>
           <strong>Mental model:</strong> React re-runs your component function
@@ -320,7 +325,7 @@ function Card({ title, children }: CardProps) {
 }
 
 // Usage
-<Card title="Score"><p>You scored 42!</p></Card>`}
+<Card title="Frankenstein"><p>Mary Shelley, 1818 · Horror</p></Card>`}
         />
         <Callout>
           <strong>Composition over configuration:</strong> instead of a{' '}
@@ -336,12 +341,12 @@ function Card({ title, children }: CardProps) {
           Calling the setter schedules a re-render with the new value.
         </p>
         <Tsx
-          code={`function Counter() {
-  const [count, setCount] = useState(0);
+          code={`function CopiesCounter() {
+  const [copies, setCopies] = useState(0);
 
   return (
-    <button onClick={() => setCount(count + 1)}>
-      Clicked {count} times
+    <button onClick={() => setCopies(copies + 1)}>
+      Copies received: {copies}
     </button>
   );
 }`}
@@ -353,7 +358,7 @@ function Card({ title, children }: CardProps) {
           even inside rapid-fire calls:
         </p>
         <Tsx
-          code={`setCount(prev => prev + 1); // safe, even called several times in a row`}
+          code={`setCopies(prev => prev + 1); // safe, even called several times in a row`}
         />
         <p>
           <strong>No auto-merge.</strong> Unlike class-component{' '}
@@ -361,18 +366,18 @@ function Card({ title, children }: CardProps) {
           entirely:
         </p>
         <Tsx
-          code={`const [user, setUser] = useState({ name: "Pradeep", role: "dev" });
+          code={`const [member, setMember] = useState({ name: "Grace Hopper", tier: "standard" });
 
-// setUser({ role: "lead" }) wipes out \`name\`
-setUser(prev => ({ ...prev, role: "lead" })); // spread + override`}
+// setMember({ tier: "premium" }) wipes out \`name\`
+setMember(prev => ({ ...prev, tier: "premium" })); // spread + override`}
         />
-        <h4>Try it — a dice roller</h4>
+        <h4>Try it — a WishlistToggle</h4>
         <Tsx
-          code={`function Dice() {
-  const [value, setValue] = useState(1);
+          code={`function WishlistToggle() {
+  const [onWishlist, setOnWishlist] = useState(false);
   return (
-    <button onClick={() => setValue(1 + Math.floor(Math.random() * 6))}>
-      Rolled: {value}
+    <button aria-pressed={onWishlist} onClick={() => setOnWishlist(prev => !prev)}>
+      {onWishlist ? "On your wishlist" : "Add to wishlist"}
     </button>
   );
 }`}
@@ -390,31 +395,32 @@ setUser(prev => ({ ...prev, role: "lead" })); // spread + override`}
           <code>onClick={'{fn()}'}</code>).
         </p>
         <Tsx
-          code={`function LoginButton({ isLoggedIn, onToggle }: { isLoggedIn: boolean; onToggle: () => void }) {
-  return <button onClick={onToggle}>{isLoggedIn ? "Log out" : "Log in"}</button>;
+          code={`function LoanButton({ isBorrowed, onToggle }: { isBorrowed: boolean; onToggle: () => void }) {
+  return <button onClick={onToggle}>{isBorrowed ? "Return" : "Borrow"}</button>;
 }`}
         />
         <h4>Three conditional patterns you&apos;ll use constantly</h4>
         <Tsx
           code={`{isLoading && <Spinner />}                       // show or nothing
-{error ? <ErrorMsg /> : <Content />}               // either/or
+{error ? <ErrorMsg /> : <BooksList />}             // either/or
 {status === "loading" ? <Spinner /> :
- status === "error"   ? <ErrorMsg /> : <Content />}  // multi-branch`}
+ status === "error"   ? <ErrorMsg /> : <BooksList />}  // multi-branch`}
         />
         <Callout variant="warn">
-          <strong>Watch out:</strong> <code>{'{count && <Badge />}'}</code>{' '}
-          renders a literal <code>0</code> when <code>count</code> is{' '}
-          <code>0</code>, because <code>0</code> is falsy but still gets
-          rendered as text. Use <code>{'{count > 0 && ...}'}</code> instead.
+          <strong>Watch out:</strong>{' '}
+          <code>{'{holdsReady && <HoldsBadge />}'}</code> renders a literal{' '}
+          <code>0</code> when <code>holdsReady</code> is <code>0</code>, because{' '}
+          <code>0</code> is falsy but still gets rendered as text. Use{' '}
+          <code>{'{holdsReady > 0 && ...}'}</code> instead.
         </Callout>
       </Topic>
 
       <Topic id="lists-keys" no="05" title="Lists & Keys">
         <Tsx
-          code={`const todos = [{ id: 1, text: "Learn React" }, { id: 2, text: "Learn TanStack" }];
+          code={`const books = [{ id: 1, title: "Pride and Prejudice" }, { id: 2, title: "Frankenstein" }];
 
 <ul>
-  {todos.map(todo => <li key={todo.id}>{todo.text}</li>)}
+  {books.map(book => <li key={book.id}>{book.title}</li>)}
 </ul>`}
         />
         <p>
@@ -440,8 +446,12 @@ setUser(prev => ({ ...prev, role: "lead" })); // spread + override`}
         </p>
         <Tsx
           code={`useEffect(() => {
-  const timer = setInterval(() => console.log("tick"), 1000);
-  return () => clearInterval(timer); // cleanup — runs before the next effect, and on unmount
+  const controller = new AbortController();
+  fetch("/api/books", { signal: controller.signal })
+    .then(res => res.json())
+    .then(setBooks)
+    .catch(err => { if (err.name !== "AbortError") setError(err); });
+  return () => controller.abort(); // cleanup — runs before the next effect, and on unmount
 }, []); // dependency array`}
         />
         <h4>Dependency array cheat sheet</h4>
@@ -460,10 +470,10 @@ setUser(prev => ({ ...prev, role: "lead" })); // spread + override`}
           derive one piece of state from another.
           <Tsx
             code={`// don't
-useEffect(() => { setFullName(firstName + " " + lastName); }, [firstName, lastName]);
+useEffect(() => { setAvailableBooks(books.filter(b => b.copiesAvailable > 0)); }, [books]);
 
 // just compute it during render — no effect needed
-const fullName = firstName + " " + lastName;`}
+const availableBooks = books.filter(b => b.copiesAvailable > 0);`}
           />
         </Deepdive>
         <p>
@@ -479,10 +489,10 @@ const fullName = firstName + " " + lastName;`}
           <em>without</em> triggering one, and pointing at a real DOM node.
         </p>
         <Tsx
-          code={`function TextInputWithFocus() {
+          code={`function SearchBox() {
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => { inputRef.current?.focus(); }, []);
-  return <input ref={inputRef} />;
+  return <input ref={inputRef} type="search" placeholder="Search the catalog" />;
 }`}
         />
         <Tsx
@@ -505,26 +515,27 @@ function StopWatch() {
           drilling through every layer in between.
         </p>
         <Tsx
-          code={`const ThemeContext = createContext<"light" | "dark">("light");
+          code={`type Member = { id: number; name: string; tier: "standard" | "premium" };
+const CurrentMemberContext = createContext<Member | null>(null);
 
 function App() {
   return (
-    <ThemeContext.Provider value="dark">
-      <Toolbar />
-    </ThemeContext.Provider>
+    <CurrentMemberContext.Provider value={{ id: 1, name: "Ada Lovelace", tier: "premium" }}>
+      <LibraryHeader />
+    </CurrentMemberContext.Provider>
   );
 }
 
-function Toolbar() {
-  const theme = useContext(ThemeContext); // no prop passed down at all
-  return <div className={theme}>...</div>;
+function LibraryHeader() {
+  const member = useContext(CurrentMemberContext); // no prop passed down at all
+  return <header>{member ? member.name : "Sign in"}</header>;
 }`}
         />
         <p>
-          Good fits: theme, the logged-in user, locale/i18n — values that change
-          rarely and are needed widely. Poor fit: high-frequency updates, since
-          every consumer re-renders whenever the context value changes. For
-          that, split contexts by concern or reach for a dedicated state
+          Good fits: theme, the signed-in member, locale/i18n — values that
+          change rarely and are needed widely. Poor fit: high-frequency updates,
+          since every consumer re-renders whenever the context value changes.
+          For that, split contexts by concern or reach for a dedicated state
           library.
         </p>
       </Topic>
@@ -535,24 +546,24 @@ function Toolbar() {
           sub-values that change together as one unit.
         </p>
         <Tsx
-          code={`type State = { count: number };
-type Action = { type: "increment" } | { type: "decrement" } | { type: "reset" };
+          code={`type State = { total: number; available: number };
+type Action = { type: "checkOut" } | { type: "checkIn" } | { type: "reset" };
 
-function reducer(state: State, action: Action): State {
+function copiesReducer(state: State, action: Action): State {
   switch (action.type) {
-    case "increment": return { count: state.count + 1 };
-    case "decrement": return { count: state.count - 1 };
-    case "reset":      return { count: 0 };
+    case "checkOut": return { ...state, available: Math.max(state.available - 1, 0) };
+    case "checkIn":  return { ...state, available: Math.min(state.available + 1, state.total) };
+    case "reset":    return { ...state, available: state.total };
   }
 }
 
-function Counter() {
-  const [state, dispatch] = useReducer(reducer, { count: 0 });
+function CopiesCounter({ total }: { total: number }) {
+  const [state, dispatch] = useReducer(copiesReducer, { total, available: total });
   return (
     <>
-      <button onClick={() => dispatch({ type: "decrement" })}>-</button>
-      {state.count}
-      <button onClick={() => dispatch({ type: "increment" })}>+</button>
+      <button onClick={() => dispatch({ type: "checkOut" })}>-</button>
+      {state.available} of {state.total} available
+      <button onClick={() => dispatch({ type: "checkIn" })}>+</button>
     </>
   );
 }`}
@@ -584,8 +595,8 @@ function Counter() {
   return [value, setValue] as const;
 }
 
-// Usage — clean and reusable across the app
-const [theme, setTheme] = useLocalStorage("theme", "light");`}
+// Usage — clean and reusable across the app (book ids on the member's wishlist)
+const [wishlist, setWishlist] = useLocalStorage<number[]>("wishlist", []);`}
         />
         <Callout>
           Custom hooks don&apos;t share state between the components that call
@@ -616,8 +627,8 @@ const [theme, setTheme] = useLocalStorage("theme", "light");`}
 
 // Modal knows nothing about what's inside it
 <Modal onClose={close}>
-  <h2>Delete item?</h2>
-  <p>This can't be undone.</p>
+  <h2>Cancel reservation?</h2>
+  <p>You'll lose your place in the queue for Moby-Dick.</p>
 </Modal>`}
         />
         <p>
@@ -650,12 +661,12 @@ function Layout({ header, sidebar, children }: LayoutProps) {
           state up.&quot;
         </p>
         <Tsx
-          code={`function Parent() {
+          code={`function CatalogPage() {
   const [query, setQuery] = useState("");
   return (
     <>
       <SearchBox query={query} onChange={setQuery} />
-      <ResultsList query={query} />
+      <BooksList query={query} />
     </>
   );
 }`}
@@ -683,14 +694,14 @@ function Layout({ header, sidebar, children }: LayoutProps) {
         </p>
         <Tsx
           code={`// useMemo — cache an expensive computed VALUE between renders
-const sorted = useMemo(() => expensiveSort(items), [items]);
+const sorted = useMemo(() => expensiveSort(books), [books]);
 
 // useCallback — cache a FUNCTION reference so it doesn't change every render
-const handleClick = useCallback(() => doSomething(id), [id]);
+const handleBorrow = useCallback(() => borrowBook(bookId), [bookId]);
 
 // React.memo — skip re-rendering a component if its props haven't changed
-const Row = React.memo(function Row({ item }: { item: Item }) {
-  return <li>{item.name}</li>;
+const BookRow = React.memo(function BookRow({ book }: { book: Book }) {
+  return <li>{book.title}</li>;
 });`}
         />
         <Callout>
@@ -755,13 +766,14 @@ function Tooltip({ children }: { children: React.ReactNode }) {
   }
 
   render() {
-    if (this.state.hasError) return <h2>Something went wrong.</h2>;
+    if (this.state.hasError) return <h2>We couldn't load the catalog.</h2>;
     return this.props.children;
   }
 }
 
+// if BooksList throws while rendering, only this section shows the fallback
 <ErrorBoundary>
-  <WidgetThatMightThrow />
+  <BooksList />
 </ErrorBoundary>`}
         />
         <Callout variant="warn">
@@ -822,10 +834,10 @@ Tabs.Tab = function Tab({ id, children }: { id: string; children: React.ReactNod
 };
 
 // Usage reads like plain markup
-<Tabs defaultTab="a">
+<Tabs defaultTab="available">
   <Tabs.List>
-    <Tabs.Tab id="a">First</Tabs.Tab>
-    <Tabs.Tab id="b">Second</Tabs.Tab>
+    <Tabs.Tab id="available">Available</Tabs.Tab>
+    <Tabs.Tab id="on-loan">On loan</Tabs.Tab>
   </Tabs.List>
 </Tabs>`}
         />
@@ -842,32 +854,32 @@ Tabs.Tab = function Tab({ id, children }: { id: string; children: React.ReactNod
           global-store pattern with zero dependencies.
         </p>
         <Tsx
-          code={`type State = { cart: Item[] };
-type Action = { type: "add"; item: Item } | { type: "remove"; id: string };
+          code={`type State = { basket: Book[] };
+type Action = { type: "add"; book: Book } | { type: "remove"; id: number };
 
-function cartReducer(state: State, action: Action): State {
+function loanBasketReducer(state: State, action: Action): State {
   switch (action.type) {
-    case "add":    return { cart: [...state.cart, action.item] };
-    case "remove": return { cart: state.cart.filter(i => i.id !== action.id) };
+    case "add":    return { basket: [...state.basket, action.book] };
+    case "remove": return { basket: state.basket.filter(b => b.id !== action.id) };
   }
 }
 
-const CartContext = createContext<{ state: State; dispatch: React.Dispatch<Action> } | null>(null);
+const LoanBasketContext = createContext<{ state: State; dispatch: React.Dispatch<Action> } | null>(null);
 
-function CartProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, { cart: [] });
-  return <CartContext.Provider value={{ state, dispatch }}>{children}</CartContext.Provider>;
+function LoanBasketProvider({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = useReducer(loanBasketReducer, { basket: [] });
+  return <LoanBasketContext.Provider value={{ state, dispatch }}>{children}</LoanBasketContext.Provider>;
 }
 
-function useCart() {
-  const ctx = useContext(CartContext);
-  if (!ctx) throw new Error("useCart must be used inside CartProvider");
+function useLoanBasket() {
+  const ctx = useContext(LoanBasketContext);
+  if (!ctx) throw new Error("useLoanBasket must be used inside LoanBasketProvider");
   return ctx;
 }`}
         />
         <p>
-          Any component can now call <code>useCart()</code> to read state or
-          dispatch actions, with no prop drilling. For very high-frequency
+          Any component can now call <code>useLoanBasket()</code> to read state
+          or dispatch actions, with no prop drilling. For very high-frequency
           global state, a dedicated library (Zustand, Jotai) will still
           outperform this — Context re-renders every consumer on any change.
         </p>
@@ -885,7 +897,7 @@ function useCart() {
         </p>
         <Tsx
           code={`<Suspense fallback={<Spinner />}>
-  <ProfilePage />
+  <BookDetails bookId={3} />
 </Suspense>`}
         />
         <p>
@@ -915,22 +927,22 @@ function useCart() {
           doesn&apos;t let it block urgent updates like typing in an input.
         </p>
         <Tsx
-          code={`function SearchPage() {
+          code={`function BookSearch() {
   const [query, setQuery] = useState("");
   const [isPending, startTransition] = useTransition();
-  const [results, setResults] = useState<Result[]>([]);
+  const [results, setResults] = useState<Book[]>([]);
 
   function handleChange(value: string) {
     setQuery(value); // urgent — keep the input responsive
     startTransition(() => {
-      setResults(expensiveSearch(value)); // low priority — can be interrupted
+      setResults(searchCatalog(value)); // low priority — can be interrupted
     });
   }
 
   return (
     <>
       <input value={query} onChange={e => handleChange(e.target.value)} />
-      {isPending ? <Spinner /> : <ResultsList results={results} />}
+      {isPending ? <Spinner /> : <BooksList books={results} />}
     </>
   );
 }`}
@@ -942,7 +954,7 @@ function useCart() {
         </p>
         <Tsx
           code={`const deferredQuery = useDeferredValue(query);
-const results = useMemo(() => expensiveSearch(deferredQuery), [deferredQuery]);`}
+const results = useMemo(() => searchCatalog(deferredQuery), [deferredQuery]);`}
         />
       </Topic>
 
@@ -960,12 +972,14 @@ const results = useMemo(() => expensiveSearch(deferredQuery), [deferredQuery]);`
           by React instead of hand-rolled <code>useState</code> juggling.
         </p>
         <Tsx
-          code={`function ChangeName({ currentName }: { currentName: string }) {
+          code={`function MemberSignupForm() {
   const [error, submitAction, isPending] = useActionState(
     async (previousState: string | null, formData: FormData) => {
-      const newName = formData.get("name") as string;
-      const result = await updateName(newName);
-      if (result.error) return result.error;
+      const name = formData.get("name") as string;
+      const email = formData.get("email") as string;
+      if (!name) return "Name is required";
+      const result = await signUpMember({ name, email });
+      if (result.error) return result.error; // e.g. "Enter a valid email"
       return null;
     },
     null
@@ -973,8 +987,9 @@ const results = useMemo(() => expensiveSearch(deferredQuery), [deferredQuery]);`
 
   return (
     <form action={submitAction}>
-      <input name="name" defaultValue={currentName} />
-      <button disabled={isPending}>Update</button>
+      <input name="name" placeholder="Name" />
+      <input name="email" type="email" placeholder="Email" />
+      <button disabled={isPending}>Join the library</button>
       {error && <p>{error}</p>}
     </form>
   );
@@ -995,29 +1010,29 @@ const results = useMemo(() => expensiveSearch(deferredQuery), [deferredQuery]);`
           then automatically reconciles once the real response lands.
         </p>
         <Tsx
-          code={`function ThreadView({ messages, sendMessage }: { messages: Message[]; sendMessage: (text: string) => Promise<void> }) {
-  const [optimisticMessages, addOptimistic] = useOptimistic(
-    messages,
-    (state, newText: string) => [...state, { text: newText, sending: true }]
+          code={`function BorrowButton({ book, borrow }: { book: Book; borrow: (bookId: number) => Promise<void> }) {
+  const [optimisticCopies, addOptimistic] = useOptimistic(
+    book.copiesAvailable,
+    (current, change: number) => current + change
   );
 
-  async function formAction(formData: FormData) {
-    const text = formData.get("message") as string;
-    addOptimistic(text);      // shows instantly
-    await sendMessage(text);  // real state arrives via props once it resolves
+  async function formAction() {
+    addOptimistic(-1);        // shows instantly
+    await borrow(book.id);    // real state arrives via props once it resolves
   }
 
   return (
-    <>
-      {optimisticMessages.map((m, i) => <p key={i} style={{ opacity: m.sending ? 0.5 : 1 }}>{m.text}</p>)}
-      <form action={formAction}><input name="message" /></form>
-    </>
+    <form action={formAction}>
+      <p>{optimisticCopies} of {book.copiesTotal} available</p>
+      <button disabled={optimisticCopies === 0}>Borrow</button>
+    </form>
   );
 }`}
         />
         <p>
-          If the real update fails, React quietly reverts to the actual state —
-          no manual rollback code needed.
+          If the real update fails (say another member just took the last copy
+          of Moby-Dick), React quietly reverts to the actual state — no manual
+          rollback code needed.
         </p>
       </Topic>
 
@@ -1029,22 +1044,22 @@ const results = useMemo(() => expensiveSearch(deferredQuery), [deferredQuery]);`
           doesn&apos;t follow the &quot;Rules of Hooks.&quot;
         </p>
         <Tsx
-          code={`function Comments({ commentsPromise }: { commentsPromise: Promise<Comment[]> }) {
+          code={`function BookDetails({ bookPromise }: { bookPromise: Promise<Book> }) {
   // suspends the component until the promise resolves
-  const comments = use(commentsPromise);
-  return <ul>{comments.map(c => <li key={c.id}>{c.text}</li>)}</ul>;
+  const book = use(bookPromise);
+  return <h2>{book.title} — {book.author}</h2>;
 }
 
 <Suspense fallback={<Spinner />}>
-  <Comments commentsPromise={fetchComments()} />
+  <BookDetails bookPromise={fetchBook(3)} />
 </Suspense>`}
         />
         <Tsx
           code={`// Conditional context reads — impossible with useContext
-function Banner({ showTheme }: { showTheme: boolean }) {
-  if (!showTheme) return null;
-  const theme = use(ThemeContext); // fine — use() allows this, useContext() would not
-  return <div className={theme}>...</div>;
+function MemberGreeting({ show }: { show: boolean }) {
+  if (!show) return null;
+  const member = use(CurrentMemberContext); // fine — use() allows this, useContext() would not
+  return <p>Welcome back, {member?.name}</p>;
 }`}
         />
       </Topic>
@@ -1062,22 +1077,26 @@ function Banner({ showTheme }: { showTheme: boolean }) {
         </p>
         <Tsx
           code={`// This runs ONLY on the server — no JS bundle sent to the client for this component
-async function ProductPage({ id }: { id: string }) {
-  const product = await db.products.findById(id); // direct DB access, safely
+async function CatalogPage() {
+  const books = await db.books.findAll(); // direct DB access, safely
   return (
-    <div>
-      <h1>{product.name}</h1>
-      <AddToCartButton productId={id} /> {/* a Client Component, marked below */}
-    </div>
+    <ul>
+      {books.map(book => (
+        <li key={book.id}>
+          {book.title}
+          <BorrowButton bookId={book.id} /> {/* a Client Component, marked below */}
+        </li>
+      ))}
+    </ul>
   );
 }`}
         />
         <Tsx
           code={`"use client"; // opts this file INTO the client bundle — needed for interactivity
 
-function AddToCartButton({ productId }: { productId: string }) {
+function BorrowButton({ bookId }: { bookId: number }) {
   const [pending, setPending] = useState(false);
-  return <button onClick={() => setPending(true)}>Add to cart</button>;
+  return <button onClick={() => setPending(true)}>Borrow</button>;
 }`}
         />
         <Callout>
@@ -1178,9 +1197,9 @@ npm run dev`}
 │  │  ├─ __root.tsx        # root layout — wraps every route
 │  │  ├─ index.tsx         # "/"
 │  │  ├─ about.tsx         # "/about"
-│  │  └─ posts/
-│  │     ├─ index.tsx      # "/posts"
-│  │     └─ $postId.tsx    # "/posts/:postId"
+│  │  └─ books/
+│  │     ├─ index.tsx      # "/books"
+│  │     └─ $bookId.tsx    # "/books/:bookId"
 │  ├─ client.tsx           # client entry
 │  ├─ router.tsx           # createRouter() config
 │  └─ ssr.tsx              # server entry
@@ -1214,36 +1233,36 @@ npm run dev`}
           hand-write a route config object for the common case.
         </p>
         <Tsx
-          code={`// app/routes/posts/$postId.tsx
-export const Route = createFileRoute("/posts/$postId")({
-  component: PostPage,
+          code={`// app/routes/books/$bookId.tsx
+export const Route = createFileRoute("/books/$bookId")({
+  component: BookPage,
 });
 
-function PostPage() {
-  const { postId } = Route.useParams(); // fully typed as { postId: string }
-  return <h1>Post {postId}</h1>;
+function BookPage() {
+  const { bookId } = Route.useParams(); // fully typed as { bookId: string }
+  return <h1>Book {bookId}</h1>;
 }`}
         />
         <h4>Naming conventions</h4>
         <ul>
           <li>
-            <code>posts.index.tsx</code> or <code>posts/index.tsx</code> →{' '}
-            <code>/posts</code>
+            <code>books.index.tsx</code> or <code>books/index.tsx</code> →{' '}
+            <code>/books</code>
           </li>
           <li>
-            <code>posts.$postId.tsx</code> or <code>posts/$postId.tsx</code> →{' '}
-            <code>/posts/:postId</code> (dynamic segment)
+            <code>books.$bookId.tsx</code> or <code>books/$bookId.tsx</code> →{' '}
+            <code>/books/:bookId</code> (dynamic segment)
           </li>
           <li>
-            <code>posts.$postId.edit.tsx</code> →{' '}
-            <code>/posts/:postId/edit</code> (nested)
+            <code>members.$memberId.loans.tsx</code> →{' '}
+            <code>/members/:memberId/loans</code> (nested)
           </li>
           <li>
             <code>_layout.tsx</code> (leading underscore) → a pathless layout
             route, wraps children without adding to the URL
           </li>
           <li>
-            <code>posts.$.tsx</code> → a splat/catch-all route
+            <code>books.$.tsx</code> → a splat/catch-all route
           </li>
         </ul>
         <Callout>
@@ -1262,17 +1281,17 @@ function PostPage() {
           already knows it needs.
         </p>
         <Tsx
-          code={`export const Route = createFileRoute("/posts/$postId")({
+          code={`export const Route = createFileRoute("/books/$bookId")({
   loader: async ({ params }) => {
-    const post = await fetchPost(params.postId);
-    return { post };
+    const book = await fetchBook(params.bookId);
+    return { book };
   },
-  component: PostPage,
+  component: BookPage,
 });
 
-function PostPage() {
-  const { post } = Route.useLoaderData(); // typed from the loader's return value
-  return <h1>{post.title}</h1>;
+function BookPage() {
+  const { book } = Route.useLoaderData(); // typed from the loader's return value
+  return <h1>{book.title}</h1>;
 }`}
         />
         <p>
@@ -1282,8 +1301,8 @@ function PostPage() {
           background.
         </p>
         <Tsx
-          code={`export const Route = createFileRoute("/posts/$postId")({
-  loader: ({ params }) => fetchPost(params.postId),
+          code={`export const Route = createFileRoute("/books/$bookId")({
+  loader: ({ params }) => fetchBook(params.bookId),
   staleTime: 30_000, // cached loader data is considered fresh for 30s
 });`}
         />
@@ -1304,18 +1323,18 @@ function PostPage() {
         <Tsx
           code={`import { createServerFn } from "@tanstack/react-start";
 
-const getUser = createServerFn({ method: "GET" })
+const getMember = createServerFn({ method: "GET" })
   .validator((id: string) => id)
   .handler(async ({ data: id }) => {
     // runs ONLY on the server — safe to touch a database or secret env vars
-    return db.users.findById(id);
+    return db.members.findById(id);
   });
 
 // Called from a component like any async function
-function Profile({ userId }: { userId: string }) {
-  const [user, setUser] = useState<User | null>(null);
-  useEffect(() => { getUser({ data: userId }).then(setUser); }, [userId]);
-  return <h1>{user?.name}</h1>;
+function MemberName({ memberId }: { memberId: string }) {
+  const [member, setMember] = useState<Member | null>(null);
+  useEffect(() => { getMember({ data: memberId }).then(setMember); }, [memberId]);
+  return <h1>{member?.name}</h1>;
 }`}
         />
         <p>
@@ -1323,8 +1342,8 @@ function Profile({ userId }: { userId: string }) {
           ready before render:
         </p>
         <Tsx
-          code={`export const Route = createFileRoute("/profile/$userId")({
-  loader: ({ params }) => getUser({ data: params.userId }),
+          code={`export const Route = createFileRoute("/members/$memberId/loans")({
+  loader: ({ params }) => getMember({ data: params.memberId }),
 });`}
         />
         <Callout>
@@ -1342,29 +1361,33 @@ function Profile({ userId }: { userId: string }) {
           invalidate cached loader data afterward.
         </p>
         <Tsx
-          code={`const createPost = createServerFn({ method: "POST" })
-  .validator((data: { title: string; body: string }) => data)
-  .handler(async ({ data }) => db.posts.create(data));
+          code={`const renewLoan = createServerFn({ method: "POST" })
+  .validator((data: { loanId: number }) => data)
+  .handler(async ({ data }) => db.loans.renew(data.loanId)); // pushes due_on out another loan period
 
-function NewPostForm() {
+function RenewLoanForm({ loanId }: { loanId: number }) {
   const router = useRouter();
 
   async function handleSubmit(formData: FormData) {
-    await createPost({
-      data: { title: formData.get("title") as string, body: formData.get("body") as string },
+    await renewLoan({
+      data: { loanId: Number(formData.get("loanId")) },
     });
-    router.invalidate(); // re-runs affected loaders so the new post shows up
+    router.invalidate(); // re-runs affected loaders so the new due date shows up
   }
 
   return (
     <form action={handleSubmit}>
-      <input name="title" />
-      <textarea name="body" />
-      <button>Publish</button>
+      <input type="hidden" name="loanId" value={loanId} />
+      <button>Renew</button>
     </form>
   );
 }`}
         />
+        <p>
+          <code>borrowBook</code> and <code>returnLoan</code> have exactly the
+          same shape — a <code>POST</code> server function, then an invalidation
+          so <code>/members/$memberId/loans</code> shows the new state.
+        </p>
         <p>
           <code>router.invalidate()</code> tells the router &quot;loader data
           may be stale, re-fetch what&apos;s active&quot; — the router-native
@@ -1392,23 +1415,23 @@ export function createRouter() {
         />
         <Tsx
           code={`// A route loader that primes the Query cache instead of returning raw data
-export const Route = createFileRoute("/posts/$postId")({
+export const Route = createFileRoute("/books/$bookId")({
   loader: ({ context: { queryClient }, params }) =>
     queryClient.ensureQueryData({
-      queryKey: ["post", params.postId],
-      queryFn: () => fetchPost(params.postId),
+      queryKey: ["books", params.bookId],
+      queryFn: () => fetchBook(params.bookId),
     }),
-  component: PostPage,
+  component: BookPage,
 });
 
-function PostPage() {
-  const { postId } = Route.useParams();
+function BookPage() {
+  const { bookId } = Route.useParams();
   // instant — data's already in the cache from the loader above
-  const { data: post } = useSuspenseQuery({
-    queryKey: ["post", postId],
-    queryFn: () => fetchPost(postId),
+  const { data: book } = useSuspenseQuery({
+    queryKey: ["books", bookId],
+    queryFn: () => fetchBook(bookId),
   });
-  return <h1>{post.title}</h1>;
+  return <h1>{book.title}</h1>;
 }`}
         />
         <Callout>
@@ -1422,23 +1445,24 @@ function PostPage() {
       <Topic id="search-params" no="32" title="Search Params as State">
         <p>
           TanStack Router treats URL search params as fully typed, validated
-          state — not raw strings you parse by hand. This makes filters,
-          pagination, and sort order shareable via URL and safe to read like any
-          other typed value.
+          state — not raw strings you parse by hand. This makes filters (genre,
+          available only), pagination, and sort order shareable via URL and safe
+          to read like any other typed value.
         </p>
         <Tsx
           code={`const searchSchema = z.object({
+  genre: z.enum(["All", "Classics", "Horror", "Adventure", "Fantasy", "Science Fiction"]).catch("All"),
+  available: z.boolean().catch(false),
   page: z.number().catch(1),
-  sort: z.enum(["newest", "popular"]).catch("newest"),
 });
 
-export const Route = createFileRoute("/posts/")({
+export const Route = createFileRoute("/books/")({
   validateSearch: searchSchema,
-  component: PostsPage,
+  component: BooksPage,
 });
 
-function PostsPage() {
-  const { page, sort } = Route.useSearch(); // typed as { page: number; sort: "newest" | "popular" }
+function BooksPage() {
+  const { genre, available, page } = Route.useSearch(); // typed as { genre: "All" | "Classics" | ...; available: boolean; page: number }
   const navigate = Route.useNavigate();
 
   return (
@@ -1466,25 +1490,25 @@ function PostsPage() {
           boundaries on the client to show placeholders in the meantime.
         </p>
         <Tsx
-          code={`export const Route = createFileRoute("/dashboard")({
-  loader: async () => {
+          code={`export const Route = createFileRoute("/books/$bookId")({
+  loader: async ({ params }) => {
     // fast, blocking — needed for the initial paint
-    const summary = await fetchSummary();
+    const book = await fetchBook(params.bookId);
     // slow — don't block on it, stream it in when ready
-    const activityPromise = fetchActivityFeed();
-    return { summary, activityPromise };
+    const alsoBorrowedPromise = fetchReadersAlsoBorrowed(params.bookId);
+    return { book, alsoBorrowedPromise };
   },
-  component: Dashboard,
+  component: BookPage,
 });
 
-function Dashboard() {
-  const { summary, activityPromise } = Route.useLoaderData();
+function BookPage() {
+  const { book, alsoBorrowedPromise } = Route.useLoaderData();
   return (
     <>
-      <Summary data={summary} />
+      <BookDetails book={book} />
       <Suspense fallback={<Spinner />}>
-        <Await promise={activityPromise}>
-          {(activity) => <ActivityFeed data={activity} />}
+        <Await promise={alsoBorrowedPromise}>
+          {(books) => <ReadersAlsoBorrowed books={books} />}
         </Await>
       </Suspense>
     </>
@@ -1492,9 +1516,9 @@ function Dashboard() {
 }`}
         />
         <p>
-          The user sees the shell and the fast data almost immediately; the
-          activity feed pops in once its promise resolves, without a second
-          round trip from the client.
+          The member sees the shell and the book details almost immediately; the
+          &quot;Readers also borrowed&quot; shelf pops in once its promise
+          resolves, without a second round trip from the client.
         </p>
       </Topic>
 
@@ -1511,10 +1535,10 @@ function Dashboard() {
   return next({ context: { ...context, user: session.user } }); // injects \`user\` downstream
 });
 
-const getMyOrders = createServerFn({ method: "GET" })
+const getMyLoans = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    return db.orders.findByUser(context.user.id); // context.user is typed, guaranteed present
+    return db.loans.findByMember(context.user.id); // context.user is typed, guaranteed present
   });`}
         />
         <p>
@@ -1532,15 +1556,19 @@ const getMyOrders = createServerFn({ method: "GET" })
           or data ships to the client.
         </p>
         <Tsx
-          code={`export const Route = createFileRoute("/dashboard")({
+          code={`// app/routes/admin.tsx — a layout route, so every /admin/* child is protected too
+export const Route = createFileRoute("/admin")({
   beforeLoad: async ({ context }) => {
     const user = await context.getUser();
     if (!user) {
-      throw redirect({ to: "/login", search: { redirectTo: "/dashboard" } });
+      throw redirect({ to: "/login", search: { redirectTo: "/admin" } });
+    }
+    if (user.role !== "Librarian" && user.role !== "Admin") {
+      throw redirect({ to: "/books" }); // signed in, but not staff
     }
     return { user }; // now available to this route's loader and component
   },
-  loader: ({ context }) => fetchDashboardData(context.user.id),
+  loader: ({ context }) => fetchOverdueLoans(context.user.branchId),
 });`}
         />
         <p>

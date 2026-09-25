@@ -22,6 +22,8 @@ import { Route as TutorialsDotnetWebApiIndexRouteImport } from './routes/tutoria
 import { Route as TutorialsDotnetWebApiTopicIdRouteImport } from './routes/tutorials/dotnet-web-api/$topicId'
 import { Route as TutorialsEfcore10IndexRouteImport } from './routes/tutorials/efcore-10/index'
 import { Route as TutorialsEfcore10TopicIdRouteImport } from './routes/tutorials/efcore-10/$topicId'
+import { Route as TutorialsReactStorybookIndexRouteImport } from './routes/tutorials/react-storybook/index'
+import { Route as TutorialsReactStorybookTopicIdRouteImport } from './routes/tutorials/react-storybook/$topicId'
 import { Route as TutorialsReactTanstackStartIndexRouteImport } from './routes/tutorials/react-tanstack-start/index'
 import { Route as TutorialsReactTanstackStartTopicIdRouteImport } from './routes/tutorials/react-tanstack-start/$topicId'
 import { Route as TutorialsSqlNovaPizzaIndexRouteImport } from './routes/tutorials/sql-nova-pizza/index'
@@ -98,6 +100,18 @@ const TutorialsEfcore10TopicIdRoute =
     path: '/tutorials/efcore-10/$topicId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const TutorialsReactStorybookIndexRoute =
+  TutorialsReactStorybookIndexRouteImport.update({
+    id: '/tutorials/react-storybook/',
+    path: '/tutorials/react-storybook/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const TutorialsReactStorybookTopicIdRoute =
+  TutorialsReactStorybookTopicIdRouteImport.update({
+    id: '/tutorials/react-storybook/$topicId',
+    path: '/tutorials/react-storybook/$topicId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const TutorialsReactTanstackStartIndexRoute =
   TutorialsReactTanstackStartIndexRouteImport.update({
     id: '/tutorials/react-tanstack-start/',
@@ -146,12 +160,14 @@ export interface FileRoutesByFullPath {
   '/tutorials/csharp-14/$topicId': typeof TutorialsCsharp14TopicIdRoute
   '/tutorials/dotnet-web-api/$topicId': typeof TutorialsDotnetWebApiTopicIdRoute
   '/tutorials/efcore-10/$topicId': typeof TutorialsEfcore10TopicIdRoute
+  '/tutorials/react-storybook/$topicId': typeof TutorialsReactStorybookTopicIdRoute
   '/tutorials/react-tanstack-start/$topicId': typeof TutorialsReactTanstackStartTopicIdRoute
   '/tutorials/sql-nova-pizza/$topicId': typeof TutorialsSqlNovaPizzaTopicIdRoute
   '/tutorials/web-development/$topicId': typeof TutorialsWebDevelopmentTopicIdRoute
   '/tutorials/csharp-14/': typeof TutorialsCsharp14IndexRoute
   '/tutorials/dotnet-web-api/': typeof TutorialsDotnetWebApiIndexRoute
   '/tutorials/efcore-10/': typeof TutorialsEfcore10IndexRoute
+  '/tutorials/react-storybook/': typeof TutorialsReactStorybookIndexRoute
   '/tutorials/react-tanstack-start/': typeof TutorialsReactTanstackStartIndexRoute
   '/tutorials/sql-nova-pizza/': typeof TutorialsSqlNovaPizzaIndexRoute
   '/tutorials/web-development/': typeof TutorialsWebDevelopmentIndexRoute
@@ -167,12 +183,14 @@ export interface FileRoutesByTo {
   '/tutorials/csharp-14/$topicId': typeof TutorialsCsharp14TopicIdRoute
   '/tutorials/dotnet-web-api/$topicId': typeof TutorialsDotnetWebApiTopicIdRoute
   '/tutorials/efcore-10/$topicId': typeof TutorialsEfcore10TopicIdRoute
+  '/tutorials/react-storybook/$topicId': typeof TutorialsReactStorybookTopicIdRoute
   '/tutorials/react-tanstack-start/$topicId': typeof TutorialsReactTanstackStartTopicIdRoute
   '/tutorials/sql-nova-pizza/$topicId': typeof TutorialsSqlNovaPizzaTopicIdRoute
   '/tutorials/web-development/$topicId': typeof TutorialsWebDevelopmentTopicIdRoute
   '/tutorials/csharp-14': typeof TutorialsCsharp14IndexRoute
   '/tutorials/dotnet-web-api': typeof TutorialsDotnetWebApiIndexRoute
   '/tutorials/efcore-10': typeof TutorialsEfcore10IndexRoute
+  '/tutorials/react-storybook': typeof TutorialsReactStorybookIndexRoute
   '/tutorials/react-tanstack-start': typeof TutorialsReactTanstackStartIndexRoute
   '/tutorials/sql-nova-pizza': typeof TutorialsSqlNovaPizzaIndexRoute
   '/tutorials/web-development': typeof TutorialsWebDevelopmentIndexRoute
@@ -189,12 +207,14 @@ export interface FileRoutesById {
   '/tutorials/csharp-14/$topicId': typeof TutorialsCsharp14TopicIdRoute
   '/tutorials/dotnet-web-api/$topicId': typeof TutorialsDotnetWebApiTopicIdRoute
   '/tutorials/efcore-10/$topicId': typeof TutorialsEfcore10TopicIdRoute
+  '/tutorials/react-storybook/$topicId': typeof TutorialsReactStorybookTopicIdRoute
   '/tutorials/react-tanstack-start/$topicId': typeof TutorialsReactTanstackStartTopicIdRoute
   '/tutorials/sql-nova-pizza/$topicId': typeof TutorialsSqlNovaPizzaTopicIdRoute
   '/tutorials/web-development/$topicId': typeof TutorialsWebDevelopmentTopicIdRoute
   '/tutorials/csharp-14/': typeof TutorialsCsharp14IndexRoute
   '/tutorials/dotnet-web-api/': typeof TutorialsDotnetWebApiIndexRoute
   '/tutorials/efcore-10/': typeof TutorialsEfcore10IndexRoute
+  '/tutorials/react-storybook/': typeof TutorialsReactStorybookIndexRoute
   '/tutorials/react-tanstack-start/': typeof TutorialsReactTanstackStartIndexRoute
   '/tutorials/sql-nova-pizza/': typeof TutorialsSqlNovaPizzaIndexRoute
   '/tutorials/web-development/': typeof TutorialsWebDevelopmentIndexRoute
@@ -212,12 +232,14 @@ export interface FileRouteTypes {
     | '/tutorials/csharp-14/$topicId'
     | '/tutorials/dotnet-web-api/$topicId'
     | '/tutorials/efcore-10/$topicId'
+    | '/tutorials/react-storybook/$topicId'
     | '/tutorials/react-tanstack-start/$topicId'
     | '/tutorials/sql-nova-pizza/$topicId'
     | '/tutorials/web-development/$topicId'
     | '/tutorials/csharp-14/'
     | '/tutorials/dotnet-web-api/'
     | '/tutorials/efcore-10/'
+    | '/tutorials/react-storybook/'
     | '/tutorials/react-tanstack-start/'
     | '/tutorials/sql-nova-pizza/'
     | '/tutorials/web-development/'
@@ -233,12 +255,14 @@ export interface FileRouteTypes {
     | '/tutorials/csharp-14/$topicId'
     | '/tutorials/dotnet-web-api/$topicId'
     | '/tutorials/efcore-10/$topicId'
+    | '/tutorials/react-storybook/$topicId'
     | '/tutorials/react-tanstack-start/$topicId'
     | '/tutorials/sql-nova-pizza/$topicId'
     | '/tutorials/web-development/$topicId'
     | '/tutorials/csharp-14'
     | '/tutorials/dotnet-web-api'
     | '/tutorials/efcore-10'
+    | '/tutorials/react-storybook'
     | '/tutorials/react-tanstack-start'
     | '/tutorials/sql-nova-pizza'
     | '/tutorials/web-development'
@@ -254,12 +278,14 @@ export interface FileRouteTypes {
     | '/tutorials/csharp-14/$topicId'
     | '/tutorials/dotnet-web-api/$topicId'
     | '/tutorials/efcore-10/$topicId'
+    | '/tutorials/react-storybook/$topicId'
     | '/tutorials/react-tanstack-start/$topicId'
     | '/tutorials/sql-nova-pizza/$topicId'
     | '/tutorials/web-development/$topicId'
     | '/tutorials/csharp-14/'
     | '/tutorials/dotnet-web-api/'
     | '/tutorials/efcore-10/'
+    | '/tutorials/react-storybook/'
     | '/tutorials/react-tanstack-start/'
     | '/tutorials/sql-nova-pizza/'
     | '/tutorials/web-development/'
@@ -276,12 +302,14 @@ export interface RootRouteChildren {
   TutorialsCsharp14TopicIdRoute: typeof TutorialsCsharp14TopicIdRoute
   TutorialsDotnetWebApiTopicIdRoute: typeof TutorialsDotnetWebApiTopicIdRoute
   TutorialsEfcore10TopicIdRoute: typeof TutorialsEfcore10TopicIdRoute
+  TutorialsReactStorybookTopicIdRoute: typeof TutorialsReactStorybookTopicIdRoute
   TutorialsReactTanstackStartTopicIdRoute: typeof TutorialsReactTanstackStartTopicIdRoute
   TutorialsSqlNovaPizzaTopicIdRoute: typeof TutorialsSqlNovaPizzaTopicIdRoute
   TutorialsWebDevelopmentTopicIdRoute: typeof TutorialsWebDevelopmentTopicIdRoute
   TutorialsCsharp14IndexRoute: typeof TutorialsCsharp14IndexRoute
   TutorialsDotnetWebApiIndexRoute: typeof TutorialsDotnetWebApiIndexRoute
   TutorialsEfcore10IndexRoute: typeof TutorialsEfcore10IndexRoute
+  TutorialsReactStorybookIndexRoute: typeof TutorialsReactStorybookIndexRoute
   TutorialsReactTanstackStartIndexRoute: typeof TutorialsReactTanstackStartIndexRoute
   TutorialsSqlNovaPizzaIndexRoute: typeof TutorialsSqlNovaPizzaIndexRoute
   TutorialsWebDevelopmentIndexRoute: typeof TutorialsWebDevelopmentIndexRoute
@@ -380,6 +408,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TutorialsEfcore10TopicIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tutorials/react-storybook/': {
+      id: '/tutorials/react-storybook/'
+      path: '/tutorials/react-storybook'
+      fullPath: '/tutorials/react-storybook/'
+      preLoaderRoute: typeof TutorialsReactStorybookIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutorials/react-storybook/$topicId': {
+      id: '/tutorials/react-storybook/$topicId'
+      path: '/tutorials/react-storybook/$topicId'
+      fullPath: '/tutorials/react-storybook/$topicId'
+      preLoaderRoute: typeof TutorialsReactStorybookTopicIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tutorials/react-tanstack-start/': {
       id: '/tutorials/react-tanstack-start/'
       path: '/tutorials/react-tanstack-start'
@@ -436,6 +478,7 @@ const rootRouteChildren: RootRouteChildren = {
   TutorialsCsharp14TopicIdRoute: TutorialsCsharp14TopicIdRoute,
   TutorialsDotnetWebApiTopicIdRoute: TutorialsDotnetWebApiTopicIdRoute,
   TutorialsEfcore10TopicIdRoute: TutorialsEfcore10TopicIdRoute,
+  TutorialsReactStorybookTopicIdRoute: TutorialsReactStorybookTopicIdRoute,
   TutorialsReactTanstackStartTopicIdRoute:
     TutorialsReactTanstackStartTopicIdRoute,
   TutorialsSqlNovaPizzaTopicIdRoute: TutorialsSqlNovaPizzaTopicIdRoute,
@@ -443,6 +486,7 @@ const rootRouteChildren: RootRouteChildren = {
   TutorialsCsharp14IndexRoute: TutorialsCsharp14IndexRoute,
   TutorialsDotnetWebApiIndexRoute: TutorialsDotnetWebApiIndexRoute,
   TutorialsEfcore10IndexRoute: TutorialsEfcore10IndexRoute,
+  TutorialsReactStorybookIndexRoute: TutorialsReactStorybookIndexRoute,
   TutorialsReactTanstackStartIndexRoute: TutorialsReactTanstackStartIndexRoute,
   TutorialsSqlNovaPizzaIndexRoute: TutorialsSqlNovaPizzaIndexRoute,
   TutorialsWebDevelopmentIndexRoute: TutorialsWebDevelopmentIndexRoute,

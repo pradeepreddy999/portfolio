@@ -23,9 +23,9 @@ export const tutorials: Tutorial[] = [
   },
   {
     slug: 'sql-nova-pizza',
-    title: 'SQL — Basics to Advanced (Nova Pizza Academy)',
+    title: 'SQL — Basics to Advanced (Maple Street Library)',
     excerpt:
-      'Learn SQL from SELECT to window functions, CTEs, ROLLUP/CUBE, transactions, JSON, indexing, and security — every example queries the same five-table pizza delivery schema so it all clicks together.',
+      'Learn SQL from SELECT to window functions, CTEs, ROLLUP/CUBE, transactions, JSON, indexing, and security — every example queries the same small library schema — books, members, and loans — so it all clicks together.',
     date: '2026-09-12',
     readTime: '65 min read',
     difficulty: 'Beginner',
@@ -34,9 +34,9 @@ export const tutorials: Tutorial[] = [
   },
   {
     slug: 'efcore-10',
-    title: 'EF Core — Basics to Advanced (Superhero Academy)',
+    title: 'EF Core — Basics to Advanced (Maple Street Library)',
     excerpt:
-      'A complete walk from first DbContext to bulk operations, multi-tenancy, and provider internals — every relationship, query, and gotcha taught against one running schema: a superhero academy database.',
+      'A complete walk from first DbContext to bulk operations, multi-tenancy, and provider internals — every relationship, query, and gotcha taught against one running schema: a small lending library.',
     date: '2026-09-15',
     readTime: '65 min read',
     difficulty: 'Intermediate',
@@ -69,11 +69,22 @@ export const tutorials: Tutorial[] = [
     slug: 'dotnet-web-api',
     title: 'The .NET 10 Web API Field Guide',
     excerpt:
-      'Everything a Web API needs, in the order you’ll actually need it — 45 concepts from C# 14 language essentials through Docker, every one of them named against the library you’d reach for in real production code, all built around one running Pizza Ordering API. Targets .NET 10, EF Core 10, and xUnit v3.',
+      'Everything a Web API needs, in the order you’ll actually need it — 45 concepts from C# 14 language essentials through Docker, every one of them named against the library you’d reach for in real production code, all built around one running Library API (Maple Street Library). Targets .NET 10, EF Core 10, and xUnit v3.',
     date: '2026-09-19',
     readTime: '95 min read',
     difficulty: 'Intermediate',
     stack: ['.NET 10', 'C# 14', 'EF Core 10'],
+    content: '',
+  },
+  {
+    slug: 'react-storybook',
+    title: 'React Storybook — Basics to Advanced, with Testing',
+    excerpt:
+      'Build, document, and test components in isolation — 36 topics from your first CSF story through decorators, MSW and module mocking, then a full testing track: play functions, the Vitest addon, accessibility, portable stories, visual regression, coverage, and CI. Every example builds on the same Maple Street Library app used across these tutorials.',
+    date: '2026-09-25',
+    readTime: '80 min read',
+    difficulty: 'Intermediate',
+    stack: ['Storybook 10', 'React 19', 'Vitest'],
     content: '',
   },
 ]

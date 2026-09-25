@@ -30,7 +30,7 @@ function EfCoreTopicPage() {
       basePath="/tutorials/efcore-10"
       nav={efCoreNav}
       activeId={topicId}
-      eyebrow="Superhero Academy"
+      eyebrow="EF Core · Maple Street Library"
       title="EF Core — Basics → Advanced"
     >
       <EfCoreContent />
