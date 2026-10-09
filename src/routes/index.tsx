@@ -1,3 +1,4 @@
+import { CertificateCard } from '#/components/certificate-card'
 import { ContactForm } from '#/components/contact-form'
 import { Reveal } from '#/components/reveal'
 import { Badge } from '#/components/ui/badge'
@@ -9,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card'
+import { certifications } from '#/lib/certifications'
 import { projects } from '#/lib/data'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowRight, ArrowUpRight, Mail } from 'lucide-react'
@@ -275,6 +277,33 @@ function Home() {
           </div>
         </section>
       </Reveal>
+
+      {/* CERTIFICATIONS */}
+      {certifications.length > 0 && (
+        <Reveal>
+          <section id="certifications" className="py-24 bg-muted/50">
+            <div className="container px-4 md:px-6 mx-auto">
+              <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
+                  Certifications
+                </h2>
+                <p className="text-muted-foreground max-w-150">
+                  Courses and credentials I&apos;ve completed to keep learning.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {certifications.map((cert) => (
+                  <CertificateCard
+                    key={`${cert.issuer}-${cert.title}`}
+                    cert={cert}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        </Reveal>
+      )}
 
       {/* CONTACT SECTION */}
       <Reveal>

@@ -16,6 +16,7 @@ const navLinks = [
   { name: 'About', to: '/' as const, hash: 'about' },
   { name: 'Experience', to: '/' as const, hash: 'experience' },
   { name: 'Projects', to: '/' as const, hash: 'projects' },
+  { name: 'Certifications', to: '/' as const, hash: 'certifications' },
   { name: 'Blog', to: '/blog' as const, hash: undefined },
   { name: 'Tutorials', to: '/tutorials' as const, hash: undefined },
   { name: 'Contact', to: '/' as const, hash: 'contact' },
