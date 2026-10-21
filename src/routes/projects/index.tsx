@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { PageHeader } from '#/components/page-header'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import {
@@ -9,7 +10,7 @@ import {
   CardTitle,
 } from '#/components/ui/card'
 import { projects } from '#/lib/data'
-import { ArrowLeft, ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 
 export const Route = createFileRoute('/projects/')({
   component: ProjectsPage,
@@ -18,21 +19,10 @@ export const Route = createFileRoute('/projects/')({
 function ProjectsPage() {
   return (
     <div className="container mx-auto max-w-5xl py-12 px-4 md:px-6">
-      <div className="mb-12 space-y-4">
-        <Link
-          to="/"
-          className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4 transition-colors"
-        >
-          <ArrowLeft className="mr-2 size-4" /> Back to Home
-        </Link>
-        <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
-          Projects
-        </h1>
-        <p className="text-xl text-muted-foreground">
-          A collection of projects I&apos;ve built, from small experiments to
-          full-stack applications.
-        </p>
-      </div>
+      <PageHeader
+        title="Projects"
+        description="A collection of projects I've built, from small experiments to full-stack applications."
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {projects.map((project) => (
@@ -65,16 +55,12 @@ function ProjectsPage() {
             </CardContent>
 
             <CardFooter>
-              <Link
-                to="/projects/$slug"
-                params={{ slug: project.slug }}
-                className="w-full"
-              >
-                <Button variant="outline" className="w-full group">
+              <Button variant="outline" className="group w-full" asChild>
+                <Link to="/projects/$slug" params={{ slug: project.slug }}>
                   View Case Study
                   <ArrowUpRight className="ml-2 size-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </CardFooter>
           </Card>
         ))}

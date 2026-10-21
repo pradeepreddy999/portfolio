@@ -4,6 +4,7 @@ import {
   resetProgress,
   useTutorialProgress,
 } from '#/lib/tutorials/progress'
+import type { TutorialSlug } from '#/lib/tutorials'
 import { cn } from '#/lib/utils'
 import { Link } from '@tanstack/react-router'
 import { ArrowLeft, ArrowRight, Calendar, Check, Clock } from 'lucide-react'
@@ -18,14 +19,7 @@ export interface NavGroup {
   items: Array<NavItem>
 }
 
-export type TutorialBasePath =
-  | '/tutorials/csharp-14'
-  | '/tutorials/sql-nova-pizza'
-  | '/tutorials/efcore-10'
-  | '/tutorials/web-development'
-  | '/tutorials/dotnet-web-api'
-  | '/tutorials/react-tanstack-start'
-  | '/tutorials/react-storybook'
+export type TutorialBasePath = `/tutorials/${TutorialSlug}`
 
 function topicRoute(basePath: TutorialBasePath) {
   return `${basePath}/$topicId`

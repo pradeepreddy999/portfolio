@@ -1,39 +1,14 @@
-import { createFileRoute, notFound } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { WebDevContent, webDevNav } from '#/lib/tutorials/webdev-content'
-import { TutorialTopicPage, flattenTopics } from '#/lib/tutorials/shared'
+import { topicRouteOptions } from '#/lib/tutorials/route-options'
 
-const flatTopics = flattenTopics(webDevNav)
-
-export const Route = createFileRoute('/tutorials/web-development/$topicId')({
-  loader: ({ params }) => {
-    const topic = flatTopics.find((t) => t.id === params.topicId)
-    if (!topic) throw notFound()
-    return topic
-  },
-  head: ({ loaderData }) => ({
-    meta: [
-      {
-        title: loaderData
-          ? `${loaderData.label} — Modern Web Development | Tutorials`
-          : 'Tutorials',
-      },
-    ],
+export const Route = createFileRoute('/tutorials/web-development/$topicId')(
+  topicRouteOptions({
+    slug: 'web-development',
+    nav: webDevNav,
+    Content: WebDevContent,
+    eyebrow: 'Web Dev Roadmap',
+    title: 'Web Development — Basics → Advanced',
+    headTitle: 'Modern Web Development',
   }),
-  component: WebDevTopicPage,
-})
-
-function WebDevTopicPage() {
-  const { topicId } = Route.useParams()
-
-  return (
-    <TutorialTopicPage
-      basePath="/tutorials/web-development"
-      nav={webDevNav}
-      activeId={topicId}
-      eyebrow="Web Dev Roadmap"
-      title="Web Development — Basics → Advanced"
-    >
-      <WebDevContent />
-    </TutorialTopicPage>
-  )
-}
+)

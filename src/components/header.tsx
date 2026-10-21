@@ -1,8 +1,10 @@
 import { ModeToggle } from '#/components/mode-toggle'
 import { ResumeDownloadButton } from '#/components/resume-download-button'
+import { SocialLinks } from '#/components/social-links'
 import { Button } from '#/components/ui/button'
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetTitle,
   SheetTrigger,
@@ -22,20 +24,7 @@ const navLinks = [
   { name: 'Contact', to: '/' as const, hash: 'contact' },
 ]
 
-const socialLinks = [
-  {
-    name: 'GitHub',
-    href: 'https://github.com/pradeepreddy999',
-    icon: 'images/github-mark.svg',
-  },
-  {
-    name: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/pradeep-reddy-palavalli-70159818b/',
-    icon: 'images/linkedin.svg',
-  },
-]
-
-export default function Header() {
+export function Header() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
 
   return (
@@ -68,26 +57,11 @@ export default function Header() {
             <ResumeDownloadButton />
           </div>
 
-          <div className="hidden sm:flex items-center gap-1">
-            {socialLinks.map((social) => (
-              <a
-                key={social.name}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="ghost" size="icon">
-                  <img
-                    src={`${import.meta.env.BASE_URL}${social.icon}`}
-                    alt={social.name}
-                    width={20}
-                    height={20}
-                    className="dark:invert"
-                  />
-                </Button>
-              </a>
-            ))}
-          </div>
+          <SocialLinks
+            size={20}
+            asButtons
+            className="hidden items-center gap-1 sm:flex"
+          />
 
           <ModeToggle />
 
@@ -102,38 +76,22 @@ export default function Header() {
               <SheetTitle className="sr-only">Mobile Navigation</SheetTitle>
               <div className="grid gap-6 px-4 py-6 text-lg font-medium">
                 {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    to={link.to}
-                    hash={link.hash}
-                    className="hover:text-primary transition-colors"
-                  >
-                    {link.name}
-                  </Link>
+                  <SheetClose key={link.name} asChild>
+                    <Link
+                      to={link.to}
+                      hash={link.hash}
+                      className="hover:text-primary transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  </SheetClose>
                 ))}
 
                 <div className="mt-2">
                   <ResumeDownloadButton />
                 </div>
 
-                <div className="mt-4 flex gap-4">
-                  {socialLinks.map((social) => (
-                    <a
-                      key={social.name}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img
-                        src={`${import.meta.env.BASE_URL}${social.icon}`}
-                        alt={social.name}
-                        width={24}
-                        height={24}
-                        className="dark:invert"
-                      />
-                    </a>
-                  ))}
-                </div>
+                <SocialLinks className="mt-4" />
               </div>
             </SheetContent>
           </Sheet>

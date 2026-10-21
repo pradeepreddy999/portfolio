@@ -1,16 +1,13 @@
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { getProject } from '#/lib/data'
-import { Link, createFileRoute, notFound } from '@tanstack/react-router'
+import { orNotFound } from '#/lib/utils'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowLeft, Code2, Globe } from 'lucide-react'
 import Markdown from 'react-markdown'
 
 export const Route = createFileRoute('/projects/$slug')({
-  loader: ({ params }) => {
-    const project = getProject(params.slug)
-    if (!project) throw notFound()
-    return project
-  },
+  loader: ({ params }) => orNotFound(getProject(params.slug)),
   head: ({ loaderData }) => ({
     meta: [
       {
@@ -55,26 +52,26 @@ function ProjectPage() {
         {(project.githubUrl || project.demoUrl) && (
           <div className="flex gap-4">
             {project.githubUrl && (
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button>
+              <Button asChild>
+                <a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Code2 className="mr-2 size-4" /> View Source
-                </Button>
-              </a>
+                </a>
+              </Button>
             )}
             {project.demoUrl && (
-              <a
-                href={project.demoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="outline">
+              <Button variant="outline" asChild>
+                <a
+                  href={project.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Globe className="mr-2 size-4" /> Live Demo
-                </Button>
-              </a>
+                </a>
+              </Button>
             )}
           </div>
         )}

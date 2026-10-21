@@ -15,7 +15,6 @@ import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
 import { Route as TutorialsIndexRouteImport } from './routes/tutorials/index'
-import { Route as TutorialsSlugRouteImport } from './routes/tutorials/$slug'
 import { Route as TutorialsCsharp14IndexRouteImport } from './routes/tutorials/csharp-14/index'
 import { Route as TutorialsCsharp14TopicIdRouteImport } from './routes/tutorials/csharp-14/$topicId'
 import { Route as TutorialsDotnetWebApiIndexRouteImport } from './routes/tutorials/dotnet-web-api/index'
@@ -59,11 +58,6 @@ const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
 const TutorialsIndexRoute = TutorialsIndexRouteImport.update({
   id: '/tutorials/',
   path: '/tutorials/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TutorialsSlugRoute = TutorialsSlugRouteImport.update({
-  id: '/tutorials/$slug',
-  path: '/tutorials/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TutorialsCsharp14IndexRoute = TutorialsCsharp14IndexRouteImport.update({
@@ -153,7 +147,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
-  '/tutorials/$slug': typeof TutorialsSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/tutorials/': typeof TutorialsIndexRoute
@@ -176,7 +169,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
-  '/tutorials/$slug': typeof TutorialsSlugRoute
   '/blog': typeof BlogIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/tutorials': typeof TutorialsIndexRoute
@@ -200,7 +192,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
-  '/tutorials/$slug': typeof TutorialsSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/tutorials/': typeof TutorialsIndexRoute
@@ -225,7 +216,6 @@ export interface FileRouteTypes {
     | '/'
     | '/blog/$slug'
     | '/projects/$slug'
-    | '/tutorials/$slug'
     | '/blog/'
     | '/projects/'
     | '/tutorials/'
@@ -248,7 +238,6 @@ export interface FileRouteTypes {
     | '/'
     | '/blog/$slug'
     | '/projects/$slug'
-    | '/tutorials/$slug'
     | '/blog'
     | '/projects'
     | '/tutorials'
@@ -271,7 +260,6 @@ export interface FileRouteTypes {
     | '/'
     | '/blog/$slug'
     | '/projects/$slug'
-    | '/tutorials/$slug'
     | '/blog/'
     | '/projects/'
     | '/tutorials/'
@@ -295,7 +283,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BlogSlugRoute: typeof BlogSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
-  TutorialsSlugRoute: typeof TutorialsSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
   TutorialsIndexRoute: typeof TutorialsIndexRoute
@@ -357,13 +344,6 @@ declare module '@tanstack/react-router' {
       path: '/tutorials'
       fullPath: '/tutorials/'
       preLoaderRoute: typeof TutorialsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tutorials/$slug': {
-      id: '/tutorials/$slug'
-      path: '/tutorials/$slug'
-      fullPath: '/tutorials/$slug'
-      preLoaderRoute: typeof TutorialsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tutorials/csharp-14/': {
@@ -471,7 +451,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BlogSlugRoute: BlogSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
-  TutorialsSlugRoute: TutorialsSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
   TutorialsIndexRoute: TutorialsIndexRoute,

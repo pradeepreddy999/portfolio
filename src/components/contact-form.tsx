@@ -3,6 +3,7 @@ import { sendContactForm } from '#/lib/actions'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Textarea } from '#/components/ui/textarea'
+import { cn } from '#/lib/utils'
 import { Loader2 } from 'lucide-react'
 
 const initialState = { success: false, message: '' }
@@ -70,7 +71,10 @@ export function ContactForm() {
       {state.message && (
         <p
           aria-live="polite"
-          className={`text-sm ${state.success ? 'text-green-500' : 'text-red-500'}`}
+          className={cn(
+            'text-sm',
+            state.success ? 'text-green-500' : 'text-red-500',
+          )}
         >
           {state.message}
         </p>

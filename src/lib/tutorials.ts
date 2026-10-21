@@ -1,12 +1,20 @@
+export type TutorialSlug =
+  | 'csharp-14'
+  | 'sql-nova-pizza'
+  | 'efcore-10'
+  | 'web-development'
+  | 'react-tanstack-start'
+  | 'dotnet-web-api'
+  | 'react-storybook'
+
 export interface Tutorial {
-  slug: string
+  slug: TutorialSlug
   title: string
   excerpt: string
   date: string
   readTime: string
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
   stack: Array<string>
-  content: string
 }
 
 export const tutorials: Tutorial[] = [
@@ -19,7 +27,6 @@ export const tutorials: Tutorial[] = [
     readTime: '65 min read',
     difficulty: 'Intermediate',
     stack: ['C#', '.NET 10'],
-    content: '',
   },
   {
     slug: 'sql-nova-pizza',
@@ -30,7 +37,6 @@ export const tutorials: Tutorial[] = [
     readTime: '65 min read',
     difficulty: 'Beginner',
     stack: ['SQL', 'PostgreSQL'],
-    content: '',
   },
   {
     slug: 'efcore-10',
@@ -41,7 +47,6 @@ export const tutorials: Tutorial[] = [
     readTime: '65 min read',
     difficulty: 'Intermediate',
     stack: ['C#', 'EF Core 10', '.NET 10'],
-    content: '',
   },
   {
     slug: 'web-development',
@@ -52,7 +57,6 @@ export const tutorials: Tutorial[] = [
     readTime: '90 min read',
     difficulty: 'Beginner',
     stack: ['HTML', 'CSS', 'JavaScript', 'TypeScript'],
-    content: '',
   },
   {
     slug: 'react-tanstack-start',
@@ -63,7 +67,6 @@ export const tutorials: Tutorial[] = [
     readTime: '75 min read',
     difficulty: 'Intermediate',
     stack: ['React 19', 'TanStack Start', 'TypeScript'],
-    content: '',
   },
   {
     slug: 'dotnet-web-api',
@@ -74,7 +77,6 @@ export const tutorials: Tutorial[] = [
     readTime: '95 min read',
     difficulty: 'Intermediate',
     stack: ['.NET 10', 'C# 14', 'EF Core 10'],
-    content: '',
   },
   {
     slug: 'react-storybook',
@@ -85,10 +87,9 @@ export const tutorials: Tutorial[] = [
     readTime: '80 min read',
     difficulty: 'Intermediate',
     stack: ['Storybook 10', 'React 19', 'Vitest'],
-    content: '',
   },
 ]
 
-export function getTutorial(slug: string) {
+export function getTutorial(slug: TutorialSlug) {
   return tutorials.find((tutorial) => tutorial.slug === slug)
 }

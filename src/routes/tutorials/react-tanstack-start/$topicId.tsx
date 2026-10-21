@@ -1,44 +1,19 @@
-import { createFileRoute, notFound } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import {
   ReactStartContent,
   reactStartNav,
 } from '#/lib/tutorials/reactstart-content'
-import { TutorialTopicPage, flattenTopics } from '#/lib/tutorials/shared'
-
-const flatTopics = flattenTopics(reactStartNav)
+import { topicRouteOptions } from '#/lib/tutorials/route-options'
 
 export const Route = createFileRoute(
   '/tutorials/react-tanstack-start/$topicId',
-)({
-  loader: ({ params }) => {
-    const topic = flatTopics.find((t) => t.id === params.topicId)
-    if (!topic) throw notFound()
-    return topic
-  },
-  head: ({ loaderData }) => ({
-    meta: [
-      {
-        title: loaderData
-          ? `${loaderData.label} — React & TanStack Start | Tutorials`
-          : 'Tutorials',
-      },
-    ],
+)(
+  topicRouteOptions({
+    slug: 'react-tanstack-start',
+    nav: reactStartNav,
+    Content: ReactStartContent,
+    eyebrow: 'React & TanStack Start',
+    title: 'React & TanStack Start — Field Notes',
+    headTitle: 'React & TanStack Start',
   }),
-  component: ReactStartTopicPage,
-})
-
-function ReactStartTopicPage() {
-  const { topicId } = Route.useParams()
-
-  return (
-    <TutorialTopicPage
-      basePath="/tutorials/react-tanstack-start"
-      nav={reactStartNav}
-      activeId={topicId}
-      eyebrow="React & TanStack Start"
-      title="React & TanStack Start — Field Notes"
-    >
-      <ReactStartContent />
-    </TutorialTopicPage>
-  )
-}
+)

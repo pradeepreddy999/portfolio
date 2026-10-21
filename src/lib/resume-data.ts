@@ -25,6 +25,18 @@ export const resume = {
   linkedin: 'https://www.linkedin.com/in/pradeep-reddy-palavalli-70159818b/',
   summary:
     'Software Engineer with 5+ years of experience building scalable, data-driven retail and supply chain solutions using .NET Core, React, and SQL Server. Adept at full-stack development, system design, and performance optimization, with a strong focus on clean architecture, maintainability, and business impact.',
+  techStack: [
+    'C#',
+    '.NET Core Web API',
+    'React.js',
+    'TypeScript',
+    'JavaScript ES6+',
+    'Redux Toolkit',
+    'SQL Server',
+    'jQuery',
+    'Bootstrap',
+    'MUI5',
+  ],
   skills: [
     {
       label: 'Languages & Frameworks',
@@ -117,3 +129,16 @@ export const resume = {
     },
   ] satisfies ResumeProject[],
 }
+
+export const socialLinks = [
+  {
+    name: 'GitHub',
+    href: resume.github,
+    icon: 'images/github-mark.svg',
+  },
+  {
+    name: 'LinkedIn',
+    href: resume.linkedin,
+    icon: 'images/linkedin.svg',
+  },
+]

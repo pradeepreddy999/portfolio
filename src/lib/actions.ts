@@ -7,12 +7,17 @@ const contactSchema = z.object({
   message: z.string().min(10, 'Message must be at least 10 characters'),
 })
 
+function field(formData: FormData, name: string) {
+  const value = formData.get(name)
+  return typeof value === 'string' ? value : ''
+}
+
 export async function sendContactForm(_prevState: unknown, formData: FormData) {
   const parsed = contactSchema.safeParse({
-    firstName: (formData.get('first-name') as string | null) ?? '',
-    lastName: (formData.get('last-name') as string | null) || undefined,
-    email: (formData.get('email') as string | null) ?? '',
-    message: (formData.get('message') as string | null) ?? '',
+    firstName: field(formData, 'first-name'),
+    lastName: field(formData, 'last-name') || undefined,
+    email: field(formData, 'email'),
+    message: field(formData, 'message'),
   })
 
   if (!parsed.success) {

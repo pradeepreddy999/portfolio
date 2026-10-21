@@ -1,8 +1,6 @@
+import { readStoredTheme, storeTheme } from '#/lib/theme'
+import type { Theme } from '#/lib/theme'
 import React, { createContext, useContext, useEffect, useState } from 'react'
-
-type Theme = 'light' | 'dark' | 'system'
-
-const STORAGE_KEY = 'portfolio-theme'
 
 const ThemeContext = createContext<{
   theme: Theme
@@ -36,8 +34,7 @@ export function ThemeProvider({
   const [theme, setThemeState] = useState<Theme>(defaultTheme)
 
   useEffect(() => {
-    const stored =
-      (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? defaultTheme
+    const stored = readStoredTheme() ?? defaultTheme
     setThemeState(stored)
     applyTheme(stored)
   }, [defaultTheme])
@@ -51,7 +48,7 @@ export function ThemeProvider({
   }, [theme])
 
   const setTheme = (newTheme: Theme) => {
-    localStorage.setItem(STORAGE_KEY, newTheme)
+    storeTheme(newTheme)
     setThemeState(newTheme)
     applyTheme(newTheme)
   }

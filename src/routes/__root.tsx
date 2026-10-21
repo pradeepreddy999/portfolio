@@ -1,5 +1,6 @@
 import {
   HeadContent,
+  Link,
   Outlet,
   Scripts,
   createRootRoute,
@@ -7,9 +8,10 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ThemeProvider } from '#/components/theme-provider'
-import Header from '#/components/header'
+import { Header } from '#/components/header'
 import { Footer } from '#/components/footer'
 import { Button } from '#/components/ui/button'
+import { themeInitScript } from '#/lib/theme'
 import { ArrowLeft } from 'lucide-react'
 
 import appCss from '../styles.css?url'
@@ -66,12 +68,12 @@ function NotFoundPage() {
         Sorry, the page you&apos;re looking for doesn&apos;t exist or has been
         moved.
       </p>
-      <a href="/">
-        <Button>
+      <Button asChild>
+        <Link to="/">
           <ArrowLeft className="mr-2 size-4" />
           Back to Home
-        </Button>
-      </a>
+        </Link>
+      </Button>
     </div>
   )
 }
@@ -81,11 +83,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Inline script to apply theme class before paint — prevents flash */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem('portfolio-theme')||'system';var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.add(d?'dark':'light')})()`,
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <HeadContent />
       </head>
       <body className="antialiased">
